@@ -26,10 +26,19 @@ function App() {
       green: 0.2,
       equipment: 0.2,
     },
+    accessibility_info: { // Initialize this with default values for proximity settings
+      proximity_big_park: 1,
+      proximity_small_park: 2,
+      proximity_salud: 2,
+      proximity_educacion: 1,
+      proximity_servicios: 5,
+      proximity_supermercado: 1,
+      proximity_age_diversity: 1,
+    }
   });
   const [coords, setCoords] = useState();
   const project = window.location.pathname.split("/")[1];
-
+console.log(configuration.accessibility_info)
   useEffect(() => {
     async function updateProject() {
       await axios.get(`${API_URL}/project/${project}`);
@@ -61,16 +70,12 @@ function App() {
       const response = await axios.post(`${API_URL}/query`, {
         metric: configuration.metric,
         condition: configuration.condition,
-        accessibility_info: {
-          proximity_educacion: 1,
-          proximity_salud: 2,
-          proximity_small_park: 1,
-        },
+        accessibility_info: configuration.accessibility_info
       });
       setData(response.data);
     }
     fetchData();
-  }, [configuration.metric, configuration.condition]);
+  }, [configuration.metric, configuration.condition, configuration.accessibility_info]);
 
   return (
     <div style={{ width: "100dvw", height: "100dvh" }}>

@@ -1,4 +1,10 @@
 import {
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  Checkbox,
+  CheckboxGroup,
   Box,
   Select,
   Slider,
@@ -7,10 +13,46 @@ import {
   SliderTrack,
   Switch,
   Tag,
+  NumberInput,
+  NumberInputField,
 } from "@chakra-ui/react";
 import { COLUMN_MAPPING } from "./constants";
 
 export const Toolbar = ({ configuration, setConfiguration }) => {
+  const proximityOptions = {
+    proximity_big_park: 1,
+    proximity_small_park: 2,
+    proximity_salud: 2,
+    proximity_educacion: 1,
+    proximity_servicios: 5,
+    proximity_supermercado: 1,
+    proximity_age_diversity: 1,
+  };
+
+  const handleProximityChange = (type, value, key) => {
+    // Create a copy of the current accessibility_info
+    const updatedAccessibilityInfo = { ...configuration.accessibility_info };
+  
+    if (type === 'checkbox') {
+      if (value) {
+        // If the checkbox is checked, initialize or maintain the current value
+        updatedAccessibilityInfo[key] = updatedAccessibilityInfo[key] || proximityOptions[key];
+      } else {
+        // If the checkbox is unchecked, delete the key from accessibility_info
+        delete updatedAccessibilityInfo[key];
+      }
+    } else {
+      // For number input changes, update the value directly
+      updatedAccessibilityInfo[key] = parseInt(value) || 0;
+    }
+  
+    // Update the configuration with the modified accessibility_info
+    setConfiguration({
+      ...configuration,
+      accessibility_info: updatedAccessibilityInfo
+    });
+  };
+
   return (
     <Box
       style={{
@@ -47,6 +89,39 @@ export const Toolbar = ({ configuration, setConfiguration }) => {
           SELECT {configuration.metric} FROM predios
           {configuration.condition ? ` WHERE ${configuration.condition}` : ""}
         </Tag>
+      )}
+      {configuration.metric === 'minutes' && (
+        <Accordion allowMultiple my={4}>
+        <AccordionItem>
+          <AccordionButton>
+            <Box flex="1" textAlign="left">
+              Seleccionar Proximidad
+            </Box>
+          </AccordionButton>
+          <AccordionPanel>
+            {Object.entries(proximityOptions).map(([key, initialValue]) => (
+              <Box key={key} display="flex" alignItems="center" mb={2}>
+                <Checkbox
+                  isChecked={!!configuration.accessibility_info[key]}
+                  onChange={(e) => handleProximityChange('checkbox', e.target.checked, key)}
+                  mr={2}
+                />
+                <label htmlFor={key}>{key.replace(/_/g, ' ')}:</label>
+                <NumberInput
+                  id={key}
+                  defaultValue={initialValue}
+                  min={0}
+                  onChange={(val) => handleProximityChange('number', val, key)}
+                  keepWithinRange={true}
+                  isDisabled={!configuration.accessibility_info[key]}
+                >
+                  <NumberInputField />
+                </NumberInput>
+              </Box>
+            ))}
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
       )}
       <br />
       Edificios
