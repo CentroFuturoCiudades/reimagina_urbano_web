@@ -4,7 +4,6 @@ import {
   AccordionButton,
   AccordionPanel,
   Checkbox,
-  CheckboxGroup,
   Box,
   Select,
   Slider,
