@@ -14,28 +14,38 @@ import {
   Tag,
   NumberInput,
   NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from "@chakra-ui/react";
 import { COLUMN_MAPPING } from "./constants";
 
+const mappingLabels = {
+  proximity_small_park: "Parque",
+  proximity_salud: "Salud",
+  proximity_educacion: "Educación",
+  proximity_servicios: "Servicios",
+  proximity_supermercado: "Supermercado",
+};
+
 export const Toolbar = ({ configuration, setConfiguration }) => {
   const proximityOptions = {
-    proximity_big_park: 1,
-    proximity_small_park: 2,
+    proximity_small_park: 1,
     proximity_salud: 2,
     proximity_educacion: 1,
     proximity_servicios: 5,
     proximity_supermercado: 1,
-    proximity_age_diversity: 1,
   };
 
   const handleProximityChange = (type, value, key) => {
     // Create a copy of the current accessibility_info
     const updatedAccessibilityInfo = { ...configuration.accessibility_info };
-  
-    if (type === 'checkbox') {
+
+    if (type === "checkbox") {
       if (value) {
         // If the checkbox is checked, initialize or maintain the current value
-        updatedAccessibilityInfo[key] = updatedAccessibilityInfo[key] || proximityOptions[key];
+        updatedAccessibilityInfo[key] =
+          updatedAccessibilityInfo[key] || proximityOptions[key];
       } else {
         // If the checkbox is unchecked, delete the key from accessibility_info
         delete updatedAccessibilityInfo[key];
@@ -44,11 +54,11 @@ export const Toolbar = ({ configuration, setConfiguration }) => {
       // For number input changes, update the value directly
       updatedAccessibilityInfo[key] = parseInt(value) || 0;
     }
-  
+
     // Update the configuration with the modified accessibility_info
     setConfiguration({
       ...configuration,
-      accessibility_info: updatedAccessibilityInfo
+      accessibility_info: updatedAccessibilityInfo,
     });
   };
 
@@ -89,38 +99,48 @@ export const Toolbar = ({ configuration, setConfiguration }) => {
           {configuration.condition ? ` WHERE ${configuration.condition}` : ""}
         </Tag>
       )}
-      {configuration.metric === 'minutes' && (
+      {configuration.metric === "minutes" && (
         <Accordion allowMultiple my={4}>
-        <AccordionItem>
-          <AccordionButton>
-            <Box flex="1" textAlign="left">
-              Seleccionar Proximidad
-            </Box>
-          </AccordionButton>
-          <AccordionPanel>
-            {Object.entries(proximityOptions).map(([key, initialValue]) => (
-              <Box key={key} display="flex" alignItems="center" mb={2}>
-                <Checkbox
-                  isChecked={!!configuration.accessibility_info[key]}
-                  onChange={(e) => handleProximityChange('checkbox', e.target.checked, key)}
-                  mr={2}
-                />
-                <label htmlFor={key}>{key.replace(/_/g, ' ')}:</label>
-                <NumberInput
-                  id={key}
-                  defaultValue={initialValue}
-                  min={0}
-                  onChange={(val) => handleProximityChange('number', val, key)}
-                  keepWithinRange={true}
-                  isDisabled={!configuration.accessibility_info[key]}
-                >
-                  <NumberInputField />
-                </NumberInput>
+          <AccordionItem>
+            <AccordionButton>
+              <Box flex="1" textAlign="left">
+                Seleccionar Proximidad
               </Box>
-            ))}
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
+            </AccordionButton>
+            <AccordionPanel>
+              {Object.entries(proximityOptions).map(([key, initialValue]) => (
+                <Box key={key} display="flex" alignItems="center" mb={2}>
+                  <Checkbox
+                    isChecked={!!configuration.accessibility_info[key]}
+                    onChange={(e) =>
+                      handleProximityChange("checkbox", e.target.checked, key)
+                    }
+                    mr={2}
+                  />
+                  <NumberInput
+                    width="50px"
+                    size="xs"
+                    id={key}
+                    defaultValue={initialValue}
+                    min={0}
+                    onChange={(val) =>
+                      handleProximityChange("number", val || 1, key)
+                    }
+                    keepWithinRange={true}
+                    isDisabled={!configuration.accessibility_info[key]}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper fontSize="8px" />
+                      <NumberDecrementStepper fontSize="8px" />
+                    </NumberInputStepper>
+                  </NumberInput>
+                  <label>{mappingLabels[key]}</label>
+                </Box>
+              ))}
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
       )}
       <br />
       Edificios
@@ -177,7 +197,7 @@ export const Toolbar = ({ configuration, setConfiguration }) => {
         </SliderTrack>
         <SliderThumb />
       </Slider>
-      Áreas Verdes
+      Áreas Vegetación
       <Slider
         min={0}
         max={1}

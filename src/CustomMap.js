@@ -1,13 +1,12 @@
-import { useMemo, useState, useEffect } from "react";
-import { AMOUNT, API_URL, COLORS, INITIAL_STATE } from "./constants";
-import { colorInterpolate, useFetch } from "./utils";
+import { useMemo, useState } from "react";
+import { API_URL, INITIAL_STATE } from "./constants";
+import { useFetch } from "./utils";
 import * as turf from "@turf/turf";
 import { DeckGL, GeoJsonLayer } from "deck.gl";
 import { Map } from "react-map-gl";
 import { Tooltip } from "./Tooltip";
 
-import * as d3 from 'd3';
-import { rgb } from "d3-color";
+import * as d3 from "d3";
 
 export const CustomMap = ({
   aggregatedInfo,
@@ -18,7 +17,6 @@ export const CustomMap = ({
   coords,
   metric,
 }) => {
-
   const { data: dataLots } = useFetch(`${API_URL}/geojson/lots`);
   const { data: poligono } = useFetch(`${API_URL}/geojson/bounds`);
   const { data: dataBuildings } = useFetch(`${API_URL}/geojson/building`);
@@ -30,8 +28,6 @@ export const CustomMap = ({
   const { data: dataGreen } = useFetch(`${API_URL}/geojson/green`);
   const { data: dataEquipment } = useFetch(`${API_URL}/geojson/equipment`);
   const [hoverInfo, setHoverInfo] = useState();
-
-  const [colorDict, setColorDict] = useState({});
 
   const center = !!aggregatedInfo && [
     aggregatedInfo["longitud"],
@@ -49,20 +45,6 @@ export const CustomMap = ({
     [data]
   );
 
-  const quantiles = useMemo(() => {
-    const filteredData = data.map((feature) => feature["value"]);
-    const max = Math.max(...filteredData);
-    const min = 0;
-    return Array.from(
-      { length: AMOUNT },
-      (_, i) => (i * (max - min)) / AMOUNT + min
-    );
-  }, [data]);
-
-  useEffect(() => {
-    if (dataLots) updateColorDict();
-  }, [metric, dataLots]);
-
   const updateSelectedLots = (info) => {
     const lote = info.object.properties["ID"];
     if (selectedLots.includes(lote)) {
@@ -71,53 +53,26 @@ export const CustomMap = ({
       setSelectedLots([...selectedLots, lote]);
     }
   };
-  function colorInterpolate(value, thresholds, colors, opacity = 1) {
-    // Create a scale using the thresholds and colors
-    const scale = d3
-      .scaleLinear()
-      .domain(thresholds)
-      .range(colors)
-      .interpolate(d3.interpolateRgb);
-  
-    const thresholdColor = rgb(scale(value));
-    thresholdColor.opacity = opacity;
-  
-    return [
-      thresholdColor.r,
-      thresholdColor.g,
-      thresholdColor.b,
-      thresholdColor.opacity * 255,
-    ];
-  }
-  
-  const updateColorDict = () => {
-    if (dataLots){
-      
-      var values = [];
-      for(var i=0; i<dataLots.features.length; i++){
-        values.push(dataLots.features[i].properties[metric]);
-      }
-      // console.log(`${metric}: ${values}`);
 
-      // Calculate colors
-      const interpolator = d3.interpolate("white", "darkblue"); 
-      const colors = d3.quantize(interpolator, 8); 
-      console.log(colors);
-      
-      const quant = d3.scaleQuantile()
-      .domain(values)
-      .range(colors);
-      
-      const dictValues = {};
-      for(var i=0; i<dataLots.features.length; i++){
-        dictValues[dataLots.features[i].properties["ID"]] = quant(dataLots.features[i].properties[metric]);
-      }
-      setColorDict(dictValues);
-    }
-  }
+  const getFillColor = useMemo(() => {
+    if (!dataLots) return [255, 0, 0, 150];
+    const interpolator = d3.interpolate("white", "darkblue");
+    const colors = d3.quantize(interpolator, 8);
+    const domain =
+      metric === "minutes"
+        ? [0, Math.max(...Object.values(dictData))]
+        : Object.values(dictData);
+    const quantiles = d3.scaleQuantile().domain(domain).range(colors);
 
-  
-  if (!coords) {
+    return (d) => {
+      const color = d3.color(quantiles(dictData[d.properties["ID"]])).rgb();
+      return selectedLots.includes(d.properties["ID"])
+        ? [255, 0, 0, 150]
+        : [color.r, color.g, color.b];
+    };
+  }, [dataLots, metric, selectedLots, dictData]);
+
+  if (!coords || !dataLots) {
     return <div>Loading</div>;
   }
 
@@ -151,17 +106,7 @@ export const CustomMap = ({
           id="geojson-layer"
           data={dataLots.features.filter((x) => dictData[x.properties["ID"]])}
           filled={true}
-          getFillColor={(d) => colorDict[d.properties["ID"]].match(/\d+/g).map(Number)}
-          // getFillColor={(d) =>
-          //   selectedLots.includes(d.properties["ID"])
-          //     ? [255, 0, 0, 150]
-          //     : colorInterpolate(
-          //         dictData[d.properties["ID"]],
-          //         quantiles,
-          //         COLORS,
-          //         0.6
-          //       )
-          // }
+          getFillColor={getFillColor}
           getLineWidth={0}
           onClick={updateSelectedLots}
           pickable={true}
@@ -186,49 +131,59 @@ export const CustomMap = ({
       )}
 
       {/* Layer de color amarillo */}
-      <GeoJsonLayer
-        id="building-layer"
-        data={dataBuildings}
-        filled={true}
-        extruded={true}
-        // getElevation={(d) => dictData[d.properties['ID']].ALTURA * 20}
-        getElevation={3}
-        getLineWidth={0}
-        getFillColor={[255, 255, 0, 100]}
-        opacity={opacities.building}
-      />
-      <GeoJsonLayer
-        id="green-layer"
-        data={dataGreen}
-        filled={true}
-        getFillColor={[160, 200, 160, 255]}
-        getLineWidth={0}
-        opacity={opacities.green}
-      />
-      <GeoJsonLayer
-        id="parking-layer"
-        data={dataParking}
-        filled={true}
-        getFillColor={[120, 120, 120, 255]}
-        getLineWidth={0}
-        opacity={opacities.parking}
-      />
-      <GeoJsonLayer
-        id="equipment-layer"
-        data={dataEquipment}
-        filled={true}
-        getFillColor={[180, 0, 180, 255]}
-        getLineWidth={0}
-        opacity={opacities.equipment}
-      />
-      <GeoJsonLayer
-        id="park-layer"
-        data={dataPark}
-        filled={true}
-        getFillColor={[0, 130, 0, 255]}
-        getLineWidth={0}
-        opacity={opacities.park}
-      />
+      {opacities.building > 0 && (
+        <GeoJsonLayer
+          id="building-layer"
+          data={dataBuildings}
+          filled={true}
+          extruded={true}
+          // getElevation={(d) => dictData[d.properties['ID']].ALTURA * 20}
+          getElevation={3}
+          getLineWidth={0}
+          getFillColor={[255, 255, 0, 100]}
+          opacity={opacities.building}
+        />
+      )}
+      {opacities.green > 0 && (
+        <GeoJsonLayer
+          id="green-layer"
+          data={dataGreen}
+          filled={true}
+          getFillColor={[160, 200, 160, 255]}
+          getLineWidth={0}
+          opacity={opacities.green}
+        />
+      )}
+      {opacities.parking > 0 && (
+        <GeoJsonLayer
+          id="parking-layer"
+          data={dataParking}
+          filled={true}
+          getFillColor={[120, 120, 120, 255]}
+          getLineWidth={0}
+          opacity={opacities.parking}
+        />
+      )}
+      {opacities.equipment > 0 && (
+        <GeoJsonLayer
+          id="equipment-layer"
+          data={dataEquipment}
+          filled={true}
+          getFillColor={[180, 0, 180, 255]}
+          getLineWidth={0}
+          opacity={opacities.equipment}
+        />
+      )}
+      {opacities.park > 0 && (
+        <GeoJsonLayer
+          id="park-layer"
+          data={dataPark}
+          filled={true}
+          getFillColor={[0, 130, 0, 255]}
+          getLineWidth={0}
+          opacity={opacities.park}
+        />
+      )}
       <GeoJsonLayer
         id="establishments-layer"
         data={dataEstablishments}

@@ -47,7 +47,7 @@ export const LotSidebar = ({
       color: "rgb(100, 100, 200)",
     },
     {
-      name: "Area verde",
+      name: "Vegetación",
       value: aggregatedInfo["green_ratio"],
       color: "rgb(160, 200, 160)",
     },

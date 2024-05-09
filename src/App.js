@@ -20,25 +20,23 @@ function App() {
     metric: "wasteful_ratio",
     is3D: false,
     opacities: {
-      parking: 0.2,
-      building: 0.2,
-      park: 0.2,
-      green: 0.2,
-      equipment: 0.2,
+      parking: 0,
+      building: 0,
+      park: 0,
+      green: 0,
+      equipment: 0,
     },
-    accessibility_info: { // Initialize this with default values for proximity settings
-      proximity_big_park: 1,
+    accessibility_info: {
+      // Initialize this with default values for proximity settings
       proximity_small_park: 2,
       proximity_salud: 2,
       proximity_educacion: 1,
       proximity_servicios: 5,
       proximity_supermercado: 1,
-      proximity_age_diversity: 1,
-    }
+    },
   });
   const [coords, setCoords] = useState();
   const project = window.location.pathname.split("/")[1];
-console.log(configuration.accessibility_info)
   useEffect(() => {
     async function updateProject() {
       await axios.get(`${API_URL}/project/${project}`);
@@ -70,12 +68,16 @@ console.log(configuration.accessibility_info)
       const response = await axios.post(`${API_URL}/query`, {
         metric: configuration.metric,
         condition: configuration.condition,
-        accessibility_info: configuration.accessibility_info
+        accessibility_info: configuration.accessibility_info,
       });
       setData(response.data);
     }
     fetchData();
-  }, [configuration.metric, configuration.condition, configuration.accessibility_info]);
+  }, [
+    configuration.metric,
+    configuration.condition,
+    configuration.accessibility_info,
+  ]);
 
   return (
     <div style={{ width: "100dvw", height: "100dvh" }}>
@@ -94,9 +96,9 @@ console.log(configuration.accessibility_info)
           selectedLots={selectedLots}
           setSelectedLots={setSelectedLots}
           opacities={configuration.opacities}
-          />
-        ) : (
-          <CustomMap
+        />
+      ) : (
+        <CustomMap
           aggregatedInfo={aggregatedInfo}
           data={data}
           selectedLots={selectedLots}
