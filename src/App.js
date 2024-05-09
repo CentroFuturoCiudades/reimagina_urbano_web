@@ -89,15 +89,16 @@ function App() {
           selectedLots={selectedLots}
           setSelectedLots={setSelectedLots}
           opacities={configuration.opacities}
-        />
-      ) : (
-        <CustomMap
+          />
+        ) : (
+          <CustomMap
           aggregatedInfo={aggregatedInfo}
           data={data}
           selectedLots={selectedLots}
           setSelectedLots={setSelectedLots}
           opacities={configuration.opacities}
           coords={coords}
+          metric={configuration.metric}
         />
       )}
       <Toolbar
