@@ -88,7 +88,7 @@ export const CustomMap = ({
       <Map
         width="100%"
         height="100%"
-        mapStyle="mapbox://styles/mapbox/satellite-v9"
+        mapStyle="mapbox://styles/lameouchi/clw841tdm00io01ox4vczgtkl"
         mapboxAccessToken="pk.eyJ1IjoibGFtZW91Y2hpIiwiYSI6ImNsa3ZqdHZtMDBjbTQzcXBpNzRyc2ljNGsifQ.287002jl7xT9SBub-dbBbQ"
         attributionControl={false}
       />
