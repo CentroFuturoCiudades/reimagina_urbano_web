@@ -7,6 +7,7 @@
     "@chatscope/chat-ui-kit-react": "^1.10.1",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
+    "@nebula.gl/layers": "^1.0.4",
     "@react-icons/all-files": "^4.1.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
