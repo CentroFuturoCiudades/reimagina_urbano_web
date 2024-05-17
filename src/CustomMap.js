@@ -5,6 +5,7 @@ import * as turf from "@turf/turf";
 import { DeckGL, GeoJsonLayer } from "deck.gl";
 import { Map } from "react-map-gl";
 import { Tooltip } from "./Tooltip";
+import { Legend } from "./Legend";
 
 import * as d3 from "d3";
 
@@ -54,14 +55,22 @@ export const CustomMap = ({
     }
   };
 
+  // ------------------------------------------ New legend -------------------------------
+
+  const colors = useMemo(() => {
+    if (!dataLots) return [];
+    const interpolator = d3.interpolate("white", "darkblue");
+    return d3.quantize(interpolator, 8);
+  }, [dataLots]);
+
+  const domain = useMemo(() => {
+    return metric === "minutes"
+      ? [0, Math.max(...Object.values(dictData))]
+      : Object.values(dictData);
+  }, [metric, dictData]);
+
   const getFillColor = useMemo(() => {
     if (!dataLots) return [255, 0, 0, 150];
-    const interpolator = d3.interpolate("white", "darkblue");
-    const colors = d3.quantize(interpolator, 8);
-    const domain =
-      metric === "minutes"
-        ? [0, Math.max(...Object.values(dictData))]
-        : Object.values(dictData);
     const quantiles = d3.scaleQuantile().domain(domain).range(colors);
 
     return (d) => {
@@ -70,7 +79,27 @@ export const CustomMap = ({
         ? [255, 0, 0, 150]
         : [color.r, color.g, color.b];
     };
-  }, [dataLots, metric, selectedLots, dictData]);
+  }, [dataLots, domain, colors, selectedLots, dictData]);
+
+  // -------------------------------------------------------------------------
+
+  // const getFillColor = useMemo(() => {   // Solo da lista de colores
+  //   if (!dataLots) return [255, 0, 0, 150];
+  //   const interpolator = d3.interpolate("white", "darkblue");
+  //   const colors = d3.quantize(interpolator, 8);
+  //   const domain =       // Define los rangos a tomar la info
+  //     metric === "minutes"
+  //       ? [0, Math.max(...Object.values(dictData))]
+  //       : Object.values(dictData);
+  //   const quantiles = d3.scaleQuantile().domain(domain).range(colors);
+
+  //   return (d) => {
+  //     const color = d3.color(quantiles(dictData[d.properties["ID"]])).rgb(); // Asigna color a los valores dados
+  //     return selectedLots.includes(d.properties["ID"])
+  //       ? [255, 0, 0, 150]
+  //       : [color.r, color.g, color.b];
+  //   };
+  // }, [dataLots, metric, selectedLots, dictData]);
 
   if (!coords || !dataLots) {
     return <div>Loading</div>;
@@ -210,6 +239,7 @@ export const CustomMap = ({
           </span>
         </Tooltip>
       )}
+      <Legend colors={colors} domain={domain} metric={metric} />
     </DeckGL>
   );
 };
