@@ -6,6 +6,9 @@ import { DeckGL, GeoJsonLayer } from "deck.gl";
 import { Map } from "react-map-gl";
 import { Tooltip } from "./Tooltip";
 import { Legend } from "./Legend";
+import { EditableGeoJsonLayer } from "@nebula.gl/layers";
+import {DrawPolygonMode} from "@nebula.gl/edit-modes"
+
 
 import * as d3 from "d3";
 
@@ -29,6 +32,14 @@ export const CustomMap = ({
   const { data: dataGreen } = useFetch(`${API_URL}/geojson/green`);
   const { data: dataEquipment } = useFetch(`${API_URL}/geojson/equipment`);
   const [hoverInfo, setHoverInfo] = useState();
+  
+  const [data2, setData2] = useState({
+    type: 'FeatureCollection',
+    features: []
+  });
+
+  //const [mode, setMode] = useState(DrawPolygonMode);
+
 
   const center = !!aggregatedInfo && [
     aggregatedInfo["longitud"],
@@ -101,6 +112,29 @@ export const CustomMap = ({
   //   };
   // }, [dataLots, metric, selectedLots, dictData]);
 
+
+  
+  const handleEdit = ({ updatedData }) => {
+    if(updatedData.features.length > 0)
+    {
+      console.log('Poligono dibujado', updatedData)
+    }
+    setData2(updatedData);
+  };
+
+  const editableLayer = new EditableGeoJsonLayer({
+    id: 'editable-layer',
+    data: data2,
+    mode: DrawPolygonMode,
+    selectedFeatureIndexes: [],
+    onEdit: handleEdit,
+    pickable: true,
+  });
+
+  const pointClick = (event) => {
+    console.log('OnLayer Click', event)
+  }
+
   if (!coords || !dataLots) {
     return <div>Loading</div>;
   }
@@ -113,6 +147,9 @@ export const CustomMap = ({
         longitude: coords["longitud"],
       }}
       controller={true}
+      onClick={pointClick}
+      layers={[editableLayer]}
+
     >
       <Map
         width="100%"
@@ -120,6 +157,7 @@ export const CustomMap = ({
         mapStyle="mapbox://styles/lameouchi/clw841tdm00io01ox4vczgtkl"
         mapboxAccessToken="pk.eyJ1IjoibGFtZW91Y2hpIiwiYSI6ImNsa3ZqdHZtMDBjbTQzcXBpNzRyc2ljNGsifQ.287002jl7xT9SBub-dbBbQ"
         attributionControl={false}
+        //onClick={handleSketch}  //cuando se hace click en el mapa se activa 
       />
       <GeoJsonLayer
         id="poligono"
