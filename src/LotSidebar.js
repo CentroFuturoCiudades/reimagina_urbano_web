@@ -259,43 +259,43 @@ export const LotSidebar = ({
             <StatLabel>Comercio al por menor</StatLabel>
             <StatNumber>
               <Icon as={FaShoppingCart} />
-              {aggregatedInfo["adj_comercio"]}
+              {aggregatedInfo["minutes_proximity_comercio"]?.toFixed(0)} min
             </StatNumber>
           </Stat>
         )}
         {servicios.activated && (
           <Stat>
-            <StatLabel>Servicios: {`${aggregatedInfo.servicios}`}</StatLabel>
+            <StatLabel>Servicios</StatLabel>
             <StatNumber>
               <Icon as={FaShoppingCart} />
-              {aggregatedInfo["adj_servicios"]}
+              {aggregatedInfo["minutes_proximity_servicios"]?.toFixed(0)} min
             </StatNumber>
           </Stat>
         )}
         {salud.activated && (
           <Stat>
-            <StatLabel>Salud: {`${aggregatedInfo.salud}`}</StatLabel>
+            <StatLabel>Salud</StatLabel>
             <StatNumber>
               <Icon as={FaStethoscope} />
-              {aggregatedInfo["adj_salud"]}
+              {aggregatedInfo["minutes_proximity_salud"]?.toFixed(0)} min
             </StatNumber>
           </Stat>
         )}
         {educacion.activated && (
           <Stat>
-            <StatLabel>Educación: {`${aggregatedInfo.educacion}`}</StatLabel>
+            <StatLabel>Educación</StatLabel>
             <StatNumber>
               <Icon as={MdSchool} />
-              {aggregatedInfo["adj_educacion"]}
+              {aggregatedInfo["minutes_proximity_educacion"]?.toFixed(0)} min
             </StatNumber>
           </Stat>
         )}
         {servicios.activated && (
           <Stat>
-            <StatLabel>Servicios Cercanos </StatLabel>
+            <StatLabel>Minutos</StatLabel>
             <StatNumber>
               <Icon as={MdOutlineRestaurant} />
-              {aggregatedInfo["services_nearby"]}
+              {aggregatedInfo["minutes"]?.toFixed(0)} min
             </StatNumber>
           </Stat>
         )}
