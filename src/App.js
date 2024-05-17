@@ -10,6 +10,7 @@ import { LotSidebar } from "./LotSidebar";
 import "./App.css";
 import { Chat } from "./Chat";
 import { Toolbar } from "./ConfigurationToolbar";
+import Legend from "./Legend"; 
 
 function App() {
   const [data, setData] = useState([]);
@@ -132,6 +133,7 @@ function App() {
           />
         </Box>
       )}
+      
     </div>
   );
 }
