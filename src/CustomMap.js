@@ -6,7 +6,7 @@ import { DeckGL, GeoJsonLayer } from "deck.gl";
 import { Map } from "react-map-gl";
 import { Tooltip } from "./Tooltip";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
-import {DrawPolygonMode, ModifyMode} from "@nebula.gl/edit-modes"
+import {DrawPolygonMode} from "@nebula.gl/edit-modes"
 
 import * as d3 from "d3";
 
@@ -30,11 +30,13 @@ export const CustomMap = ({
   const { data: dataGreen } = useFetch(`${API_URL}/geojson/green`);
   const { data: dataEquipment } = useFetch(`${API_URL}/geojson/equipment`);
   const [hoverInfo, setHoverInfo] = useState();
-  const [polygonCoordinates, setPolygonCoordinates] = useState([]);
-  const [isDrawing, setIsDrawing] = useState(true);
   
+  const [data2, setData2] = useState({
+    type: 'FeatureCollection',
+    features: []
+  });
 
-  const [drawingCoor, setDrawingCoor] = useState(null);
+  //const [mode, setMode] = useState(DrawPolygonMode);
 
 
   const center = !!aggregatedInfo && [
@@ -81,70 +83,27 @@ export const CustomMap = ({
   }, [dataLots, metric, selectedLots, dictData]);
 
 
-  const handleSketch = (event) => {
-    if(!isDrawing) return; 
-
-    console.log('onLayer Click',event)
-    const newCoordinate = event;
-
-    const updatedPolygonCoordinates = [...polygonCoordinates, newCoordinate];
-    console.log(updatedPolygonCoordinates)
-
-    /*if(updatedPolygonCoordinates.length > 2 && closingCoordinate(newCoordinate,updatedPolygonCoordinates[0])){
-      updatedPolygonCoordinates.push(updatedPolygonCoordinates[0]);
-      setIsDrawing(false);
-      console.log('Poligono cerrado', updatedPolygonCoordinates)
-      return;
-    }*/
-    
-    if(updatedPolygonCoordinates.length > 2)
+  
+  const handleEdit = ({ updatedData }) => {
+    if(updatedData.features.length > 0)
     {
-      //console.log(updatedPolygonCoordinates.length-1)
-      /*if(updatedPolygonCoordinates[updatedPolygonCoordinates.length-1].layer === 'EditableGeoJsonLayer')
-        {
-          console.log('YAA')
-        }*/
-      console.log(updatedPolygonCoordinates[updatedPolygonCoordinates.length-1].layer)
+      console.log('Poligono dibujado', updatedData)
     }
-    
-    //setPolygonCoordinates([...polygonCoordinates, newCoordinate])
-    setPolygonCoordinates(updatedPolygonCoordinates)
+    setData2(updatedData);
   };
 
-
-  const closingCoordinate = (lastCoor, firstCoor, threshold = 0.0001) => {
-    const [x1, y1] = lastCoor.coordinate;
-    const [x2, y2] = firstCoor.coordinate;
-    return Math.abs(x1 - x2) < threshold && Math.abs(y1 - y2) < threshold;
-  };
-
-
-  const editableLayer = new EditableGeoJsonLayer ({
+  const editableLayer = new EditableGeoJsonLayer({
     id: 'editable-layer',
-    data: {
-      type: 'FeatureCollection',
-      features: [
-       {
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: polygonCoordinates
-        }
-      }
-        
-      ]
-    },
+    data: data2,
     mode: DrawPolygonMode,
     selectedFeatureIndexes: [],
-    getTentativeFillColor: () => [255, 0, 255, 100],
-    //mode: isDrawing ? DrawPolygonMode : ModifyMode,
-    /*onEdit: ({ updatedData }) => {
-      console.log('Updated data:', updatedData);
-      //console.log('Updated data:', updatedData.features[0].geometry.coordinates[0])
-      setPolygonCoordinates(updatedData.features[0].geometry.coordinates[0]);
-    },*/
-  })
-  
+    onEdit: handleEdit,
+    pickable: true,
+  });
+
+  const pointClick = (event) => {
+    console.log('OnLayer Click', event)
+  }
 
   if (!coords || !dataLots) {
     return <div>Loading</div>;
@@ -158,7 +117,7 @@ export const CustomMap = ({
         longitude: coords["longitud"],
       }}
       controller={true}
-      onClick={handleSketch}
+      onClick={pointClick}
       layers={[editableLayer]}
 
     >
