@@ -32,6 +32,11 @@ export const LotSidebar = ({
   aggregatedInfo,
   selectedLots,
   setSelectedLots,
+  parques,
+  salud,
+  educacion,
+  servicios,
+  supermercados
 }) => {
   if (!aggregatedInfo) return null;
 
@@ -248,44 +253,54 @@ export const LotSidebar = ({
             <Heading size="md">Accesibildad a Servicios</Heading>
           </AccordionButton>
           <AccordionPanel pb={4}>
-            <SimpleGrid columns={2} spacing={5}>
-              <Stat>
-                <StatLabel>Comercio al por menor</StatLabel>
-                <StatNumber>
-                  <Icon as={FaShoppingCart} />
-                  {aggregatedInfo["adj_comercio"]}
-                </StatNumber>
-              </Stat>
-              <Stat>
-                <StatLabel>Servicios</StatLabel>
-                <StatNumber>
-                  <Icon as={FaShoppingCart} />
-                  {aggregatedInfo["adj_servicios"]}
-                </StatNumber>
-              </Stat>
-              <Stat>
-                <StatLabel>Salud</StatLabel>
-                <StatNumber>
-                  <Icon as={FaStethoscope} />
-                  {aggregatedInfo["adj_salud"]}
-                </StatNumber>
-              </Stat>
-              <Stat>
-                <StatLabel>Educación</StatLabel>
-                <StatNumber>
-                  <Icon as={MdSchool} />
-                  {aggregatedInfo["adj_educacion"]}
-                </StatNumber>
-              </Stat>
-              <Stat>
-                <StatLabel>Servicios Cercanos</StatLabel>
-                <StatNumber>
-                  <Icon as={MdOutlineRestaurant} />
-                  {aggregatedInfo["services_nearby"]}
-                </StatNumber>
-              </Stat>
-            </SimpleGrid>
-          </AccordionPanel>
+      <SimpleGrid columns={2} spacing={5}>
+        {supermercados.activated && (
+          <Stat>
+            <StatLabel>Comercio al por menor</StatLabel>
+            <StatNumber>
+              <Icon as={FaShoppingCart} />
+              {aggregatedInfo["minutes_proximity_comercio"]?.toFixed(0)} min
+            </StatNumber>
+          </Stat>
+        )}
+        {servicios.activated && (
+          <Stat>
+            <StatLabel>Servicios</StatLabel>
+            <StatNumber>
+              <Icon as={FaShoppingCart} />
+              {aggregatedInfo["minutes_proximity_servicios"]?.toFixed(0)} min
+            </StatNumber>
+          </Stat>
+        )}
+        {salud.activated && (
+          <Stat>
+            <StatLabel>Salud</StatLabel>
+            <StatNumber>
+              <Icon as={FaStethoscope} />
+              {aggregatedInfo["minutes_proximity_salud"]?.toFixed(0)} min
+            </StatNumber>
+          </Stat>
+        )}
+        {educacion.activated && (
+          <Stat>
+            <StatLabel>Educación</StatLabel>
+            <StatNumber>
+              <Icon as={MdSchool} />
+              {aggregatedInfo["minutes_proximity_educacion"]?.toFixed(0)} min
+            </StatNumber>
+          </Stat>
+        )}
+        {servicios.activated && (
+          <Stat>
+            <StatLabel>Minutos</StatLabel>
+            <StatNumber>
+              <Icon as={MdOutlineRestaurant} />
+              {aggregatedInfo["minutes"]?.toFixed(0)} min
+            </StatNumber>
+          </Stat>
+        )}
+      </SimpleGrid>
+    </AccordionPanel>
         </AccordionItem>
       </Accordion>
     </>
