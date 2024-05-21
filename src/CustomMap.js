@@ -6,8 +6,40 @@ import { DeckGL, GeoJsonLayer } from "deck.gl";
 import { Map } from "react-map-gl";
 import { Tooltip } from "./Tooltip";
 import { Legend } from "./Legend";
-
 import * as d3 from "d3";
+
+const legendTitles = {
+  "ID": "Clave de Lote",
+  "POBTOT": "Población total",
+  "TVIVHAB": "Total de viviendas habitadas",
+  "VIVPAR_DES": "Viviendas particulares deshabitadas",
+  "VIVTOT": "Viviendas totales",
+  "VPH_AUTOM": "Viviendas con automóvil",
+  "building_area": "Área de edificación",
+  "building_ratio": "Porcentaje de edificación",
+  "equipment_area": "Área de equipamiento",
+  "equipment_ratio": "Porcentaje de equipamiento",
+  "park_area": "Área de parque",
+  "park_ratio": "Porcentaje de parque",
+  "green_area": "Área con vegetación",
+  "green_ratio": "Porcentaje de área con vegetación",
+  "parking_area": "Área de estacionamiento",
+  "parking_ratio": "Porcentaje de estacionamiento",
+  "unused_area": "Área sin utilizar",
+  "unused_ratio": "Porcentaje de área sin utilizar",
+  "num_establishments": "Número de establecimientos",
+  "num_workers": "Número de trabajadores",
+  "educacion": "Educación",
+  "salud": "Salud",
+  "servicios": "Servicios",
+  "underutilized_area": "Área subutilizada",
+  "underutilized_ratio": "Porcentaje de Subutilización",
+  "wasteful_area": "Área desperdiciada",
+  "wasteful_ratio": "Porcentaje de área desperdiciada",
+  "combined_score": "Puntuación combinada",
+  "minutes": "Minutos",
+  "accessibility": "Accesibilidad",
+};
 
 export const CustomMap = ({
   aggregatedInfo,
@@ -239,7 +271,7 @@ export const CustomMap = ({
           </span>
         </Tooltip>
       )}
-      <Legend colors={colors} domain={domain} metric={metric} />
+      <Legend colors={colors} domain={domain} metric={metric} legendTitles={legendTitles} />
     </DeckGL>
   );
 };
