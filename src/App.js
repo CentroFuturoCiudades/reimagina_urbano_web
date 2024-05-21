@@ -10,8 +10,11 @@ import { LotSidebar } from "./LotSidebar";
 import "./App.css";
 import { Chat } from "./Chat";
 import { Toolbar } from "./ConfigurationToolbar";
+import {Icon, IconButton} from '@chakra-ui/react';
+import { MdAdd } from "react-icons/md";
 
 function App() {
+  const [isActive, setIsActive] = useState(false);
   const [data, setData] = useState([]);
   const [selectedLots, setSelectedLots] = useState([]);
   const [aggregatedInfo, setAggregatedInfo] = useState();
@@ -37,6 +40,12 @@ function App() {
   });
   const [coords, setCoords] = useState();
   const project = window.location.pathname.split("/")[1];
+
+  const handleIsActive = () => 
+  {
+    setIsActive((isActive)=> !isActive)
+  }
+
   useEffect(() => {
     async function updateProject() {
       await axios.get(`${API_URL}/project/${project}`);
@@ -106,13 +115,30 @@ function App() {
           opacities={configuration.opacities}
           coords={coords}
           metric={configuration.metric}
+          activeSketch={isActive}
         />
       )}
       <Toolbar
         configuration={configuration}
         setConfiguration={setConfiguration}
       />
-      {selectedLots.length > 0 && (
+      <div
+        style={{
+          position: "absolute",
+          top: '20px',
+          right: '100px',
+          marginRight: '250px'
+        }}
+      >
+      <IconButton
+          icon={<Icon as={MdAdd} />}
+          size="lg"
+          colorScheme="blue"
+          isRound
+          onClick={handleIsActive}
+        />
+      </div>
+      {selectedLots.length > 0 && !isActive && (
         <Box
           style={{
             position: "absolute",

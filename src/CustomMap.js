@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect} from "react";
 import { API_URL, INITIAL_STATE } from "./constants";
 import { useFetch } from "./utils";
 import * as turf from "@turf/turf";
@@ -6,7 +6,8 @@ import { DeckGL, GeoJsonLayer } from "deck.gl";
 import { Map } from "react-map-gl";
 import { Tooltip } from "./Tooltip";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
-import {DrawPolygonMode} from "@nebula.gl/edit-modes"
+import {DrawPolygonMode, ModifyMode} from "@nebula.gl/edit-modes";
+
 
 import * as d3 from "d3";
 
@@ -18,6 +19,7 @@ export const CustomMap = ({
   opacities,
   coords,
   metric,
+  activeSketch
 }) => {
   const { data: dataLots } = useFetch(`${API_URL}/geojson/lots`);
   const { data: poligono } = useFetch(`${API_URL}/geojson/bounds`);
@@ -36,7 +38,7 @@ export const CustomMap = ({
     features: []
   });
 
-  //const [mode, setMode] = useState(DrawPolygonMode);
+  const [mode, setMode] = useState(new DrawPolygonMode());
 
 
   const center = !!aggregatedInfo && [
@@ -56,12 +58,17 @@ export const CustomMap = ({
   );
 
   const updateSelectedLots = (info) => {
-    const lote = info.object.properties["ID"];
+    if(!activeSketch)
+    {
+      const lote = info.object.properties["ID"];
     if (selectedLots.includes(lote)) {
       setSelectedLots(selectedLots.filter((lot) => lot !== lote));
     } else {
       setSelectedLots([...selectedLots, lote]);
     }
+
+    }
+    
   };
 
   const getFillColor = useMemo(() => {
@@ -83,27 +90,35 @@ export const CustomMap = ({
   }, [dataLots, metric, selectedLots, dictData]);
 
 
+  const handleEdit2 = ({ updatedData, editType, editContext }) => {
+    console.log('On Edit:', editType, editContext);
   
-  const handleEdit = ({ updatedData }) => {
-    if(updatedData.features.length > 0)
-    {
-      console.log('Poligono dibujado', updatedData)
-    }
     setData2(updatedData);
-  };
+
+    if(updatedData.features.length)
+    {
+      setMode(new ModifyMode())
+    }
+
+  };    
 
   const editableLayer = new EditableGeoJsonLayer({
     id: 'editable-layer',
     data: data2,
-    mode: DrawPolygonMode,
-    selectedFeatureIndexes: [],
-    onEdit: handleEdit,
+    mode: mode,
+    selectedFeatureIndexes: [0],
+    onEdit: handleEdit2,
     pickable: true,
   });
 
-  const pointClick = (event) => {
-    console.log('OnLayer Click', event)
-  }
+  /*
+  useEffect(() => {
+    console.log('ACTIVE STATE', activeSketch)
+    //console.log('Mode changed to:', mode);
+    if(data2.features[0])
+      console.log('ya se cerro el primer poligono')
+  }, [mode, activeSketch]);*/
+
 
   if (!coords || !dataLots) {
     return <div>Loading</div>;
@@ -117,8 +132,8 @@ export const CustomMap = ({
         longitude: coords["longitud"],
       }}
       controller={true}
-      onClick={pointClick}
-      layers={[editableLayer]}
+      layers={ activeSketch  ? [editableLayer] : []}
+      //layers={ [editableLayer] }
 
     >
       <Map
@@ -127,8 +142,7 @@ export const CustomMap = ({
         mapStyle="mapbox://styles/mapbox/satellite-v9"
         mapboxAccessToken="pk.eyJ1IjoibGFtZW91Y2hpIiwiYSI6ImNsa3ZqdHZtMDBjbTQzcXBpNzRyc2ljNGsifQ.287002jl7xT9SBub-dbBbQ"
         attributionControl={false}
-        //onClick={handleSketch}  //cuando se hace click en el mapa se activa 
-      />
+      />      
       <GeoJsonLayer
         id="poligono"
         data={poligono}
@@ -156,7 +170,7 @@ export const CustomMap = ({
           getPosition={(d) => d.position}
         />
       )}
-      {circleGeoJson && (
+      {circleGeoJson && !activeSketch && (
         <GeoJsonLayer
           id="circle"
           data={circleGeoJson}
