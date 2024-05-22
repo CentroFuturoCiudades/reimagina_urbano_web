@@ -109,6 +109,10 @@ export const CustomMap = ({
     selectedFeatureIndexes: [0],
     onEdit: handleEdit2,
     pickable: true,
+    getTentativeFillColor: [255,0,0,100],
+    getFillColor: [255,0,0,100],
+    getTentativeLineColor: [255,0,0,200],
+    getLineColor: [255,0,0,200],
   });
 
   /*

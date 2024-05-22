@@ -11,7 +11,7 @@ import "./App.css";
 import { Chat } from "./Chat";
 import { Toolbar } from "./ConfigurationToolbar";
 import {Icon, IconButton} from '@chakra-ui/react';
-import { MdAdd } from "react-icons/md";
+import { MdAdd, MdOutlineMotionPhotosOff } from "react-icons/md";
 
 function App() {
   const [isActive, setIsActive] = useState(false);
@@ -131,9 +131,9 @@ function App() {
         }}
       >
       <IconButton
-          icon={<Icon as={MdAdd} />}
+          icon={isActive ? (<Icon as={MdOutlineMotionPhotosOff} />):(<Icon as={MdAdd} />)}
           size="lg"
-          colorScheme="blue"
+          colorScheme={isActive ? "red" : "blue"}
           isRound
           onClick={handleIsActive}
         />
