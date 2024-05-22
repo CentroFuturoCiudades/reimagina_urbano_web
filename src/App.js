@@ -22,7 +22,7 @@ function App() {
   const [configuration, setConfiguration] = useState({
     condition: undefined,
     metric: "wasteful_ratio",
-    is3D: false,
+    isSatellite: false,
     opacities: {
       parking: 0,
       building: 0,
@@ -113,25 +113,17 @@ console.log(parques)
           })
         }
       />
-      {configuration.is3D ? (
-        <Custom3DMap
-          data={data}
-          selectedLots={selectedLots}
-          setSelectedLots={setSelectedLots}
-          opacities={configuration.opacities}
-        />
-      ) : (
-        <CustomMap
-          aggregatedInfo={aggregatedInfo}
-          data={data}
-          selectedLots={selectedLots}
-          setSelectedLots={setSelectedLots}
-          opacities={configuration.opacities}
-          coords={coords}
-          metric={configuration.metric}
-          activeSketch={isActive}
-        />
-      )}
+      <CustomMap
+        aggregatedInfo={aggregatedInfo}
+        data={data}
+        selectedLots={selectedLots}
+        setSelectedLots={setSelectedLots}
+        opacities={configuration.opacities}
+        coords={coords}
+        metric={configuration.metric}
+        activeSketch={isActive}
+        isSatellite={configuration.isSatellite}
+      />
       <Toolbar
         configuration={configuration}
         setConfiguration={setConfiguration}

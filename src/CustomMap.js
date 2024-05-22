@@ -21,7 +21,8 @@ export const CustomMap = ({
   opacities,
   coords,
   metric,
-  activeSketch
+  activeSketch,
+  isSatellite,
 }) => {
   const { data: dataLots } = useFetch(`${API_URL}/geojson/lots`);
   const { data: poligono } = useFetch(`${API_URL}/geojson/bounds`);
@@ -173,7 +174,7 @@ export const CustomMap = ({
       <Map
         width="100%"
         height="100%"
-        mapStyle="mapbox://styles/lameouchi/clw841tdm00io01ox4vczgtkl"
+        mapStyle={isSatellite ? "mapbox://styles/mapbox/satellite-v9" : "mapbox://styles/lameouchi/clw841tdm00io01ox4vczgtkl"}
         mapboxAccessToken="pk.eyJ1IjoibGFtZW91Y2hpIiwiYSI6ImNsa3ZqdHZtMDBjbTQzcXBpNzRyc2ljNGsifQ.287002jl7xT9SBub-dbBbQ"
         attributionControl={false}
       />      
@@ -202,6 +203,7 @@ export const CustomMap = ({
               : [255, 0, 0, 70];
           }}
           getPosition={(d) => d.position}
+          opacity={isSatellite ? 0.4 : 1}
         />
       )}
       {circleGeoJson && !activeSketch && (

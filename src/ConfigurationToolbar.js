@@ -257,11 +257,11 @@ export const Toolbar = ({ configuration, setConfiguration,  setParques,
         </SliderTrack>
         <SliderThumb />
       </Slider>
-      3D
+      Vista Satelital
       <Switch
-        isChecked={configuration.is3D}
+        isChecked={configuration.isSatellite}
         onChange={(e) =>
-          setConfiguration({ ...configuration, is3D: e.target.checked })
+          setConfiguration({ ...configuration, isSatellite: e.target.checked })
         }
       />
     </Box>
