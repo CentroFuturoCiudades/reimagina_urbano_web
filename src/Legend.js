@@ -2,18 +2,19 @@ import React from 'react';
 import * as d3 from 'd3';
 
 export const Legend = ({ colors, domain, metric, legendTitles }) => {
-  const quantiles = d3.scaleQuantile().domain(domain).range(colors);
+  const quantiles = d3.scaleQuantize().domain(domain).range(colors);
   const title = legendTitles[metric] || metric; 
 
   const formatValue = (value) => {
+    const formattedValue = Number(value).toLocaleString('en-US');
     if (title.toLowerCase().includes('porcentaje') || title.toLowerCase().includes('ratio')) {
-      return `${value}%`;
+      return `${formattedValue}%`;
     } else if (title.toLowerCase().includes('minutos') || title.toLowerCase().includes('minutes')) {
-      return `${value} min`;
+      return `${formattedValue} min`;
     } else if (title.toLowerCase().includes('área') || title.toLowerCase().includes('area')) {
-      return `${value} m²`;
+      return `${formattedValue} m²`;
     }
-    return value;
+    return formattedValue;
   };
 
   return (

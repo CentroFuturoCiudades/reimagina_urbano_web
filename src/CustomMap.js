@@ -41,6 +41,26 @@ const legendTitles = {
   "accessibility": "Accesibilidad",
 };
 
+const areaMetrics = [
+  "building_area",
+  "equipment_area",
+  "park_area",
+  "green_area",
+  "parking_area",
+  "unused_area",
+];
+
+const ratioMetrics = [
+  "building_ratio",
+  "equipment_ratio",
+  "park_ratio",
+  "green_ratio",
+  "parking_ratio",
+  "unused_ratio",
+  "underutilized_ratio",
+  "wasteful_ratio",
+];
+
 export const CustomMap = ({
   aggregatedInfo,
   data,
@@ -72,10 +92,17 @@ export const CustomMap = ({
   const dictData = useMemo(
     () =>
       data.reduce((acc, cur) => {
-        acc[cur["ID"]] = cur["value"];
+        let value = cur["value"];
+        if (areaMetrics.includes(metric)) {
+          value *= 10000; // Convertir hectáreas a metros cuadrados
+        }
+        if (ratioMetrics.includes(metric)) {
+          value *= 100; // Convertir ratio a porcentaje
+        }
+        acc[cur["ID"]] = value;
         return acc;
       }, {}),
-    [data]
+    [data, metric]
   );
 
   const updateSelectedLots = (info) => {
@@ -96,14 +123,21 @@ export const CustomMap = ({
   }, [dataLots]);
 
   const domain = useMemo(() => {
-    return metric === "minutes"
-      ? [0, Math.max(...Object.values(dictData))]
-      : Object.values(dictData);
+    const values = Object.values(dictData);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    return metric === "minutes" ? [0, max] : [min, max];
   }, [metric, dictData]);
+
+  // const domain = useMemo(() => {
+  //   return metric === "minutes"
+  //     ? [0, Math.max(...Object.values(dictData))]
+  //     : Object.values(dictData);
+  // }, [metric, dictData]);
 
   const getFillColor = useMemo(() => {
     if (!dataLots) return [255, 0, 0, 150];
-    const quantiles = d3.scaleQuantile().domain(domain).range(colors);
+    const quantiles = d3.scaleQuantize().domain(domain).range(colors);
 
     return (d) => {
       const color = d3.color(quantiles(dictData[d.properties["ID"]])).rgb();
