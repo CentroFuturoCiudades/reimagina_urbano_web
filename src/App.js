@@ -12,6 +12,7 @@ import { Chat } from "./Chat";
 import { Toolbar } from "./ConfigurationToolbar";
 import {Icon, IconButton} from '@chakra-ui/react';
 import { MdAdd, MdOutlineMotionPhotosOff } from "react-icons/md";
+import Legend from "./Legend"; 
 
 function App() {
   const [isActive, setIsActive] = useState(false);
@@ -39,6 +40,12 @@ function App() {
     },
   });
   const [coords, setCoords] = useState();
+  const [parques, setParques] = useState({ activated: true, value: 0 });
+  const [salud, setSalud] = useState({ activated: true, value: 0 });
+  const [educacion, setEducacion] = useState({ activated: true, value: 0 });
+  const [servicios, setServicios] = useState({ activated: true, value: 0 });
+  const [supermercados, setSupermercados] = useState({ activated: true, value: 0 });
+console.log(parques)
   const project = window.location.pathname.split("/")[1];
 
   const handleIsActive = () => 
@@ -54,6 +61,8 @@ function App() {
     }
     updateProject();
   }, [project]);
+
+  console.log(aggregatedInfo)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,6 +135,12 @@ function App() {
       <Toolbar
         configuration={configuration}
         setConfiguration={setConfiguration}
+        supermercados={supermercados}
+        setParques={setParques}
+        setSalud={setSalud}
+        setEducacion={setEducacion}
+        setServicios={setServicios}
+        setSupermercados={setSupermercados}
       />
       <div
         style={{
@@ -160,9 +175,15 @@ function App() {
             aggregatedInfo={aggregatedInfo}
             selectedLots={selectedLots}
             setSelectedLots={setSelectedLots}
+            parques={parques}
+            salud={salud}
+            educacion={educacion}
+            servicios={servicios}
+            supermercados={supermercados}
           />
         </Box>
       )}
+      
     </div>
   );
 }

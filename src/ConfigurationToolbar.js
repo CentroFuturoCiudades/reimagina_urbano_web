@@ -28,7 +28,12 @@ const mappingLabels = {
   proximity_supermercado: "Supermercado",
 };
 
-export const Toolbar = ({ configuration, setConfiguration }) => {
+export const Toolbar = ({ configuration, setConfiguration,  setParques,
+  setSalud,
+  setEducacion,
+  setServicios,
+  setSupermercados, }) => {
+
   const proximityOptions = {
     proximity_small_park: 1,
     proximity_salud: 2,
@@ -49,6 +54,25 @@ export const Toolbar = ({ configuration, setConfiguration }) => {
       } else {
         // If the checkbox is unchecked, delete the key from accessibility_info
         delete updatedAccessibilityInfo[key];
+      }
+      switch (key) {
+        case 'proximity_small_park':
+          setParques((prev) => ({ ...prev, activated: value }));
+          break;
+        case 'proximity_salud':
+          setSalud((prev) => ({ ...prev, activated: value }));
+          break;
+        case 'proximity_educacion':
+          setEducacion((prev) => ({ ...prev, activated: value }));
+          break;
+        case 'proximity_servicios':
+          setServicios((prev) => ({ ...prev, activated: value }));
+          break;
+        case 'proximity_supermercado':
+          setSupermercados((prev) => ({ ...prev, activated: value }));
+          break;
+        default:
+          break;
       }
     } else {
       // For number input changes, update the value directly
