@@ -104,7 +104,7 @@ console.log(parques)
 
   return (
     <div style={{ width: "100dvw", height: "100dvh" }}>
-      <Chat
+      {/* <Chat
         onSend={(query) =>
           setConfiguration({
             ...configuration,
@@ -112,7 +112,7 @@ console.log(parques)
             condition: query.condition,
           })
         }
-      />
+      /> */}
       <CustomMap
         aggregatedInfo={aggregatedInfo}
         data={data}

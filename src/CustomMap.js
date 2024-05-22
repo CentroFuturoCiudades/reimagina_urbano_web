@@ -9,9 +9,60 @@ import { Legend } from "./Legend";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import {DrawPolygonMode, ModifyMode} from "@nebula.gl/edit-modes";
 
-
-
 import * as d3 from "d3";
+
+const legendTitles = {
+  "ID": "Clave de Lote",
+  "POBTOT": "Población total",
+  "TVIVHAB": "Total de viviendas habitadas",
+  "VIVPAR_DES": "Viviendas particulares deshabitadas",
+  "VIVTOT": "Viviendas totales",
+  "VPH_AUTOM": "Viviendas con automóvil",
+  "building_area": "Área de edificación",
+  "building_ratio": "Porcentaje de edificación",
+  "equipment_area": "Área de equipamiento",
+  "equipment_ratio": "Porcentaje de equipamiento",
+  "park_area": "Área de parque",
+  "park_ratio": "Porcentaje de parque",
+  "green_area": "Área con vegetación",
+  "green_ratio": "Porcentaje de área con vegetación",
+  "parking_area": "Área de estacionamiento",
+  "parking_ratio": "Porcentaje de estacionamiento",
+  "unused_area": "Área sin utilizar",
+  "unused_ratio": "Porcentaje de área sin utilizar",
+  "num_establishments": "Número de establecimientos",
+  "num_workers": "Número de trabajadores",
+  "educacion": "Educación",
+  "salud": "Salud",
+  "servicios": "Servicios",
+  "underutilized_area": "Área subutilizada",
+  "underutilized_ratio": "Porcentaje de Subutilización",
+  "wasteful_area": "Área desperdiciada",
+  "wasteful_ratio": "Porcentaje de área desperdiciada",
+  "combined_score": "Puntuación combinada",
+  "minutes": "Minutos",
+  "accessibility": "Accesibilidad",
+};
+
+const areaMetrics = [
+  "building_area",
+  "equipment_area",
+  "park_area",
+  "green_area",
+  "parking_area",
+  "unused_area",
+];
+
+const ratioMetrics = [
+  "building_ratio",
+  "equipment_ratio",
+  "park_ratio",
+  "green_ratio",
+  "parking_ratio",
+  "unused_ratio",
+  "underutilized_ratio",
+  "wasteful_ratio",
+];
 
 export const CustomMap = ({
   aggregatedInfo,
@@ -54,10 +105,17 @@ export const CustomMap = ({
   const dictData = useMemo(
     () =>
       data.reduce((acc, cur) => {
-        acc[cur["ID"]] = cur["value"];
+        let value = cur["value"];
+        if (areaMetrics.includes(metric)) {
+          value *= 10000; // Convertir hectáreas a metros cuadrados
+        }
+        if (ratioMetrics.includes(metric)) {
+          value *= 100; // Convertir ratio a porcentaje
+        }
+        acc[cur["ID"]] = value;
         return acc;
       }, {}),
-    [data]
+    [data, metric]
   );
 
   const updateSelectedLots = (info) => {
@@ -83,14 +141,21 @@ export const CustomMap = ({
   }, [dataLots]);
 
   const domain = useMemo(() => {
-    return metric === "minutes"
-      ? [0, Math.max(...Object.values(dictData))]
-      : Object.values(dictData);
+    const values = Object.values(dictData);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    return metric === "minutes" ? [0, max] : [min, max];
   }, [metric, dictData]);
+
+  // const domain = useMemo(() => {
+  //   return metric === "minutes"
+  //     ? [0, Math.max(...Object.values(dictData))]
+  //     : Object.values(dictData);
+  // }, [metric, dictData]);
 
   const getFillColor = useMemo(() => {
     if (!dataLots) return [255, 0, 0, 150];
-    const quantiles = d3.scaleQuantile().domain(domain).range(colors);
+    const quantiles = d3.scaleQuantize().domain(domain).range(colors);
 
     return (d) => {
       const color = d3.color(quantiles(dictData[d.properties["ID"]])).rgb();
@@ -297,7 +362,7 @@ export const CustomMap = ({
           </span>
         </Tooltip>
       )}
-      <Legend colors={colors} domain={domain} metric={metric} />
+      <Legend colors={colors} domain={domain} metric={metric} legendTitles={legendTitles} />
     </DeckGL>
   );
 };
