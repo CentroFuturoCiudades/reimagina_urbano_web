@@ -71,6 +71,11 @@ function App() {
     fetchData();
   }, [selectedLots, coords]);
 
+  useEffect(()=>{
+    if(isActive)
+      setSelectedLots([])
+  },[isActive])
+
   useEffect(() => {
     async function fetchData() {
       console.log(configuration.metric);
