@@ -187,16 +187,25 @@ export const CustomMap = ({
 
 
   const handleEdit2 = ({ updatedData, editType, editContext }) => {
-    console.log('On Edit:', editType, editContext);
-  
     setData2(updatedData);
-
-    if(updatedData.features.length)
-    {
-      setMode(new ModifyMode())
+  
+    if (updatedData.features.length) {
+      setMode(new ModifyMode());
     }
+  
+    // Log the data inside the selected area
+    if (editType === "addFeature" || editType === "finishMovePosition" || editType === "finish") {
+      const selectedArea = updatedData.features[0];
+      const selectedData = dataLots.features.filter((feature) =>
+        turf.booleanIntersects(selectedArea, feature)
+      ).map(feature => feature.properties.ID);
 
-  };    
+      setSelectedLots(selectedData)
+      
+      console.log("Selected IDs:", selectedData);
+    }
+  };
+  
 
   const editableLayer = new EditableGeoJsonLayer({
     id: 'editable-layer',

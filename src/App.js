@@ -39,13 +39,13 @@ function App() {
       proximity_supermercado: 1,
     },
   });
+  console.log(selectedLots)
   const [coords, setCoords] = useState();
   const [parques, setParques] = useState({ activated: true, value: 0 });
   const [salud, setSalud] = useState({ activated: true, value: 0 });
   const [educacion, setEducacion] = useState({ activated: true, value: 0 });
   const [servicios, setServicios] = useState({ activated: true, value: 0 });
   const [supermercados, setSupermercados] = useState({ activated: true, value: 0 });
-console.log(parques)
   const project = window.location.pathname.split("/")[1];
 
   const handleIsActive = () => 
@@ -65,6 +65,8 @@ console.log(parques)
   console.log(aggregatedInfo)
 
   useEffect(() => {
+    console.log(selectedLots)
+
     const fetchData = async () => {
       if (selectedLots.length > 0) {
         const response = await axios.get(
@@ -150,7 +152,7 @@ console.log(parques)
           onClick={handleIsActive}
         />
       </div>
-      {selectedLots.length > 0 && !isActive && (
+      {selectedLots.length > 0 && isActive && (
         <Box
           style={{
             position: "absolute",
