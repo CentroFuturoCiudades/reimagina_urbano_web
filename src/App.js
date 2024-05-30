@@ -11,14 +11,21 @@ import "./App.css";
 import { Chat } from "./Chat";
 import { Toolbar } from "./ConfigurationToolbar";
 import {Icon, IconButton} from '@chakra-ui/react';
-import { MdAdd, MdOutlineMotionPhotosOff } from "react-icons/md";
+import { MdAdd, MdDelete, MdEdit, MdOutlineMotionPhotosOff } from "react-icons/md";
 import Legend from "./Legend"; 
+import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes"; 
 
 function App() {
   const [isActive, setIsActive] = useState(false);
   const [data, setData] = useState([]);
   const [selectedLots, setSelectedLots] = useState([]);
   const [aggregatedInfo, setAggregatedInfo] = useState();
+  const [isAreaSelected, setIsAreaSelected] = useState(false);  // Nueva variable de estado
+  const [mode, setMode] = useState(new DrawPolygonMode());  // Definir modo y setMode en el estado
+  const [data2, setData2] = useState({
+    type: 'FeatureCollection',
+    features: []
+  });
   const [configuration, setConfiguration] = useState({
     condition: undefined,
     metric: "wasteful_ratio",
@@ -48,10 +55,23 @@ function App() {
   const [supermercados, setSupermercados] = useState({ activated: true, value: 0 });
   const project = window.location.pathname.split("/")[1];
 
-  const handleIsActive = () => 
-  {
-    setIsActive((isActive)=> !isActive)
-  }
+  
+  const handleIsActive = () => {
+    setIsActive((isActive) => !isActive);
+    setIsAreaSelected(false);  // Resetear cuando se activa o desactiva la selección
+  };
+
+  const handleDeleteSelection = () => {
+    setIsAreaSelected(false);
+    setSelectedLots([]);
+    setIsActive(false)
+    setData2({ type: 'FeatureCollection', features: [] });  // Resetear el área roja
+  };
+
+  const handleEnableEditing = () => {
+    setMode(new ModifyMode());
+  };
+
 
   useEffect(() => {
     async function updateProject() {
@@ -125,6 +145,11 @@ function App() {
         metric={configuration.metric}
         activeSketch={isActive}
         isSatellite={configuration.isSatellite}
+        setIsAreaSelected={setIsAreaSelected}
+        data2={data2} 
+        setData2={setData2}
+        mode={mode}
+        setMode={setMode}
       />
       <Toolbar
         configuration={configuration}
@@ -144,15 +169,34 @@ function App() {
           marginRight: '250px'
         }}
       >
-      <IconButton
-          icon={isActive ? (<Icon as={MdOutlineMotionPhotosOff} />):(<Icon as={MdAdd} />)}
-          size="lg"
-          colorScheme={isActive ? "red" : "blue"}
-          isRound
-          onClick={handleIsActive}
-        />
+      {isAreaSelected ? (
+          <>
+            <IconButton
+              icon={<Icon as={MdEdit} />}
+              size="lg"
+              colorScheme="blue"
+              isRound
+              onClick={handleEnableEditing}
+            />
+            <IconButton
+              icon={<Icon as={MdDelete} />}
+              size="lg"
+              colorScheme="red"
+              isRound
+              onClick={handleDeleteSelection}
+            />
+          </>
+        ) : (
+          <IconButton
+            icon={isActive ? (<Icon as={MdOutlineMotionPhotosOff} />) : (<Icon as={MdAdd} />)}
+            size="lg"
+            colorScheme={isActive ? "red" : "blue"}
+            isRound
+            onClick={handleIsActive}
+          />
+        )}
       </div>
-      {selectedLots.length > 0 && isActive && (
+      {selectedLots.length > 0 && (
         <Box
           style={{
             position: "absolute",

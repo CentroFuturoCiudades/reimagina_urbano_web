@@ -74,6 +74,12 @@ export const CustomMap = ({
   metric,
   activeSketch,
   isSatellite,
+  setIsAreaSelected,
+  data2,
+  setData2,
+  mode,
+  setMode
+  
 }) => {
   const { data: dataLots } = useFetch(`${API_URL}/geojson/lots`);
   const { data: poligono } = useFetch(`${API_URL}/geojson/bounds`);
@@ -87,12 +93,7 @@ export const CustomMap = ({
   const { data: dataEquipment } = useFetch(`${API_URL}/geojson/equipment`);
   const [hoverInfo, setHoverInfo] = useState();
   
-  const [data2, setData2] = useState({
-    type: 'FeatureCollection',
-    features: []
-  });
 
-  const [mode, setMode] = useState(new DrawPolygonMode());
 
 
   const center = !!aggregatedInfo && [
@@ -203,6 +204,10 @@ export const CustomMap = ({
       setSelectedLots(selectedData)
       
       console.log("Selected IDs:", selectedData);
+      setIsAreaSelected(selectedData.length > 0)
+
+      setMode(null);
+
     }
   };
   
