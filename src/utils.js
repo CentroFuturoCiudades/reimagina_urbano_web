@@ -1,6 +1,9 @@
 import * as d3 from "d3";
 import { rgb } from "d3-color";
 import { useEffect, useState } from "react";
+import { FlatGeobufLoader } from '@loaders.gl/flatgeobuf';
+import { load } from '@loaders.gl/core';
+import { geojson } from 'flatgeobuf';
 
 export function lightenColor(color, factor) {
   var lightened = color.map(function (c) {
@@ -63,7 +66,7 @@ export function generateGradientColors(startColor, endColor, steps) {
   return gradientColors;
 }
 
-export const useFetch = (url, initialData = undefined, aborter = undefined) => {
+export const useFetch = (url, initialData = undefined, list_observers = [], aborter = undefined) => {
   const [data, setData] = useState(initialData);
 
   useEffect(() => {
@@ -85,9 +88,53 @@ export const useFetch = (url, initialData = undefined, aborter = undefined) => {
     return () => {
       abortController.abort();
     };
-  }, [url, aborter]);
+  }, [url, aborter, ...list_observers]);
   return { data };
 };
+
+export const useFetchGeo = (url, rect = undefined, initialData = undefined, dependencies = [], aborter = undefined) => {
+  const [data, setData] = useState(initialData);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    const fetchData = async () => {
+      try {
+        const response = await fetchGeo(url, rect);
+        setData(response);
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    };
+    fetchData();
+    if (aborter) {
+      abortController.abort();
+    }
+
+    return () => {
+      abortController.abort();
+    };
+  }, [url, aborter, ...dependencies]);
+  return { data };
+};
+
+
+export const fetchGeo = async (url, rect = undefined, options = undefined) => {
+  if (!rect) {
+    return await load(url, FlatGeobufLoader, options);
+  }
+  let iterFeatures = await geojson.deserialize(url,
+    {
+      minX: rect[0],
+      minY: rect[1],
+      maxX: rect[2],
+      maxY: rect[3],
+    });
+  let features = [];
+  for await (const feature of iterFeatures) {
+    features.push(feature);
+  }
+  return { features };
+}
 
 export function colorInterpolate(value, thresholds, colors, opacity = 1) {
   // Create a scale using the thresholds and colors

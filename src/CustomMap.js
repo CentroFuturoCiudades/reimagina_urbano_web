@@ -1,13 +1,13 @@
-import { useMemo, useState, useEffect} from "react";
+import { useMemo, useState } from "react";
 import { API_URL, INITIAL_STATE } from "./constants";
-import { useFetch } from "./utils";
+import { useFetch, useFetchGeo } from "./utils";
 import * as turf from "@turf/turf";
 import { DeckGL, GeoJsonLayer } from "deck.gl";
 import { Map } from "react-map-gl";
 import { Tooltip } from "./Tooltip";
 import { Legend } from "./Legend";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
-import {DrawPolygonMode, ModifyMode} from "@nebula.gl/edit-modes";
+import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
 
 import * as d3 from "d3";
 
@@ -64,6 +64,8 @@ const ratioMetrics = [
   "wasteful_ratio",
 ];
 
+const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
+
 export const CustomMap = ({
   aggregatedInfo,
   data,
@@ -75,18 +77,17 @@ export const CustomMap = ({
   activeSketch,
   isSatellite,
 }) => {
-  const { data: dataLots } = useFetch(`${API_URL}/geojson/lots`);
-  const { data: poligono } = useFetch(`${API_URL}/geojson/bounds`);
-  const { data: dataBuildings } = useFetch(`${API_URL}/geojson/building`);
-  const { data: dataParking } = useFetch(`${API_URL}/geojson/parking`);
-  const { data: dataEstablishments } = useFetch(
-    `${API_URL}/geojson/establishments`
-  );
-  const { data: dataPark } = useFetch(`${API_URL}/geojson/park`);
-  const { data: dataGreen } = useFetch(`${API_URL}/geojson/green`);
-  const { data: dataEquipment } = useFetch(`${API_URL}/geojson/equipment`);
+  const project = window.location.pathname.split("/")[1];
+  const { data: dataLots } = useFetchGeo(`${BLOB_URL}/${project}/lots.fgb`);
+  const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
+  const { data: dataEstablishments } = useFetchGeo(`${BLOB_URL}/${project}/establishments.fgb`);
+  const { data: dataBuildings } = useFetchGeo(`${BLOB_URL}/${project}/landuse_building.fgb`);
+  const { data: dataParking } = useFetchGeo(`${BLOB_URL}/${project}/landuse_parking.fgb`);
+  const { data: dataPark } = useFetchGeo(`${BLOB_URL}/${project}/landuse_park.fgb`);
+  const { data: dataGreen } = useFetchGeo(`${BLOB_URL}/${project}/landuse_green.fgb`);
+  const { data: dataEquipment } = useFetchGeo(`${BLOB_URL}/${project}/landuse_equipment.fgb`);
   const [hoverInfo, setHoverInfo] = useState();
-  
+
   const [data2, setData2] = useState({
     type: 'FeatureCollection',
     features: []
@@ -119,17 +120,14 @@ export const CustomMap = ({
   );
 
   const updateSelectedLots = (info) => {
-    if(!activeSketch)
-    {
+    if (!activeSketch) {
       const lote = info.object.properties["ID"];
-    if (selectedLots.includes(lote)) {
-      setSelectedLots(selectedLots.filter((lot) => lot !== lote));
-    } else {
-      setSelectedLots([...selectedLots, lote]);
+      if (selectedLots.includes(lote)) {
+        setSelectedLots(selectedLots.filter((lot) => lot !== lote));
+      } else {
+        setSelectedLots([...selectedLots, lote]);
+      }
     }
-
-    }
-    
   };
 
   // ------------------------------------------ New legend -------------------------------
@@ -188,11 +186,11 @@ export const CustomMap = ({
 
   const handleEdit2 = ({ updatedData, editType, editContext }) => {
     setData2(updatedData);
-  
+
     if (updatedData.features.length) {
       setMode(new ModifyMode());
     }
-  
+
     // Log the data inside the selected area
     if (editType === "addFeature" || editType === "finishMovePosition" || editType === "finish") {
       const selectedArea = updatedData.features[0];
@@ -201,11 +199,11 @@ export const CustomMap = ({
       ).map(feature => feature.properties.ID);
 
       setSelectedLots(selectedData)
-      
+
       console.log("Selected IDs:", selectedData);
     }
   };
-  
+
 
   const editableLayer = new EditableGeoJsonLayer({
     id: 'editable-layer',
@@ -214,10 +212,10 @@ export const CustomMap = ({
     selectedFeatureIndexes: [0],
     onEdit: handleEdit2,
     pickable: true,
-    getTentativeFillColor: [255,0,0,100],
-    getFillColor: [255,0,0,100],
-    getTentativeLineColor: [255,0,0,200],
-    getLineColor: [255,0,0,200],
+    getTentativeFillColor: [255, 0, 0, 100],
+    getFillColor: [255, 0, 0, 100],
+    getTentativeLineColor: [255, 0, 0, 200],
+    getLineColor: [255, 0, 0, 200],
   });
 
   /*
@@ -227,7 +225,6 @@ export const CustomMap = ({
     if(data2.features[0])
       console.log('ya se cerro el primer poligono')
   }, [mode, activeSketch]);*/
-
 
   if (!coords || !dataLots) {
     return <div>Loading</div>;
@@ -241,8 +238,8 @@ export const CustomMap = ({
         longitude: coords["longitud"],
       }}
       controller={true}
-      layers={ activeSketch  ? [editableLayer] : []}
-      //layers={ [editableLayer] }
+      layers={activeSketch ? [editableLayer] : []}
+    //layers={ [editableLayer] }
 
     >
       <Map
@@ -251,7 +248,7 @@ export const CustomMap = ({
         mapStyle={isSatellite ? "mapbox://styles/mapbox/satellite-v9" : "mapbox://styles/lameouchi/clw841tdm00io01ox4vczgtkl"}
         mapboxAccessToken="pk.eyJ1IjoibGFtZW91Y2hpIiwiYSI6ImNsa3ZqdHZtMDBjbTQzcXBpNzRyc2ljNGsifQ.287002jl7xT9SBub-dbBbQ"
         attributionControl={false}
-      />      
+      />
       <GeoJsonLayer
         id="poligono"
         data={poligono}
@@ -292,7 +289,7 @@ export const CustomMap = ({
       )}
 
       {/* Layer de color amarillo */}
-      {opacities.building > 0 && (
+      {opacities.building > 0 && dataBuildings && (
         <GeoJsonLayer
           id="building-layer"
           data={dataBuildings}
@@ -305,7 +302,7 @@ export const CustomMap = ({
           opacity={opacities.building}
         />
       )}
-      {opacities.green > 0 && (
+      {opacities.green > 0 && dataGreen && (
         <GeoJsonLayer
           id="green-layer"
           data={dataGreen}
@@ -315,7 +312,7 @@ export const CustomMap = ({
           opacity={opacities.green}
         />
       )}
-      {opacities.parking > 0 && (
+      {opacities.parking > 0 && dataParking && (
         <GeoJsonLayer
           id="parking-layer"
           data={dataParking}
@@ -325,7 +322,7 @@ export const CustomMap = ({
           opacity={opacities.parking}
         />
       )}
-      {opacities.equipment > 0 && (
+      {opacities.equipment > 0 && dataEquipment && (
         <GeoJsonLayer
           id="equipment-layer"
           data={dataEquipment}
@@ -335,7 +332,7 @@ export const CustomMap = ({
           opacity={opacities.equipment}
         />
       )}
-      {opacities.park > 0 && (
+      {opacities.park > 0 && dataPark && (
         <GeoJsonLayer
           id="park-layer"
           data={dataPark}
