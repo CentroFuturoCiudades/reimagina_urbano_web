@@ -4,8 +4,7 @@ import { useFetch, useFetchGeo } from "./utils";
 import * as turf from "@turf/turf";
 import { DeckGL, GeoJsonLayer } from "deck.gl";
 import { Map } from "react-map-gl";
-import { Tooltip } from "./Tooltip";
-import { Legend } from "./Legend";
+import { Tooltip, Legend } from "./components";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
 

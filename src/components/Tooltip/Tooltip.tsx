@@ -1,9 +1,18 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import React from "react";
+import { ReactElement, useLayoutEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@chakra-ui/react";
 
-export const Tooltip = ({ hoverInfo, children }) => {
-  const tooltipRef = useRef(null);
-  const [positionStyle, setPositionStyle] = useState({ opacity: 0 });
+interface TooltipProps {
+  hoverInfo:{
+    x: number,
+    y: number
+  },
+  children: ReactElement[]
+}
+
+const Tooltip = ({ hoverInfo, children }: TooltipProps) => {
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const [positionStyle, setPositionStyle] = useState<React.CSSProperties>({ opacity: 0 });
   const [isMobile] = useMediaQuery("(max-width: 800px)");
 
   useLayoutEffect(() => {
@@ -51,3 +60,4 @@ export const Tooltip = ({ hoverInfo, children }) => {
   );
 };
 
+export default Tooltip;

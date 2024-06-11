@@ -1,0 +1,26 @@
+.legend { 
+    position: absolute; 
+    bottom: 1dvh; 
+    right: 1dvw; 
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0.5rem rgba(0,0,0,0.3);
+    width: fit-content;
+
+    &__title {
+        width: min-content;
+    }
+
+    &__label {
+        display: flex; 
+        align-items: center;
+    }
+
+    &__icon {
+        width: 1rem; 
+        height: 1rem;
+        margin-right: 0.5rem;
+    }
+}
+

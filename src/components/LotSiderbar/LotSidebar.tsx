@@ -22,13 +22,27 @@ import {
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { BiSolidHome } from "react-icons/bi";
 import { TbHomeCancel } from "react-icons/tb";
+import { FaPerson } from "react-icons/fa6";
 import { FaBuilding, FaShoppingCart, FaStethoscope } from "react-icons/fa";
 import { MdOutlineRestaurant, MdOutlineWork, MdSchool } from "react-icons/md";
 
-import { renderCustomizedLabel } from "./utils";
-import { FaPerson } from "react-icons/fa6";
+import { renderCustomizedLabel } from "../../utils";
+import { GenericObject } from "../../types";
 
-export const LotSidebar = ({
+
+interface LotSidebarProps {
+  aggregatedInfo?: GenericObject;
+  selectedLots: string[];
+  setSelectedLots: ( arg0: string[] )=> void;
+
+  parques: any;
+  salud: any;
+  educacion: any;
+  servicios: any;
+  supermercados: any;
+}
+
+const LotSidebar = ({
   aggregatedInfo,
   selectedLots,
   setSelectedLots,
@@ -37,7 +51,7 @@ export const LotSidebar = ({
   educacion,
   servicios,
   supermercados
-}) => {
+}: LotSidebarProps) => {
   if (!aggregatedInfo) return null;
 
   const chartData = [
@@ -168,7 +182,7 @@ export const LotSidebar = ({
                 <Legend
                   layout="horizontal"
                   verticalAlign="bottom"
-                  align="top"
+                  align="center"
                   fontSize={1}
                 />
                 <Pie
@@ -306,3 +320,5 @@ export const LotSidebar = ({
     </>
   );
 };
+
+export default LotSidebar;

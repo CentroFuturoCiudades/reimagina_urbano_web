@@ -6,20 +6,20 @@ import axios from "axios";
 import { Custom3DMap } from "./Custom3DMap";
 import { CustomMap } from "./CustomMap";
 import { API_URL } from "./constants";
-import { LotSidebar } from "./LotSidebar";
 import "./App.css";
-import { Chat } from "./Chat";
-import { Toolbar } from "./ConfigurationToolbar";
+import { Chat, LotSidebar, ConfigurationToolbar } from "./components";
 import {Icon, IconButton} from '@chakra-ui/react';
 import { MdAdd, MdOutlineMotionPhotosOff } from "react-icons/md";
-import Legend from "./Legend"; 
+import React from "react";
+import { Configuration, GenericObject } from "./types";
+//import Legend from "./Legend"; 
 
 function App() {
   const [isActive, setIsActive] = useState(false);
   const [data, setData] = useState([]);
-  const [selectedLots, setSelectedLots] = useState([]);
-  const [aggregatedInfo, setAggregatedInfo] = useState();
-  const [configuration, setConfiguration] = useState({
+  const [selectedLots, setSelectedLots] = useState<string[]>([]);
+  const [aggregatedInfo, setAggregatedInfo] = useState<GenericObject>();
+  const [configuration, setConfiguration] = useState<GenericObject>({
     condition: undefined,
     metric: "wasteful_ratio",
     isSatellite: false,
@@ -41,7 +41,7 @@ function App() {
   });
   console.log(selectedLots)
   const [coords, setCoords] = useState();
-  const [parques, setParques] = useState({ activated: true, value: 0 });
+  const [parques, setParques] = useState<Configuration>({ activated: true, value: 0 });
   const [salud, setSalud] = useState({ activated: true, value: 0 });
   const [educacion, setEducacion] = useState({ activated: true, value: 0 });
   const [servicios, setServicios] = useState({ activated: true, value: 0 });
@@ -119,14 +119,14 @@ function App() {
         aggregatedInfo={aggregatedInfo}
         data={data}
         selectedLots={selectedLots}
-        setSelectedLots={setSelectedLots}
+        setSelectedLots={ setSelectedLots }
         opacities={configuration.opacities}
         coords={coords}
         metric={configuration.metric}
         activeSketch={isActive}
         isSatellite={configuration.isSatellite}
       />
-      <Toolbar
+      <ConfigurationToolbar
         configuration={configuration}
         setConfiguration={setConfiguration}
         supermercados={supermercados}
@@ -145,6 +145,7 @@ function App() {
         }}
       >
       <IconButton
+          aria-label=""
           icon={isActive ? (<Icon as={MdOutlineMotionPhotosOff} />):(<Icon as={MdAdd} />)}
           size="lg"
           colorScheme={isActive ? "red" : "blue"}

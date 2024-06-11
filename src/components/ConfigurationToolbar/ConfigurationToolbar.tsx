@@ -18,9 +18,10 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
 } from "@chakra-ui/react";
-import { COLUMN_MAPPING } from "./constants";
+import { COLUMN_MAPPING } from "../../constants";
+import { Configuration, GenericObject } from "../../types";
 
-const mappingLabels = {
+const mappingLabels: GenericObject = {
   proximity_small_park: "Parque",
   proximity_salud: "Salud",
   proximity_educacion: "Educación",
@@ -28,13 +29,26 @@ const mappingLabels = {
   proximity_supermercado: "Supermercado",
 };
 
-export const Toolbar = ({ configuration, setConfiguration,  setParques,
+interface ConfigurationToolbarProps {
+  configuration: GenericObject;
+  supermercados: Configuration;
+
+  setConfiguration:  React.Dispatch<React.SetStateAction<GenericObject>>
+  setParques:  React.Dispatch<React.SetStateAction<Configuration>>
+  setSalud:  React.Dispatch<React.SetStateAction<Configuration>>
+  setEducacion:  React.Dispatch<React.SetStateAction<Configuration>>
+  setServicios:  React.Dispatch<React.SetStateAction<Configuration>>
+  setSupermercados: React.Dispatch<React.SetStateAction<Configuration>>
+}
+
+const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
+  supermercados,
   setSalud,
   setEducacion,
   setServicios,
-  setSupermercados, }) => {
+  setSupermercados }: ConfigurationToolbarProps ) => {
 
-  const proximityOptions = {
+  const proximityOptions: GenericObject = {
     proximity_small_park: 1,
     proximity_salud: 2,
     proximity_educacion: 1,
@@ -42,9 +56,9 @@ export const Toolbar = ({ configuration, setConfiguration,  setParques,
     proximity_supermercado: 1,
   };
 
-  const handleProximityChange = (type, value, key) => {
+  const handleProximityChange = (type: string, value: any, key: string) => {
     // Create a copy of the current accessibility_info
-    const updatedAccessibilityInfo = { ...configuration.accessibility_info };
+    const updatedAccessibilityInfo: GenericObject = { ...configuration.accessibility_info };
 
     if (type === "checkbox") {
       if (value) {
@@ -267,3 +281,5 @@ export const Toolbar = ({ configuration, setConfiguration,  setParques,
     </Box>
   );
 };
+
+export default ConfigurationToolbar;

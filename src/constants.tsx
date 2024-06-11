@@ -1,3 +1,4 @@
+import { GenericObject } from "./types";
 import { generateGradientColors } from "./utils";
 
 export const API_URL = "http://127.0.0.1:8000";
@@ -16,7 +17,7 @@ export const INITIAL_STATE = {
   minZoom: 8.5,
 };
 
-export const COLUMN_MAPPING = {
+export const COLUMN_MAPPING: GenericObject = {
   ID: "Clave de Lote",
   POBTOT: "Población Total",
   TVIVHAB: "Total de Viviendas Habitadas",

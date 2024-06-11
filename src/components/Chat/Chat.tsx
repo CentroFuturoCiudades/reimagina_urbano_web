@@ -6,16 +6,24 @@ import {
   MessageInput,
   TypingIndicator,
   ConversationHeader,
+  MessageModel,
 } from "@chatscope/chat-ui-kit-react";
 import { useState } from "react";
 import axios from "axios";
-import { API_URL } from "./constants";
-import { Icon, IconButton } from "@chakra-ui/react";
+import { API_URL } from "../../constants";
+import { Icon, IconButton, position } from "@chakra-ui/react";
 import { MdChat, MdOutlineClose } from "react-icons/md";
+import React from "react";
 
-export const Chat = ({ onSend }) => {
-  const [messages, setMessages] = useState([
+export interface ChatProps {
+  onSend: ( arg0: any ) => void;
+}
+
+const Chat = ( { onSend } : ChatProps ) => {
+  const [messages, setMessages] = useState<MessageModel[]>([
     {
+      direction: "incoming",
+      position: "single",
       message: "Hola, dime que información te gustaría visualizar",
       sentTime: "just now",
       sender: "ChatGPT",
@@ -24,11 +32,12 @@ export const Chat = ({ onSend }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  const handleSendRequest = async (_, message) => {
-    const newMessage = {
+  const handleSendRequest = async (_: any, message: any) => {
+    const newMessage: MessageModel = {
       message,
       direction: "outgoing",
       sender: "user",
+      position: "single"
     };
 
     setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -40,9 +49,11 @@ export const Chat = ({ onSend }) => {
     if (response.data.payload) onSend(response.data.payload);
 
     try {
-      const chatGPTResponse = {
+      const chatGPTResponse: MessageModel = {
         message: response.data.message,
         sender: "ChatGPT",
+        position: "single",
+        direction: "incoming"
       };
       setMessages((prevMessages) => [...prevMessages, chatGPTResponse]);
     } catch (error) {
@@ -65,6 +76,7 @@ export const Chat = ({ onSend }) => {
       >
         <IconButton
           icon={<Icon as={MdChat} />}
+          aria-label=""
           size="lg"
           colorScheme="blue"
           isRound
@@ -97,6 +109,7 @@ export const Chat = ({ onSend }) => {
                 colorScheme="red"
                 isRound
                 onClick={() => setIsChatOpen(false)}
+                aria-label=""
               />
             </ConversationHeader.Actions>
           </ConversationHeader>
@@ -108,7 +121,7 @@ export const Chat = ({ onSend }) => {
           >
             {messages.map((message, i) => {
               // Ensure your Message component can handle the message structure, especially for messages from ChatGPT
-              return <Message key={i} model={message} />;
+              return <Message key={i} model={ message }/>;
             })}
           </MessageList>
           <MessageInput
@@ -121,3 +134,5 @@ export const Chat = ({ onSend }) => {
     </div>
   );
 };
+
+export default Chat;
