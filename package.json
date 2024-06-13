@@ -14,7 +14,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@turf/rewind": "^6.5.0",
+    "@turf/rewind": "6.5.0",
     "@turf/turf": "^6.5.0",
     "@types/d3": "^7.4.3",
     "@types/jest": "^29.5.12",
@@ -39,6 +39,9 @@
     "sass": "^1.77.4",
     "typescript": "^5.4.5",
     "web-vitals": "^2.1.4"
+  },
+  "resolutions": {
+    "@turf/rewind": "6.5.0"
   },
   "scripts": {
     "start": "react-scripts start",
