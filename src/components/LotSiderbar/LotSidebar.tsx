@@ -15,6 +15,7 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  Switch,
   Tag,
   TagCloseButton,
   TagLabel,
@@ -40,6 +41,7 @@ interface LotSidebarProps {
   educacion: any;
   servicios: any;
   supermercados: any;
+  setViewPotentialToggle: (value: boolean) => void;
 }
 
 const LotSidebar = ({
@@ -50,7 +52,8 @@ const LotSidebar = ({
   salud,
   educacion,
   servicios,
-  supermercados
+  supermercados,
+  setViewPotentialToggle
 }: LotSidebarProps) => {
   if (!aggregatedInfo) return null;
 
@@ -86,6 +89,11 @@ const LotSidebar = ({
       color: "rgb(200, 100, 100)",
     },
   ];
+
+  const handleToggleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setViewPotentialToggle(event.target.checked);
+  };
+
   return (
     <>
       <Container m={2}>
@@ -166,6 +174,15 @@ const LotSidebar = ({
                   <CircularProgress size="80px" value={50} color="red.400">
                     <CircularProgressLabel>50%</CircularProgressLabel>
                   </CircularProgress>
+                </Stat>
+              </Box>
+              <Box mx={3}>
+                <Stat>
+                  <StatLabel>Ver potencial</StatLabel>
+                  <Switch 
+                  id="toggle-switch" 
+                  onChange={handleToggleChange}
+                  />
                 </Stat>
               </Box>
             </SimpleGrid>

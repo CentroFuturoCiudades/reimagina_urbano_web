@@ -39,14 +39,16 @@ function App() {
       proximity_supermercado: 1,
     },
   });
-  console.log(selectedLots)
+  // console.log(selectedLots); // igual a selected Ids
   const [coords, setCoords] = useState();
   const [parques, setParques] = useState<Configuration>({ activated: true, value: 0 });
   const [salud, setSalud] = useState({ activated: true, value: 0 });
   const [educacion, setEducacion] = useState({ activated: true, value: 0 });
   const [servicios, setServicios] = useState({ activated: true, value: 0 });
   const [supermercados, setSupermercados] = useState({ activated: true, value: 0 });
+  const [viewPotentialToggle, setViewPotentialToggle] = useState(false);
   const project = window.location.pathname.split("/")[1];
+
 
   const handleIsActive = () => 
   {
@@ -62,10 +64,10 @@ function App() {
     updateProject();
   }, [project]);
 
-  console.log(aggregatedInfo)
+  // console.log(aggregatedInfo)
 
   useEffect(() => {
-    console.log(selectedLots)
+    // console.log(selectedLots)
 
     const fetchData = async () => {
       if (selectedLots.length > 0) {
@@ -89,7 +91,7 @@ function App() {
 
   useEffect(() => {
     async function fetchData() {
-      console.log(configuration.metric);
+      // console.log(configuration.metric); // wasteful_ratio, la metrica que se muestra 
       const response = await axios.post(`${API_URL}/query`, {
         metric: configuration.metric,
         condition: configuration.condition,
@@ -125,6 +127,7 @@ function App() {
         metric={configuration.metric}
         activeSketch={isActive}
         isSatellite={configuration.isSatellite}
+        viewPotentialToggle={viewPotentialToggle}
       />
       <ConfigurationToolbar
         configuration={configuration}
@@ -175,6 +178,7 @@ function App() {
             educacion={educacion}
             servicios={servicios}
             supermercados={supermercados}
+            setViewPotentialToggle={setViewPotentialToggle}
           />
         </Box>
       )}

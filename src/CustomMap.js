@@ -1,9 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { API_URL, INITIAL_STATE } from "./constants";
 import { useFetch, useFetchGeo } from "./utils";
 import * as turf from "@turf/turf";
 import { DeckGL, GeoJsonLayer } from "deck.gl";
-import { Map } from "react-map-gl";
+import { Map as StaticMap } from 'react-map-gl';
 import { Tooltip, Legend } from "./components";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
@@ -75,6 +75,7 @@ export const CustomMap = ({
   metric,
   activeSketch,
   isSatellite,
+  viewPotentialToggle,
 }) => {
   const project = window.location.pathname.split("/")[1];
   const { data: dataLots } = useFetchGeo(`${BLOB_URL}/${project}/lots.fgb`);
@@ -85,6 +86,8 @@ export const CustomMap = ({
   const { data: dataPark } = useFetchGeo(`${BLOB_URL}/${project}/landuse_park.fgb`);
   const { data: dataGreen } = useFetchGeo(`${BLOB_URL}/${project}/landuse_green.fgb`);
   const { data: dataEquipment } = useFetchGeo(`${BLOB_URL}/${project}/landuse_equipment.fgb`);
+  const [maxHeightMap, setMaxHeightMap] = useState(new Map());
+  const [numFloorsMap, setNumFloorsMap] = useState(new Map());
   const [hoverInfo, setHoverInfo] = useState();
 
   const [data2, setData2] = useState({
@@ -117,6 +120,32 @@ export const CustomMap = ({
       }, {}),
     [data, metric]
   );
+
+  useEffect(() => {
+    const nFloorsMap = new Map();
+    const mHeightMap = new Map();
+    data.forEach(obj => {
+      nFloorsMap.set(obj.ID, obj.num_floors || 0);
+    });
+    data.forEach(obj => {
+      mHeightMap.set(obj.ID, obj.max_height || 0);
+    });    
+    setNumFloorsMap(nFloorsMap);
+    setMaxHeightMap(mHeightMap);
+  }, [data, dataBuildings])
+
+  // Memoized filtered GeoJSON data
+  const filteredGeoJsonData = useMemo(() => {
+    if (!selectedLots || selectedLots.length === 0) {
+      return null; // Or you could return an empty GeoJSON object if you prefer
+    }
+    return {
+      ...dataBuildings,
+      features: dataBuildings.features.filter(feature => selectedLots.includes(feature.properties.ID))
+    };
+  }, [dataBuildings, selectedLots]);
+
+  
 
   const updateSelectedLots = (info) => {
     if (!activeSketch) {
@@ -199,7 +228,7 @@ export const CustomMap = ({
 
       setSelectedLots(selectedData)
 
-      console.log("Selected IDs:", selectedData);
+      // console.log("Selected IDs:", selectedData);
     }
   };
 
@@ -241,7 +270,7 @@ export const CustomMap = ({
     //layers={ [editableLayer] }
 
     >
-      <Map
+      <StaticMap
         width="100%"
         height="100%"
         mapStyle={isSatellite ? "mapbox://styles/mapbox/satellite-v9" : "mapbox://styles/lameouchi/clw841tdm00io01ox4vczgtkl"}
@@ -256,7 +285,7 @@ export const CustomMap = ({
         getLineColor={[255, 0, 0, 255]}
         getLineWidth={10}
       />
-      {/* Layer de color gris abajo del amarillo  */}
+      {/* Layer de color azul abajo del amarillo  */}
       {dataLots && selectedLots && (
         <GeoJsonLayer
           id="geojson-layer"
@@ -288,19 +317,36 @@ export const CustomMap = ({
       )}
 
       {/* Layer de color amarillo */}
-      {opacities.building > 0 && dataBuildings && (
+      {/* {opacities.building > 0 && dataBuildings && ( */}
+      {dataBuildings && (
         <GeoJsonLayer
           id="building-layer"
           data={dataBuildings}
           filled={true}
           extruded={true}
-          // getElevation={(d) => dictData[d.properties['ID']].ALTURA * 20}
-          getElevation={3}
+          // wireframe={true}
+          // _full3d={true}
+          getElevation={(d) => numFloorsMap.get(d.properties.ID)*2}
           getLineWidth={0}
           getFillColor={[255, 255, 0, 100]}
-          opacity={opacities.building}
+          // opacity={opacities.building}
         />
       )}
+       {filteredGeoJsonData && viewPotentialToggle && (
+        <GeoJsonLayer
+          id="building-layer2"
+          data={filteredGeoJsonData}
+          filled={true}
+          wireframe={true}
+          // _full3d={true}
+          extruded={true}
+          getElevation={(d) => maxHeightMap.get(d.properties.ID)*2}
+          getLineWidth={0}
+          // getFillColor={[255, 0, 0, 50]}
+          getFillColor={[0, 255, 0, 50]}
+        />
+      )} 
+
       {opacities.green > 0 && dataGreen && (
         <GeoJsonLayer
           id="green-layer"
