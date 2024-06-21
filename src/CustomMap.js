@@ -255,6 +255,7 @@ export const CustomMap = ({
 
       // Add the new editable layer to the state
       setEditableLayers((layers) => [...layers, newEditableLayer]);
+      setSelectedLots(selectedData);
     }
   };
 
@@ -269,9 +270,6 @@ export const CustomMap = ({
     getFillColor: [255, 0, 0, 100],
     getTentativeLineColor: [255, 0, 0, 200],
     getLineColor: [255, 0, 0, 200],
-    //brushingEnabled: true,
-    //brushingRadius: 1000,
-    //extensions:[brushingExtension]
   });
 
   /*
@@ -454,21 +452,6 @@ export const CustomMap = ({
         autoHighlight={true}
         getPosition={(d) => d.position}
       />
-      
-      {/*<ScatterplotLayer
-        id= 'circle-layer'
-        data= {[{ position: hoverCenter, size: 1000 }]}
-        pickable= {true}
-        stroked= {true}
-        filled= {true}
-        lineWidthMinPixels= {1}
-        getPosition= {hoverCenter}
-        getRadius= {1100}
-        getFillColor= {[0, 0, 0, 20]} // Circle color
-        getLineWidth= {80}
-        getLineColor= {[80, 80, 80]} // Border color
-      
-      />*/}
       {hoverInfo && hoverInfo.object && (
         <Tooltip hoverInfo={hoverInfo}>
           <span className="tooltip-label">
