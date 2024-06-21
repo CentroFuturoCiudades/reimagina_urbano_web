@@ -220,8 +220,6 @@ export const CustomMap = ({
       ).map(feature => feature.properties.ID);
 
       setSelectedLots(selectedData)
-
-      console.log("Selected IDs:", selectedData);
     }
   };
 
@@ -237,9 +235,6 @@ export const CustomMap = ({
     getFillColor: [255, 0, 0, 100],
     getTentativeLineColor: [255, 0, 0, 200],
     getLineColor: [255, 0, 0, 200],
-    //brushingEnabled: true,
-    //brushingRadius: 1000,
-    //extensions:[brushingExtension]
   });
 
   /*
@@ -250,10 +245,10 @@ export const CustomMap = ({
       console.log('ya se cerro el primer poligono')
   }, [mode, activeSketch]);*/
 
+
   if (!coords || !dataLots) {
     return <div>Loading</div>;
   }
-
 
   
   return (
@@ -264,19 +259,7 @@ export const CustomMap = ({
         longitude: coords["longitud"],
       }}
       controller={true}
-      layers={activeSketch ? [editableLayer] : [/*hoverCenter && new ScatterplotLayer({
-        id: 'circle-layer',
-        data: [{ position: hoverCenter, size: 1000 }],
-        pickable: true,
-        stroked: true,
-        filled: true,
-        lineWidthMinPixels: 1,
-        getPosition: hoverCenter,
-        getRadius: 1100,
-        getFillColor: [0, 0, 0, 20],// Circle color
-        getLineWidth: 80,
-        getLineColor: [80, 80, 80] // Border color
-      })*/]}
+      layers={activeSketch ? [editableLayer] : []}
       //onHover={handleHover}
       onHover={(info, event) => {
         debouncedHover(info, event);
@@ -335,9 +318,9 @@ export const CustomMap = ({
           }}
           getPosition={(d) => d.position}
           opacity={isSatellite ? 0.4 : 1}
-          brushingEnabled={selectedLots.length == 0 && !activeSketch ? true : false}
+          brushingEnabled={selectedLots.length === 0 && !activeSketch ? true : false}
           brushingRadius={brushingRadius}
-          extensions={[new BrushingExtension()] }
+          extensions={[new BrushingExtension()]}
         />
       )}
       {circleGeoJson && !activeSketch && (
@@ -435,21 +418,6 @@ export const CustomMap = ({
         //brushingRadius={brushingRadius}
         //extensions={[new BrushingExtension()]}
       />
-      
-      {/*<ScatterplotLayer
-        id= 'circle-layer'
-        data= {[{ position: hoverCenter, size: 1000 }]}
-        pickable= {true}
-        stroked= {true}
-        filled= {true}
-        lineWidthMinPixels= {1}
-        getPosition= {hoverCenter}
-        getRadius= {1100}
-        getFillColor= {[0, 0, 0, 20]} // Circle color
-        getLineWidth= {80}
-        getLineColor= {[80, 80, 80]} // Border color
-      
-      />*/}
       {hoverInfo && hoverInfo.object && (
         <Tooltip hoverInfo={hoverInfo}>
           <span className="tooltip-label">
