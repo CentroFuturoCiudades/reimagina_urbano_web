@@ -300,6 +300,22 @@ export const CustomMap = ({
         //brushingRadius={brushingRadius}
         //extensions={[new BrushingExtension()]}
       />
+
+      {selectedLots.length === 0 && !activeSketch  && (
+        <ScatterplotLayer
+        id= 'circle-layer'
+        data= {[{ position: hoverCenter, size: 1000 }]}
+        pickable= {true}
+        stroked= {true}
+        filled= {true}
+        lineWidthMinPixels= {1}
+        getPosition= {hoverCenter}
+        getRadius= {1100}
+        getFillColor= {[0, 0, 0, 20]} // Circle color
+        getLineWidth= {80}
+        getLineColor= {[80, 80, 80]} // Border color
+        />
+      )}
       
       {/* Layer de color gris abajo del amarillo  */}
       {dataLots && selectedLots && (
@@ -319,7 +335,7 @@ export const CustomMap = ({
           }}
           getPosition={(d) => d.position}
           opacity={isSatellite ? 0.4 : 1}
-          brushingEnabled={selectedLots.length == 0 ? true : false}
+          brushingEnabled={selectedLots.length == 0 && !activeSketch ? true : false}
           brushingRadius={brushingRadius}
           extensions={[new BrushingExtension()] }
         />
@@ -419,6 +435,7 @@ export const CustomMap = ({
         //brushingRadius={brushingRadius}
         //extensions={[new BrushingExtension()]}
       />
+      
       {/*<ScatterplotLayer
         id= 'circle-layer'
         data= {[{ position: hoverCenter, size: 1000 }]}
