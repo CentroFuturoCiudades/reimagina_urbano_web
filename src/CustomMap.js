@@ -1,14 +1,17 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { API_URL, INITIAL_STATE } from "./constants";
 import { useFetch, useFetchGeo } from "./utils";
 import * as turf from "@turf/turf";
-import { DeckGL, GeoJsonLayer } from "deck.gl";
+import { DeckGL, GeoJsonLayer, ScatterplotLayer } from "deck.gl";
 import { Map } from "react-map-gl";
 import { Tooltip, Legend } from "./components";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
+import {BrushingExtension} from '@deck.gl/extensions';
 
 import * as d3 from "d3";
+import { debounce } from "lodash";
+import { hover } from "@testing-library/user-event/dist/hover";
 
 const legendTitles = {
   "ID": "Clave de Lote",
@@ -86,6 +89,9 @@ export const CustomMap = ({
   const { data: dataGreen } = useFetchGeo(`${BLOB_URL}/${project}/landuse_green.fgb`);
   const { data: dataEquipment } = useFetchGeo(`${BLOB_URL}/${project}/landuse_equipment.fgb`);
   const [hoverInfo, setHoverInfo] = useState();
+  const [brushingRadius, setBrushingRadius] = useState(1000); //radio esta en metros
+  const [hoverCenter, setHoverCenter] = useState(null);
+  
 
   const [data2, setData2] = useState({
     type: 'FeatureCollection',
@@ -126,6 +132,7 @@ export const CustomMap = ({
       } else {
         setSelectedLots([...selectedLots, lote]);
       }
+      console.log('selected lots', selectedLots)
     }
   };
 
@@ -183,6 +190,21 @@ export const CustomMap = ({
   // }, [dataLots, metric, selectedLots, dictData]);
 
 
+  const handleHover = useCallback ((info) => {
+    if(info.coordinate){
+      setHoverCenter([info.coordinate[0], info.coordinate[1]])
+      console.log('center', [info.coordinate[0], info.coordinate[1]])
+    }
+    else {
+      setHoverCenter(null)
+    }    
+  }, []);
+
+  const debouncedHover = useCallback(
+    debounce(handleHover, 200),
+    [handleHover]
+  );
+
   const handleEdit2 = ({ updatedData, editType, editContext }) => {
     setData2(updatedData);
 
@@ -215,6 +237,9 @@ export const CustomMap = ({
     getFillColor: [255, 0, 0, 100],
     getTentativeLineColor: [255, 0, 0, 200],
     getLineColor: [255, 0, 0, 200],
+    //brushingEnabled: true,
+    //brushingRadius: 1000,
+    //extensions:[brushingExtension]
   });
 
   /*
@@ -229,6 +254,8 @@ export const CustomMap = ({
     return <div>Loading</div>;
   }
 
+
+  
   return (
     <DeckGL
       initialViewState={{
@@ -237,9 +264,23 @@ export const CustomMap = ({
         longitude: coords["longitud"],
       }}
       controller={true}
-      layers={activeSketch ? [editableLayer] : []}
-    //layers={ [editableLayer] }
-
+      layers={activeSketch ? [editableLayer] : [/*hoverCenter && new ScatterplotLayer({
+        id: 'circle-layer',
+        data: [{ position: hoverCenter, size: 1000 }],
+        pickable: true,
+        stroked: true,
+        filled: true,
+        lineWidthMinPixels: 1,
+        getPosition: hoverCenter,
+        getRadius: 1100,
+        getFillColor: [0, 0, 0, 20],// Circle color
+        getLineWidth: 80,
+        getLineColor: [80, 80, 80] // Border color
+      })*/]}
+      //onHover={handleHover}
+      onHover={(info, event) => {
+        debouncedHover(info, event);
+      }}
     >
       <Map
         width="100%"
@@ -255,7 +296,11 @@ export const CustomMap = ({
         getFillColor={[0, 0, 0, 0]}
         getLineColor={[255, 0, 0, 255]}
         getLineWidth={10}
+        //brushingEnabled={true}
+        //brushingRadius={brushingRadius}
+        //extensions={[new BrushingExtension()]}
       />
+      
       {/* Layer de color gris abajo del amarillo  */}
       {dataLots && selectedLots && (
         <GeoJsonLayer
@@ -274,6 +319,9 @@ export const CustomMap = ({
           }}
           getPosition={(d) => d.position}
           opacity={isSatellite ? 0.4 : 1}
+          brushingEnabled={selectedLots.length == 0 ? true : false}
+          brushingRadius={brushingRadius}
+          extensions={[new BrushingExtension()] }
         />
       )}
       {circleGeoJson && !activeSketch && (
@@ -299,6 +347,9 @@ export const CustomMap = ({
           getLineWidth={0}
           getFillColor={[255, 255, 0, 100]}
           opacity={opacities.building}
+          //brushingEnabled={true}
+          //brushingRadius={brushingRadius}
+          //extensions={[new BrushingExtension()]}
         />
       )}
       {opacities.green > 0 && dataGreen && (
@@ -309,6 +360,9 @@ export const CustomMap = ({
           getFillColor={[160, 200, 160, 255]}
           getLineWidth={0}
           opacity={opacities.green}
+          //brushingEnabled={true}
+          //brushingRadius={brushingRadius}
+          //extensions={[new BrushingExtension()]}
         />
       )}
       {opacities.parking > 0 && dataParking && (
@@ -319,6 +373,9 @@ export const CustomMap = ({
           getFillColor={[120, 120, 120, 255]}
           getLineWidth={0}
           opacity={opacities.parking}
+          //brushingEnabled={true}
+          //brushingRadius={brushingRadius}
+          //extensions={[new BrushingExtension()]}
         />
       )}
       {opacities.equipment > 0 && dataEquipment && (
@@ -329,6 +386,9 @@ export const CustomMap = ({
           getFillColor={[180, 0, 180, 255]}
           getLineWidth={0}
           opacity={opacities.equipment}
+          //brushingEnabled={true}
+          //brushingRadius={brushingRadius}
+          //extensions={[new BrushingExtension()]}
         />
       )}
       {opacities.park > 0 && dataPark && (
@@ -339,6 +399,9 @@ export const CustomMap = ({
           getFillColor={[0, 130, 0, 255]}
           getLineWidth={0}
           opacity={opacities.park}
+          //brushingEnabled={true}
+          //brushingRadius={brushingRadius}
+          //extensions={[new BrushingExtension()]}
         />
       )}
       <GeoJsonLayer
@@ -352,7 +415,24 @@ export const CustomMap = ({
         pickable={true}
         autoHighlight={true}
         getPosition={(d) => d.position}
+        //brushingEnabled={true}
+        //brushingRadius={brushingRadius}
+        //extensions={[new BrushingExtension()]}
       />
+      {/*<ScatterplotLayer
+        id= 'circle-layer'
+        data= {[{ position: hoverCenter, size: 1000 }]}
+        pickable= {true}
+        stroked= {true}
+        filled= {true}
+        lineWidthMinPixels= {1}
+        getPosition= {hoverCenter}
+        getRadius= {1100}
+        getFillColor= {[0, 0, 0, 20]} // Circle color
+        getLineWidth= {80}
+        getLineColor= {[80, 80, 80]} // Border color
+      
+      />*/}
       {hoverInfo && hoverInfo.object && (
         <Tooltip hoverInfo={hoverInfo}>
           <span className="tooltip-label">
