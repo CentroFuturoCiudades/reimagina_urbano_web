@@ -337,7 +337,21 @@ export const CustomMap = ({
         getLineColor={[255, 0, 0, 255]}
         getLineWidth={10}
       />
-
+      {/* {selectedLots.length === 0 && !activeSketch  && (
+        <ScatterplotLayer
+        id= 'circle-layer'
+        data= {[{ position: hoverCenter, size: 1000 }]}
+        pickable= {true}
+        stroked= {true}
+        filled= {true}
+        lineWidthMinPixels= {1}
+        getPosition= {hoverCenter}
+        getRadius= {1100}
+        getFillColor= {[0, 0, 0, 20]} // Circle color
+        getLineWidth= {80}
+        getLineColor= {[80, 80, 80]} // Border color
+        />
+      )} */}
       {/* Layer de color gris abajo del amarillo  */}
       {dataLots && selectedLots && (
         <GeoJsonLayer
@@ -440,6 +454,7 @@ export const CustomMap = ({
         autoHighlight={true}
         getPosition={(d) => d.position}
       />
+      
       {/*<ScatterplotLayer
         id= 'circle-layer'
         data= {[{ position: hoverCenter, size: 1000 }]}
