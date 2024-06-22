@@ -13,8 +13,10 @@ export const INITIAL_STATE = {
   zoom: 15,
   transitionDuration: 100,
   pitch: 60,
+  maxPitch: 100,
   bearing: 0,
   minZoom: 8.5,
+  maxZoom: 22,
 };
 
 export const COLUMN_MAPPING: GenericObject = {

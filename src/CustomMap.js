@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { INITIAL_STATE } from "./constants";
 import { useFetch } from "./utils";
+
 import * as turf from "@turf/turf";
 import { DeckGL, GeoJsonLayer } from "deck.gl";
-import { Map } from "react-map-gl";
+import { Map as StaticMap } from "react-map-gl";
 import { Tooltip, Legend } from "./components";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
@@ -49,18 +50,21 @@ export const CustomMap = ({
   metric,
   activeSketch,
   isSatellite,
+  viewPotentialToggle,
 }) => {
   const project = window.location.pathname.split("/")[1];
+  const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
+  const [hoverInfo, setHoverInfo] = useState();
   const [hoverCenter, setHoverCenter] = useState(null);
   const [brushingRadius, setBrushingRadius] = useState(500); //radio esta en metros
+  const [maxHeightMap, setMaxHeightMap] = useState(new Map());
+  const [numFloorsMap, setNumFloorsMap] = useState(new Map());
 
   const [originalData, setOriginalData] = useState({
     type: "FeatureCollection",
     features: [],
   });
 
-  const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
-  const [hoverInfo, setHoverInfo] = useState();
   const dataLots = originalData.features.filter(
     (feature) => feature.properties["metric"] === "lots"
   );
@@ -163,6 +167,43 @@ export const CustomMap = ({
     [data, metric]
   );
 
+  useEffect(() => {
+    const nFloorsMap = new Map();
+    const mHeightMap = new Map();
+    data.forEach((obj) => {
+      nFloorsMap.set(obj.ID, obj.num_floors || 0);
+    });
+    data.forEach((obj) => {
+      mHeightMap.set(obj.ID, obj.max_height || 0);
+    });
+    setNumFloorsMap(nFloorsMap);
+    setMaxHeightMap(mHeightMap);
+  }, [data]);
+
+  const handleHover = useCallback((info) => {
+    if (info.coordinate) {
+      setHoverCenter([info.coordinate[0], info.coordinate[1]]);
+      console.log("center", [info.coordinate[0], info.coordinate[1]]);
+    } else {
+      setHoverCenter(null);
+    }
+  }, []);
+
+  const debouncedHover = useCallback(debounce(handleHover, 50), [handleHover]);
+
+  // Memoized filtered GeoJSON data
+  const filteredGeoJsonData = useMemo(() => {
+    if (!selectedLots || selectedLots.length === 0) {
+      return null; // Or you could return an empty GeoJSON object if you prefer
+    }
+    return {
+      ...dataBuildings,
+      features: dataBuildings.features.filter((feature) =>
+        selectedLots.includes(feature.properties.ID)
+      ),
+    };
+  }, [dataBuildings, selectedLots]);
+
   const updateSelectedLots = (info) => {
     if (!activeSketch) {
       const lote = info.object.properties["ID"];
@@ -199,17 +240,6 @@ export const CustomMap = ({
         : [color.r, color.g, color.b];
     };
   }, [dataLots, domain, colors, selectedLots, dictData]);
-
-  const handleHover = useCallback((info) => {
-    if (info.coordinate) {
-      setHoverCenter([info.coordinate[0], info.coordinate[1]]);
-      console.log("center", [info.coordinate[0], info.coordinate[1]]);
-    } else {
-      setHoverCenter(null);
-    }
-  }, []);
-
-  const debouncedHover = useCallback(debounce(handleHover, 50), [handleHover]);
 
   const handleEdit2 = ({ updatedData, editType, editContext }) => {
     setData2(updatedData);
@@ -315,7 +345,7 @@ export const CustomMap = ({
         debouncedHover(info, event);
       }}
     >
-      <Map
+      <StaticMap
         width="100%"
         height="100%"
         mapStyle={
@@ -335,6 +365,7 @@ export const CustomMap = ({
         getLineColor={[255, 0, 0, 255]}
         getLineWidth={10}
       />
+
       {/* {selectedLots.length === 0 && !activeSketch  && (
         <ScatterplotLayer
         id= 'circle-layer'
@@ -382,20 +413,32 @@ export const CustomMap = ({
           getLineWidth={5}
         />
       )}
-      {dataBuildings && (
+      {visible.building && (
         <GeoJsonLayer
           key="building-layer"
           id="building-layer"
           data={dataBuildings}
           filled={true}
           extruded={true}
-          getElevation={3}
-          getLineWidth={0}
-          getFillColor={[255, 255, 0, 100]}
-          opacity={visible.building}
+          // _full3d={true}
+          getElevation={(d) => numFloorsMap.get(d.properties.ID) * 5}
+          getFillColor={[255, 255, 0, 255]}
         />
       )}
-      {visible.green > 0 && dataGreen && (
+      {visible.potential_building && (
+        <GeoJsonLayer
+          id="potential-building-layer"
+          data={dataLots}
+          filled={true}
+          wireframe={true}
+          // _full3d={true}
+          extruded={true}
+          getElevation={(d) => maxHeightMap.get(d.properties.ID) * 5}
+          getFillColor={[255, 0, 0, 100]}
+        />
+      )}
+
+      {visible.green && (
         <GeoJsonLayer
           key="green-layer"
           id="green-layer"
@@ -406,7 +449,7 @@ export const CustomMap = ({
           opacity={visible.green}
         />
       )}
-      {visible.parking > 0 && dataParking && (
+      {visible.parking && (
         <GeoJsonLayer
           key="parking-layer"
           id="parking-layer"
@@ -417,7 +460,7 @@ export const CustomMap = ({
           opacity={visible.parking}
         />
       )}
-      {visible.equipment > 0 && dataEquipment && (
+      {visible.equipment && (
         <GeoJsonLayer
           key="equipment-layer"
           id="equipment-layer"
@@ -428,7 +471,7 @@ export const CustomMap = ({
           opacity={visible.equipment}
         />
       )}
-      {visible.park > 0 && dataPark && (
+      {visible.park && (
         <GeoJsonLayer
           key="park-layer"
           id="park-layer"

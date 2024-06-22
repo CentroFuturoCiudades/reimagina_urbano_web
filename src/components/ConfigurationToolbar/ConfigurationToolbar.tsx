@@ -199,7 +199,18 @@ const ConfigurationToolbar = ({
           })
         }
       />
-      Edificios
+      Edificios Actuales
+      <br />
+      <Switch
+        isChecked={configuration.visible.potential_building}
+        onChange={(e) =>
+          setConfiguration({
+            ...configuration,
+            visible: { ...configuration.visible, potential_building: e.target.checked },
+          })
+        }
+      />
+      Potencial Edificios
       <br />
       <Switch
         isChecked={configuration.visible.parking}
