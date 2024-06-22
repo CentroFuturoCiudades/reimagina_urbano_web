@@ -33,21 +33,24 @@ interface ConfigurationToolbarProps {
   configuration: GenericObject;
   supermercados: Configuration;
 
-  setConfiguration:  React.Dispatch<React.SetStateAction<GenericObject>>
-  setParques:  React.Dispatch<React.SetStateAction<Configuration>>
-  setSalud:  React.Dispatch<React.SetStateAction<Configuration>>
-  setEducacion:  React.Dispatch<React.SetStateAction<Configuration>>
-  setServicios:  React.Dispatch<React.SetStateAction<Configuration>>
-  setSupermercados: React.Dispatch<React.SetStateAction<Configuration>>
+  setConfiguration: React.Dispatch<React.SetStateAction<GenericObject>>;
+  setParques: React.Dispatch<React.SetStateAction<Configuration>>;
+  setSalud: React.Dispatch<React.SetStateAction<Configuration>>;
+  setEducacion: React.Dispatch<React.SetStateAction<Configuration>>;
+  setServicios: React.Dispatch<React.SetStateAction<Configuration>>;
+  setSupermercados: React.Dispatch<React.SetStateAction<Configuration>>;
 }
 
-const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
+const ConfigurationToolbar = ({
+  configuration,
+  setConfiguration,
+  setParques,
   supermercados,
   setSalud,
   setEducacion,
   setServicios,
-  setSupermercados }: ConfigurationToolbarProps ) => {
-
+  setSupermercados,
+}: ConfigurationToolbarProps) => {
   const proximityOptions: GenericObject = {
     proximity_small_park: 1,
     proximity_salud: 2,
@@ -58,7 +61,9 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
 
   const handleProximityChange = (type: string, value: any, key: string) => {
     // Create a copy of the current accessibility_info
-    const updatedAccessibilityInfo: GenericObject = { ...configuration.accessibility_info };
+    const updatedAccessibilityInfo: GenericObject = {
+      ...configuration.accessibility_info,
+    };
 
     if (type === "checkbox") {
       if (value) {
@@ -70,19 +75,19 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
         delete updatedAccessibilityInfo[key];
       }
       switch (key) {
-        case 'proximity_small_park':
+        case "proximity_small_park":
           setParques((prev) => ({ ...prev, activated: value }));
           break;
-        case 'proximity_salud':
+        case "proximity_salud":
           setSalud((prev) => ({ ...prev, activated: value }));
           break;
-        case 'proximity_educacion':
+        case "proximity_educacion":
           setEducacion((prev) => ({ ...prev, activated: value }));
           break;
-        case 'proximity_servicios':
+        case "proximity_servicios":
           setServicios((prev) => ({ ...prev, activated: value }));
           break;
-        case 'proximity_supermercado':
+        case "proximity_supermercado":
           setSupermercados((prev) => ({ ...prev, activated: value }));
           break;
         default:
@@ -116,7 +121,11 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
       <h1>Tipo de Info</h1>
       <Select
         onChange={(e) =>
-          setConfiguration({ ...configuration, metric: e.target.value, condition: "" })
+          setConfiguration({
+            ...configuration,
+            metric: e.target.value,
+            condition: "",
+          })
         }
         value={
           COLUMN_MAPPING[configuration.metric] && !configuration.condition
@@ -182,41 +191,56 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
       )}
       <br />
       <Switch
-        isChecked={configuration.opacities.building > 0}
+        isChecked={configuration.visible.building}
         onChange={(e) =>
-          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, building: e.target.checked ? 1 : 0 } })
+          setConfiguration({
+            ...configuration,
+            visible: { ...configuration.visible, building: e.target.checked },
+          })
         }
       />
       Edificios
       <br />
       <Switch
-        isChecked={configuration.opacities.parking > 0}
+        isChecked={configuration.visible.parking}
         onChange={(e) =>
-          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, parking: e.target.checked ? 1 : 0 } })
+          setConfiguration({
+            ...configuration,
+            visible: { ...configuration.visible, parking: e.target.checked },
+          })
         }
       />
       Estacionamientos
       <br />
       <Switch
-        isChecked={configuration.opacities.park > 0}
+        isChecked={configuration.visible.park}
         onChange={(e) =>
-          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, park: e.target.checked ? 1 : 0 } })
+          setConfiguration({
+            ...configuration,
+            visible: { ...configuration.visible, park: e.target.checked },
+          })
         }
       />
       Parques
       <br />
       <Switch
-        isChecked={configuration.opacities.green > 0}
+        isChecked={configuration.visible.green}
         onChange={(e) =>
-          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, green: e.target.checked ? 1 : 0 } })
+          setConfiguration({
+            ...configuration,
+            visible: { ...configuration.visible, green: e.target.checked },
+          })
         }
       />
       Áreas Vegetación
       <br />
       <Switch
-        isChecked={configuration.opacities.equipment > 0}
+        isChecked={configuration.visible.equipment}
         onChange={(e) =>
-          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, equipment: e.target.checked ? 1 : 0 } })
+          setConfiguration({
+            ...configuration,
+            visible: { ...configuration.visible, equipment: e.target.checked },
+          })
         }
       />
       Equipamientos

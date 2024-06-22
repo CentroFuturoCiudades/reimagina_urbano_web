@@ -44,7 +44,7 @@ export const CustomMap = ({
   data,
   selectedLots,
   setSelectedLots,
-  opacities,
+  visible,
   coords,
   metric,
   activeSketch,
@@ -392,10 +392,10 @@ export const CustomMap = ({
           getElevation={3}
           getLineWidth={0}
           getFillColor={[255, 255, 0, 100]}
-          opacity={opacities.building}
+          opacity={visible.building}
         />
       )}
-      {opacities.green > 0 && dataGreen && (
+      {visible.green > 0 && dataGreen && (
         <GeoJsonLayer
           key="green-layer"
           id="green-layer"
@@ -403,10 +403,10 @@ export const CustomMap = ({
           filled={true}
           getFillColor={[160, 200, 160, 255]}
           getLineWidth={0}
-          opacity={opacities.green}
+          opacity={visible.green}
         />
       )}
-      {opacities.parking > 0 && dataParking && (
+      {visible.parking > 0 && dataParking && (
         <GeoJsonLayer
           key="parking-layer"
           id="parking-layer"
@@ -414,10 +414,10 @@ export const CustomMap = ({
           filled={true}
           getFillColor={[120, 120, 120, 255]}
           getLineWidth={0}
-          opacity={opacities.parking}
+          opacity={visible.parking}
         />
       )}
-      {opacities.equipment > 0 && dataEquipment && (
+      {visible.equipment > 0 && dataEquipment && (
         <GeoJsonLayer
           key="equipment-layer"
           id="equipment-layer"
@@ -425,10 +425,10 @@ export const CustomMap = ({
           filled={true}
           getFillColor={[180, 0, 180, 255]}
           getLineWidth={0}
-          opacity={opacities.equipment}
+          opacity={visible.equipment}
         />
       )}
-      {opacities.park > 0 && dataPark && (
+      {visible.park > 0 && dataPark && (
         <GeoJsonLayer
           key="park-layer"
           id="park-layer"
@@ -436,7 +436,7 @@ export const CustomMap = ({
           filled={true}
           getFillColor={[0, 130, 0, 255]}
           getLineWidth={0}
-          opacity={opacities.park}
+          opacity={visible.park}
         />
       )}
       <GeoJsonLayer

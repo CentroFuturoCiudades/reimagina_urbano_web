@@ -23,12 +23,12 @@ function App() {
     condition: undefined,
     metric: "wasteful_ratio",
     isSatellite: false,
-    opacities: {
-      parking: 1,
-      building: 1,
-      park: 1,
-      green: 1,
-      equipment: 1,
+    visible: {
+      parking: true,
+      building: false,
+      park: true,
+      green: false,
+      equipment: true,
     },
     accessibility_info: {
       // Initialize this with default values for proximity settings
@@ -120,7 +120,7 @@ function App() {
         data={data}
         selectedLots={selectedLots}
         setSelectedLots={ setSelectedLots }
-        opacities={configuration.opacities}
+        visible={configuration.visible}
         coords={coords}
         metric={configuration.metric}
         activeSketch={isActive}
