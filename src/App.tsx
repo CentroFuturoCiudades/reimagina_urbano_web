@@ -24,11 +24,11 @@ function App() {
     metric: "wasteful_ratio",
     isSatellite: false,
     opacities: {
-      parking: 0,
-      building: 0,
-      park: 0,
-      green: 0,
-      equipment: 0,
+      parking: 1,
+      building: 1,
+      park: 1,
+      green: 1,
+      equipment: 1,
     },
     accessibility_info: {
       // Initialize this with default values for proximity settings

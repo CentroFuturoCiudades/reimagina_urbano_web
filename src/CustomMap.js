@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { API_URL, INITIAL_STATE } from "./constants";
 import { useFetch, useFetchGeo } from "./utils";
 import * as turf from "@turf/turf";
@@ -6,41 +6,13 @@ import { DeckGL, GeoJsonLayer } from "deck.gl";
 import { Map } from "react-map-gl";
 import { Tooltip, Legend } from "./components";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
-import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
+import { DrawPolygonMode, ModifyMode, ViewMode } from "@nebula.gl/edit-modes";
 
 import * as d3 from "d3";
+import axios from "axios";
 
 const legendTitles = {
-  "ID": "Clave de Lote",
-  "POBTOT": "Población total",
-  "TVIVHAB": "Total de viviendas habitadas",
-  "VIVPAR_DES": "Viviendas particulares deshabitadas",
-  "VIVTOT": "Viviendas totales",
-  "VPH_AUTOM": "Viviendas con automóvil",
-  "building_area": "Área de edificación",
-  "building_ratio": "Porcentaje de edificación",
-  "equipment_area": "Área de equipamiento",
-  "equipment_ratio": "Porcentaje de equipamiento",
-  "park_area": "Área de parque",
-  "park_ratio": "Porcentaje de parque",
-  "green_area": "Área con vegetación",
-  "green_ratio": "Porcentaje de área con vegetación",
-  "parking_area": "Área de estacionamiento",
-  "parking_ratio": "Porcentaje de estacionamiento",
-  "unused_area": "Área sin utilizar",
-  "unused_ratio": "Porcentaje de área sin utilizar",
-  "num_establishments": "Número de establecimientos",
-  "num_workers": "Número de trabajadores",
-  "educacion": "Educación",
-  "salud": "Salud",
-  "servicios": "Servicios",
-  "underutilized_area": "Área subutilizada",
-  "underutilized_ratio": "Porcentaje de Subutilización",
-  "wasteful_area": "Área desperdiciada",
-  "wasteful_ratio": "Porcentaje de área desperdiciada",
-  "combined_score": "Puntuación combinada",
-  "minutes": "Minutos",
-  "accessibility": "Accesibilidad",
+  // Your legend titles here
 };
 
 const areaMetrics = [
@@ -77,14 +49,23 @@ export const CustomMap = ({
   isSatellite,
 }) => {
   const project = window.location.pathname.split("/")[1];
-  const { data: dataLots } = useFetchGeo(`${BLOB_URL}/${project}/lots.fgb`);
+  const [ dataLots, setDataLots ] = useState(null);
+  const [ dataEstablishments, setDataEstablishments ] = useState(null);
+  const [ dataPark, setDataPark ] = useState(null);
+  const [ dataBuildings, setDataBuildings ] = useState(null);
+  const [ dataParking, setDataParking ] = useState(null);
+  const [ dataGreen, setDataGreen ] = useState(null);
+  const [ dataEquipment, setDataEquipment ] = useState(null);
+
+
+  // const { data: dataLots } = useFetchGeo(`${BLOB_URL}/${project}/lots.fgb`);
   const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
-  const { data: dataEstablishments } = useFetchGeo(`${BLOB_URL}/${project}/establishments.fgb`);
-  const { data: dataBuildings } = useFetchGeo(`${BLOB_URL}/${project}/landuse_building.fgb`);
-  const { data: dataParking } = useFetchGeo(`${BLOB_URL}/${project}/landuse_parking.fgb`);
-  const { data: dataPark } = useFetchGeo(`${BLOB_URL}/${project}/landuse_park.fgb`);
-  const { data: dataGreen } = useFetchGeo(`${BLOB_URL}/${project}/landuse_green.fgb`);
-  const { data: dataEquipment } = useFetchGeo(`${BLOB_URL}/${project}/landuse_equipment.fgb`);
+  //const { data: dataEstablishments } = useFetchGeo(`${BLOB_URL}/${project}/establishments.fgb`);
+  //const { data: dataBuildings } = useFetchGeo(`${BLOB_URL}/${project}/landuse_building.fgb`);
+  //const { data: dataParking } = useFetchGeo(`${BLOB_URL}/${project}/landuse_parking.fgb`);
+  // const { data: dataPark } = useFetchGeo(`${BLOB_URL}/${project}/landuse_park.fgb`);
+  //const { data: dataGreen } = useFetchGeo(`${BLOB_URL}/${project}/landuse_green.fgb`);
+  //const { data: dataEquipment } = useFetchGeo(`${BLOB_URL}/${project}/landuse_equipment.fgb`);
   const [hoverInfo, setHoverInfo] = useState();
 
   const [data2, setData2] = useState({
@@ -94,6 +75,58 @@ export const CustomMap = ({
 
   const [mode, setMode] = useState(new DrawPolygonMode());
 
+  const [editableLayers, setEditableLayers] = useState([]);
+  
+  useEffect( async()=> {
+    const response = await axios.post("http://127.0.0.1:8000/lens", {
+        "latitude":24.755954807243278,
+        "longitude": -107.4024526417783,
+        "radius": 1,
+        "metrics": [
+          "landuse_park", 
+          "landuse_parking", 
+          "landuse_green", 
+          "landuse_equipment", 
+          "establishments", 
+          "landuse_building"
+        ]
+      })
+    
+    let data = response.data;
+
+    let lots = JSON.parse( data.lots );
+    let ids = [];
+
+    lots.features.forEach( (lot) => {
+      ids.push( lot.properties.ID )
+    })
+
+    setDataLots( lots );
+    setDataPark( JSON.parse( data.landuse_park ) );
+    setDataEquipment( JSON.parse( data.landuse_equipment ) );
+    setDataGreen( JSON.parse( data.landuse_green ) );
+    setDataParking( JSON.parse( data.landuse_parking ) );
+    setDataEstablishments( JSON.parse( data.establishments ) )
+    setDataBuildings( JSON.parse(data.landuse_building) )
+
+  }, [])
+  
+  useEffect(() => {
+    let editableLayer = new EditableGeoJsonLayer({
+      id: 'editable-layer',
+      data: data2,
+      mode: mode,
+      selectedFeatureIndexes: [0],
+      onEdit: handleEdit2,
+      pickable: true,
+      getTentativeFillColor: [255, 0, 0, 100],
+      getFillColor: [255, 0, 0, 100],
+      getTentativeLineColor: [255, 0, 0, 200],
+      getLineColor: [255, 0, 0, 200],
+    });
+
+    setEditableLayers([editableLayer]);
+  }, [dataLots, mode, data2]);
 
   const center = !!aggregatedInfo && [
     aggregatedInfo["longitud"],
@@ -129,8 +162,6 @@ export const CustomMap = ({
     }
   };
 
-  // ------------------------------------------ New legend -------------------------------
-
   const colors = useMemo(() => {
     if (!dataLots) return [];
     const interpolator = d3.interpolate("white", "darkblue");
@@ -144,12 +175,6 @@ export const CustomMap = ({
     return metric === "minutes" ? [0, max] : [min, max];
   }, [metric, dictData]);
 
-  // const domain = useMemo(() => {
-  //   return metric === "minutes"
-  //     ? [0, Math.max(...Object.values(dictData))]
-  //     : Object.values(dictData);
-  // }, [metric, dictData]);
-
   const getFillColor = useMemo(() => {
     if (!dataLots) return [255, 0, 0, 150];
     const quantiles = d3.scaleQuantize().domain(domain).range(colors);
@@ -161,69 +186,47 @@ export const CustomMap = ({
         : [color.r, color.g, color.b];
     };
   }, [dataLots, domain, colors, selectedLots, dictData]);
+  
 
-  // -------------------------------------------------------------------------
-
-  // const getFillColor = useMemo(() => {   // Solo da lista de colores
-  //   if (!dataLots) return [255, 0, 0, 150];
-  //   const interpolator = d3.interpolate("white", "darkblue");
-  //   const colors = d3.quantize(interpolator, 8);
-  //   const domain =       // Define los rangos a tomar la info
-  //     metric === "minutes"
-  //       ? [0, Math.max(...Object.values(dictData))]
-  //       : Object.values(dictData);
-  //   const quantiles = d3.scaleQuantile().domain(domain).range(colors);
-
-  //   return (d) => {
-  //     const color = d3.color(quantiles(dictData[d.properties["ID"]])).rgb(); // Asigna color a los valores dados
-  //     return selectedLots.includes(d.properties["ID"])
-  //       ? [255, 0, 0, 150]
-  //       : [color.r, color.g, color.b];
-  //   };
-  // }, [dataLots, metric, selectedLots, dictData]);
-
-
-  const handleEdit2 = ({ updatedData, editType, editContext }) => {
+  const handleEdit2 = ({ updatedData, editType }) => {
     setData2(updatedData);
 
-    if (updatedData.features.length) {
-      setMode(new ModifyMode());
-    }
-
-    // Log the data inside the selected area
+    // Switch to ModifyMode when a feature is added or moved
     if (editType === "addFeature" || editType === "finishMovePosition" || editType === "finish") {
       const selectedArea = updatedData.features[0];
-      const selectedData = dataLots.features.filter((feature) =>
-        turf.booleanIntersects(selectedArea, feature)
-      ).map(feature => feature.properties.ID);
+      const selectedData = dataLots.features
+        .filter((feature) => turf.booleanIntersects(selectedArea, feature))
+        .map((feature) => feature.properties.ID);
 
-      setSelectedLots(selectedData)
+      setSelectedLots(selectedData);
 
-      console.log("Selected IDs:", selectedData);
+      // Set the existing editable layer to ViewMode
+      setEditableLayers((layers) =>
+        layers.map((layer) => (new EditableGeoJsonLayer ({
+          ...layer.props,
+          id: layer.id,
+          mode: new ViewMode(),
+        })))
+      );
+
+      // Create a new editable layer with a unique ID
+      const newEditableLayer = new EditableGeoJsonLayer({
+        id: `editable-layer-${editableLayers.length + 1}`, // Unique ID for the new editable layer
+        data: { type: 'FeatureCollection', features: [] },
+        mode: new DrawPolygonMode(),
+        selectedFeatureIndexes: [0],
+        onEdit: handleEdit2,
+        pickable: true,
+        getTentativeFillColor: [0, 0, 255, 100],
+        getFillColor: [0, 0, 255, 100],
+        getTentativeLineColor: [0, 0, 255, 200],
+        getLineColor: [0, 0, 255, 200],
+      });
+
+      // Add the new editable layer to the state
+      setEditableLayers((layers) => [...layers, newEditableLayer]);
     }
   };
-
-
-  const editableLayer = new EditableGeoJsonLayer({
-    id: 'editable-layer',
-    data: data2,
-    mode: mode,
-    selectedFeatureIndexes: [0],
-    onEdit: handleEdit2,
-    pickable: true,
-    getTentativeFillColor: [255, 0, 0, 100],
-    getFillColor: [255, 0, 0, 100],
-    getTentativeLineColor: [255, 0, 0, 200],
-    getLineColor: [255, 0, 0, 200],
-  });
-
-  /*
-  useEffect(() => {
-    console.log('ACTIVE STATE', activeSketch)
-    //console.log('Mode changed to:', mode);
-    if(data2.features[0])
-      console.log('ya se cerro el primer poligono')
-  }, [mode, activeSketch]);*/
 
   if (!coords || !dataLots) {
     return <div>Loading</div>;
@@ -237,9 +240,7 @@ export const CustomMap = ({
         longitude: coords["longitud"],
       }}
       controller={true}
-      layers={activeSketch ? [editableLayer] : []}
-    //layers={ [editableLayer] }
-
+      layers={activeSketch ? editableLayers : []}
     >
       <Map
         width="100%"
@@ -249,16 +250,18 @@ export const CustomMap = ({
         attributionControl={false}
       />
       <GeoJsonLayer
+        key="poligono-layer"
         id="poligono"
         data={poligono}
         filled={true}
         getFillColor={[0, 0, 0, 0]}
         getLineColor={[255, 0, 0, 255]}
         getLineWidth={10}
+        layers
       />
-      {/* Layer de color gris abajo del amarillo  */}
       {dataLots && selectedLots && (
         <GeoJsonLayer
+          key="geojson-layer"
           id="geojson-layer"
           data={dataLots.features.filter((x) => dictData[x.properties["ID"]])}
           filled={true}
@@ -278,6 +281,7 @@ export const CustomMap = ({
       )}
       {circleGeoJson && !activeSketch && (
         <GeoJsonLayer
+          key="circle-layer"
           id="circle"
           data={circleGeoJson}
           filled={true}
@@ -286,15 +290,13 @@ export const CustomMap = ({
           getLineWidth={5}
         />
       )}
-
-      {/* Layer de color amarillo */}
       {opacities.building > 0 && dataBuildings && (
         <GeoJsonLayer
+          key="building-layer"
           id="building-layer"
           data={dataBuildings}
           filled={true}
           extruded={true}
-          // getElevation={(d) => dictData[d.properties['ID']].ALTURA * 20}
           getElevation={3}
           getLineWidth={0}
           getFillColor={[255, 255, 0, 100]}
@@ -303,6 +305,7 @@ export const CustomMap = ({
       )}
       {opacities.green > 0 && dataGreen && (
         <GeoJsonLayer
+          key="green-layer"
           id="green-layer"
           data={dataGreen}
           filled={true}
@@ -313,6 +316,7 @@ export const CustomMap = ({
       )}
       {opacities.parking > 0 && dataParking && (
         <GeoJsonLayer
+          key="parking-layer"
           id="parking-layer"
           data={dataParking}
           filled={true}
@@ -323,6 +327,7 @@ export const CustomMap = ({
       )}
       {opacities.equipment > 0 && dataEquipment && (
         <GeoJsonLayer
+          key="equipment-layer"
           id="equipment-layer"
           data={dataEquipment}
           filled={true}
@@ -333,6 +338,7 @@ export const CustomMap = ({
       )}
       {opacities.park > 0 && dataPark && (
         <GeoJsonLayer
+          key="park-layer"
           id="park-layer"
           data={dataPark}
           filled={true}
@@ -342,6 +348,7 @@ export const CustomMap = ({
         />
       )}
       <GeoJsonLayer
+        key="establishments-layer"
         id="establishments-layer"
         data={dataEstablishments}
         filled={true}
@@ -359,8 +366,7 @@ export const CustomMap = ({
             <b>Nombre:</b> {hoverInfo.object.properties["nom_estab"]}
           </span>
           <span className="tooltip-label">
-            <b>Numero de Trabajadores:</b>{" "}
-            {hoverInfo.object.properties["num_workers"]}
+            <b>Numero de Trabajadores:</b> {hoverInfo.object.properties["num_workers"]}
           </span>
           <span className="tooltip-label">
             <b>Sector:</b> {hoverInfo.object.properties["sector"]}
