@@ -50,6 +50,11 @@ function App() {
   const [viewPotentialToggle, setViewPotentialToggle] = useState(false);
   const project = window.location.pathname.split("/")[1];
 
+  // if project is undefined, redirect to /primavera
+  if (project === "") {
+    window.location.href = "/primavera";
+  }
+
 
   const handleIsActive = () => 
   {
