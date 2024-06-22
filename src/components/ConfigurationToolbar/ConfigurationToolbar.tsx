@@ -116,7 +116,7 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
       <h1>Tipo de Info</h1>
       <Select
         onChange={(e) =>
-          setConfiguration({ ...configuration, metric: e.target.value })
+          setConfiguration({ ...configuration, metric: e.target.value, condition: "" })
         }
         value={
           COLUMN_MAPPING[configuration.metric] && !configuration.condition
@@ -181,103 +181,53 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
         </Accordion>
       )}
       <br />
+      <Switch
+        isChecked={configuration.opacities.building > 0}
+        onChange={(e) =>
+          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, building: e.target.checked ? 1 : 0 } })
+        }
+      />
       Edificios
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.building}
+      <br />
+      <Switch
+        isChecked={configuration.opacities.parking > 0}
         onChange={(e) =>
-          setConfiguration({
-            ...configuration,
-            opacities: { ...configuration.opacities, building: e },
-          })
+          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, parking: e.target.checked ? 1 : 0 } })
         }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
+      />
       Estacionamientos
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.parking}
+      <br />
+      <Switch
+        isChecked={configuration.opacities.park > 0}
         onChange={(e) =>
-          setConfiguration({
-            ...configuration,
-            opacities: { ...configuration.opacities, parking: e },
-          })
+          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, park: e.target.checked ? 1 : 0 } })
         }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
+      />
       Parques
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.park}
+      <br />
+      <Switch
+        isChecked={configuration.opacities.green > 0}
         onChange={(e) =>
-          setConfiguration({
-            ...configuration,
-            opacities: { ...configuration.opacities, park: e },
-          })
+          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, green: e.target.checked ? 1 : 0 } })
         }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
+      />
       Áreas Vegetación
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.green}
+      <br />
+      <Switch
+        isChecked={configuration.opacities.equipment > 0}
         onChange={(e) =>
-          setConfiguration({
-            ...configuration,
-            opacities: { ...configuration.opacities, green: e },
-          })
+          setConfiguration({ ...configuration, opacities: { ...configuration.opacities, equipment: e.target.checked ? 1 : 0 } })
         }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
+      />
       Equipamientos
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.equipment}
-        onChange={(e) =>
-          setConfiguration({
-            ...configuration,
-            opacities: { ...configuration.opacities, equipment: e },
-          })
-        }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
-      Vista Satelital
+      <br />
       <Switch
         isChecked={configuration.isSatellite}
         onChange={(e) =>
           setConfiguration({ ...configuration, isSatellite: e.target.checked })
         }
       />
+      Vista Satelital
     </Box>
   );
 };
