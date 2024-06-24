@@ -33,21 +33,24 @@ interface ConfigurationToolbarProps {
   configuration: GenericObject;
   supermercados: Configuration;
 
-  setConfiguration:  React.Dispatch<React.SetStateAction<GenericObject>>
-  setParques:  React.Dispatch<React.SetStateAction<Configuration>>
-  setSalud:  React.Dispatch<React.SetStateAction<Configuration>>
-  setEducacion:  React.Dispatch<React.SetStateAction<Configuration>>
-  setServicios:  React.Dispatch<React.SetStateAction<Configuration>>
-  setSupermercados: React.Dispatch<React.SetStateAction<Configuration>>
+  setConfiguration: React.Dispatch<React.SetStateAction<GenericObject>>;
+  setParques: React.Dispatch<React.SetStateAction<Configuration>>;
+  setSalud: React.Dispatch<React.SetStateAction<Configuration>>;
+  setEducacion: React.Dispatch<React.SetStateAction<Configuration>>;
+  setServicios: React.Dispatch<React.SetStateAction<Configuration>>;
+  setSupermercados: React.Dispatch<React.SetStateAction<Configuration>>;
 }
 
-const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
+const ConfigurationToolbar = ({
+  configuration,
+  setConfiguration,
+  setParques,
   supermercados,
   setSalud,
   setEducacion,
   setServicios,
-  setSupermercados }: ConfigurationToolbarProps ) => {
-
+  setSupermercados,
+}: ConfigurationToolbarProps) => {
   const proximityOptions: GenericObject = {
     proximity_small_park: 1,
     proximity_salud: 2,
@@ -58,7 +61,9 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
 
   const handleProximityChange = (type: string, value: any, key: string) => {
     // Create a copy of the current accessibility_info
-    const updatedAccessibilityInfo: GenericObject = { ...configuration.accessibility_info };
+    const updatedAccessibilityInfo: GenericObject = {
+      ...configuration.accessibility_info,
+    };
 
     if (type === "checkbox") {
       if (value) {
@@ -70,19 +75,19 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
         delete updatedAccessibilityInfo[key];
       }
       switch (key) {
-        case 'proximity_small_park':
+        case "proximity_small_park":
           setParques((prev) => ({ ...prev, activated: value }));
           break;
-        case 'proximity_salud':
+        case "proximity_salud":
           setSalud((prev) => ({ ...prev, activated: value }));
           break;
-        case 'proximity_educacion':
+        case "proximity_educacion":
           setEducacion((prev) => ({ ...prev, activated: value }));
           break;
-        case 'proximity_servicios':
+        case "proximity_servicios":
           setServicios((prev) => ({ ...prev, activated: value }));
           break;
-        case 'proximity_supermercado':
+        case "proximity_supermercado":
           setSupermercados((prev) => ({ ...prev, activated: value }));
           break;
         default:
@@ -116,7 +121,11 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
       <h1>Tipo de Info</h1>
       <Select
         onChange={(e) =>
-          setConfiguration({ ...configuration, metric: e.target.value })
+          setConfiguration({
+            ...configuration,
+            metric: e.target.value,
+            condition: "",
+          })
         }
         value={
           COLUMN_MAPPING[configuration.metric] && !configuration.condition
@@ -181,103 +190,79 @@ const ConfigurationToolbar = ({ configuration, setConfiguration,  setParques,
         </Accordion>
       )}
       <br />
-      Edificios
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.building}
+      <Switch
+        isChecked={configuration.visible.building}
         onChange={(e) =>
           setConfiguration({
             ...configuration,
-            opacities: { ...configuration.opacities, building: e },
+            visible: { ...configuration.visible, building: e.target.checked },
           })
         }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
+      />
+      Edificios Actuales
+      <br />
+      <Switch
+        isChecked={configuration.visible.potential_building}
+        onChange={(e) =>
+          setConfiguration({
+            ...configuration,
+            visible: { ...configuration.visible, potential_building: e.target.checked },
+          })
+        }
+      />
+      Potencial Edificios
+      <br />
+      <Switch
+        isChecked={configuration.visible.parking}
+        onChange={(e) =>
+          setConfiguration({
+            ...configuration,
+            visible: { ...configuration.visible, parking: e.target.checked },
+          })
+        }
+      />
       Estacionamientos
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.parking}
+      <br />
+      <Switch
+        isChecked={configuration.visible.park}
         onChange={(e) =>
           setConfiguration({
             ...configuration,
-            opacities: { ...configuration.opacities, parking: e },
+            visible: { ...configuration.visible, park: e.target.checked },
           })
         }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
+      />
       Parques
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.park}
+      <br />
+      <Switch
+        isChecked={configuration.visible.green}
         onChange={(e) =>
           setConfiguration({
             ...configuration,
-            opacities: { ...configuration.opacities, park: e },
+            visible: { ...configuration.visible, green: e.target.checked },
           })
         }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
+      />
       Áreas Vegetación
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.green}
+      <br />
+      <Switch
+        isChecked={configuration.visible.equipment}
         onChange={(e) =>
           setConfiguration({
             ...configuration,
-            opacities: { ...configuration.opacities, green: e },
+            visible: { ...configuration.visible, equipment: e.target.checked },
           })
         }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
+      />
       Equipamientos
-      <Slider
-        min={0}
-        max={1}
-        step={0.1}
-        value={configuration.opacities.equipment}
-        onChange={(e) =>
-          setConfiguration({
-            ...configuration,
-            opacities: { ...configuration.opacities, equipment: e },
-          })
-        }
-      >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
-      Vista Satelital
+      <br />
       <Switch
         isChecked={configuration.isSatellite}
         onChange={(e) =>
           setConfiguration({ ...configuration, isSatellite: e.target.checked })
         }
       />
+      Vista Satelital
     </Box>
   );
 };
