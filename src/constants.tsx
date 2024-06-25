@@ -19,6 +19,8 @@ export const INITIAL_STATE = {
   maxZoom: 22,
 };
 
+export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
+
 export const COLUMN_MAPPING: GenericObject = {
   ID: "Clave de Lote",
   POBTOT: "Población Total",

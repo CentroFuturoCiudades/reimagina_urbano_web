@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Radio, RadioGroup, Stack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import axios from "axios";
@@ -8,11 +8,12 @@ import { CustomMap } from "./CustomMap";
 import { API_URL } from "./constants";
 import "./App.css";
 import { Chat, LotSidebar, ConfigurationToolbar } from "./components";
-import {Icon, IconButton} from '@chakra-ui/react';
+import { Icon, IconButton } from "@chakra-ui/react";
 import { MdAdd, MdOutlineMotionPhotosOff } from "react-icons/md";
 import React from "react";
 import { Configuration, GenericObject } from "./types";
-//import Legend from "./Legend"; 
+import { LensMap } from "./LensMap";
+//import Legend from "./Legend";
 
 function App() {
   const [isActive, setIsActive] = useState(false);
@@ -42,24 +43,28 @@ function App() {
   });
   // console.log(selectedLots); // igual a selected Ids
   const [coords, setCoords] = useState();
-  const [parques, setParques] = useState<Configuration>({ activated: true, value: 0 });
+  const [parques, setParques] = useState<Configuration>({
+    activated: true,
+    value: 0,
+  });
   const [salud, setSalud] = useState({ activated: true, value: 0 });
   const [educacion, setEducacion] = useState({ activated: true, value: 0 });
   const [servicios, setServicios] = useState({ activated: true, value: 0 });
-  const [supermercados, setSupermercados] = useState({ activated: true, value: 0 });
-  const [viewPotentialToggle, setViewPotentialToggle] = useState(false);
+  const [supermercados, setSupermercados] = useState({
+    activated: true,
+    value: 0,
+  });
   const project = window.location.pathname.split("/")[1];
+  const [mode, setMode] = useState("analysis");
 
   // if project is undefined, redirect to /primavera
   if (project === "") {
     window.location.href = "/primavera";
   }
 
-
-  const handleIsActive = () => 
-  {
-    setIsActive((isActive)=> !isActive)
-  }
+  const handleIsActive = () => {
+    setIsActive((isActive) => !isActive);
+  };
 
   useEffect(() => {
     async function updateProject() {
@@ -90,14 +95,13 @@ function App() {
     fetchData();
   }, [selectedLots, coords]);
 
-  useEffect(()=>{
-    if(isActive)
-      setSelectedLots([])
-  },[isActive])
+  useEffect(() => {
+    if (isActive) setSelectedLots([]);
+  }, [isActive]);
 
   useEffect(() => {
     async function fetchData() {
-      // console.log(configuration.metric); // wasteful_ratio, la metrica que se muestra 
+      // console.log(configuration.metric); // wasteful_ratio, la metrica que se muestra
       const response = await axios.post(`${API_URL}/query`, {
         metric: configuration.metric,
         condition: configuration.condition,
@@ -123,18 +127,31 @@ function App() {
           })
         }
       /> */}
-      <CustomMap
-        aggregatedInfo={aggregatedInfo}
-        data={data}
-        selectedLots={selectedLots}
-        setSelectedLots={ setSelectedLots }
-        visible={configuration.visible}
-        coords={coords}
-        metric={configuration.metric}
-        activeSketch={isActive}
-        isSatellite={configuration.isSatellite}
-        viewPotentialToggle={viewPotentialToggle}
-      />
+      {mode === "explore" ? (
+        <LensMap
+          aggregatedInfo={aggregatedInfo}
+          data={data}
+          selectedLots={selectedLots}
+          setSelectedLots={setSelectedLots}
+          visible={configuration.visible}
+          coords={coords}
+          metric={configuration.metric}
+          activeSketch={isActive}
+          isSatellite={configuration.isSatellite}
+        />
+      ) : (
+        <CustomMap
+          aggregatedInfo={aggregatedInfo}
+          data={data}
+          selectedLots={selectedLots}
+          setSelectedLots={setSelectedLots}
+          visible={configuration.visible}
+          coords={coords}
+          metric={configuration.metric}
+          activeSketch={isActive}
+          isSatellite={configuration.isSatellite}
+        />
+      )}
       <ConfigurationToolbar
         configuration={configuration}
         setConfiguration={setConfiguration}
@@ -145,17 +162,37 @@ function App() {
         setServicios={setServicios}
         setSupermercados={setSupermercados}
       />
+      <RadioGroup
+        onChange={setMode}
+        value={mode}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "500px",
+        }}
+      >
+        <Stack direction="row">
+          <Radio value="analysis">Analizar</Radio>
+          <Radio value="explore">Explorar</Radio>
+        </Stack>
+      </RadioGroup>
       <div
         style={{
           position: "absolute",
-          top: '20px',
-          right: '100px',
-          marginRight: '250px'
+          top: "20px",
+          right: "100px",
+          marginRight: "250px",
         }}
       >
-      <IconButton
+        <IconButton
           aria-label=""
-          icon={isActive ? (<Icon as={MdOutlineMotionPhotosOff} />):(<Icon as={MdAdd} />)}
+          icon={
+            isActive ? (
+              <Icon as={MdOutlineMotionPhotosOff} />
+            ) : (
+              <Icon as={MdAdd} />
+            )
+          }
           size="lg"
           colorScheme={isActive ? "red" : "blue"}
           isRound
@@ -184,11 +221,9 @@ function App() {
             educacion={educacion}
             servicios={servicios}
             supermercados={supermercados}
-            setViewPotentialToggle={setViewPotentialToggle}
           />
         </Box>
       )}
-      
     </div>
   );
 }
