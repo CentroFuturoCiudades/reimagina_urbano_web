@@ -33,7 +33,8 @@ export const CustomMap = ({
   const [mode, setMode] = useState(new DrawPolygonMode());
   const [editableLayers, setEditableLayers] = useState([]);
   const { data: dataLots } = useFetchGeo(`${BLOB_URL}/${project}/lots.fgb`);
-  console.log(dataLots)
+  const [ isLotsReady, setLotsReady ] = useState( false );
+  const [ thisSelectedLots, setThisSelectedLots ] = useState([])
 
   // let abortController = new AbortController();
   // useEffect(() => {
@@ -93,6 +94,13 @@ export const CustomMap = ({
       }, {}),
     [data, metric]
   );
+
+  useEffect(()=> {
+    if( dataLots && dataLots.features.length > 0 && data?.length ){
+      setLotsReady( true );
+    }
+      
+  }, [ dataLots, data ])
 
   // Memoized filtered GeoJSON data
   // const filteredGeoJsonData = useMemo(() => {
@@ -161,6 +169,7 @@ export const CustomMap = ({
       console.log(selectedData);
 
       setSelectedLots(selectedData);
+      setThisSelectedLots( selectedData );
 
       // Set the existing editable layer to ViewMode
       setEditableLayers((layers) =>
@@ -284,7 +293,7 @@ export const CustomMap = ({
         />
       )} */}
       {/* Layer de color gris abajo del amarillo  */}
-      {dataLots && selectedLots && (
+      { dataLots && thisSelectedLots && isLotsReady && getFillColor && (
         <GeoJsonLayer
           key="geojson-layer"
           id="geojson-layer"
@@ -296,7 +305,7 @@ export const CustomMap = ({
           pickable={true}
           autoHighlight={true}
           highlightColor={(d) => {
-            return selectedLots.includes(d.object.properties["ID"])
+            return thisSelectedLots.includes(d.object.properties["ID"])
               ? [255, 0, 0, 150]
               : [255, 0, 0, 70];
           }}
@@ -318,7 +327,7 @@ export const CustomMap = ({
           </span>
         </Tooltip>
       )}
-      {dataLots && dataLots.length > 0 && (
+      { isLotsReady && (
         <Legend
           colors={colors}
           domain={domain}

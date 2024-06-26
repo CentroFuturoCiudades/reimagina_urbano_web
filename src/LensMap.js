@@ -53,7 +53,7 @@ export const LensMap = ({
   const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
   const [hoverInfo, setHoverInfo] = useState();
   const [hoverCenter, setHoverCenter] = useState(null);
-  const [brushingRadius, setBrushingRadius] = useState(500); //radio esta en metros
+  const [brushingRadius, setBrushingRadius] = useState(400); //radio esta en metros
   const [maxHeightMap, setMaxHeightMap] = useState(new Map());
   const [numFloorsMap, setNumFloorsMap] = useState(new Map());
 

@@ -13,6 +13,7 @@ import { MdAdd, MdOutlineMotionPhotosOff } from "react-icons/md";
 import React from "react";
 import { Configuration, GenericObject } from "./types";
 import { LensMap } from "./LensMap";
+import { useFetchGeo } from "./utils";
 //import Legend from "./Legend";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
   const [data, setData] = useState([]);
   const [selectedLots, setSelectedLots] = useState<string[]>([]);
   const [aggregatedInfo, setAggregatedInfo] = useState<GenericObject>();
+  const [minutesData, setMinutesData] = useState<GenericObject>();
   const [configuration, setConfiguration] = useState<GenericObject>({
     condition: undefined,
     metric: "wasteful_ratio",
@@ -65,6 +67,31 @@ function App() {
   const handleIsActive = () => {
     setIsActive((isActive) => !isActive);
   };
+
+  useEffect( ()=> {
+    const url = `http://127.0.0.1:8000/minutes`;
+
+    const body = {
+      "accessibility_info": {
+        "proximity_small_park": 2,
+        "proximity_salud": 2,
+        "proximity_educacion": 1,
+        "proximity_servicios": 5,
+        "proximity_supermercado": 1
+      }
+    }
+
+    fetch(url, 
+      { 
+        method: "POST", 
+        body: JSON.stringify( body ),
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }).then( (response) => {
+        console.log( response );
+      } )
+  }, [])
 
   useEffect(() => {
     async function updateProject() {
@@ -166,6 +193,10 @@ function App() {
         onChange={setMode}
         value={mode}
         style={{
+          boxShadow: "2px 2px 2px 1px rgba(0, 0, 0, 0.2)",
+          background: "white",
+          padding: "0.75rem 1rem",
+          borderRadius: "1rem",
           position: "absolute",
           top: "20px",
           right: "500px",
