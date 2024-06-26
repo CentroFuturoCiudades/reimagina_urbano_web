@@ -3,7 +3,7 @@ import { BLOB_URL, INITIAL_STATE } from "./constants";
 import { useFetch } from "./utils";
 
 import * as turf from "@turf/turf";
-import { DeckGL, GeoJsonLayer } from "deck.gl";
+import { DeckGL, GeoJsonLayer, TextLayer } from "deck.gl";
 import { Map as StaticMap } from "react-map-gl";
 import { Tooltip, Legend } from "./components";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
@@ -51,6 +51,9 @@ export const LensMap = ({
 }) => {
   const project = window.location.pathname.split("/")[1];
   const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
+  const { data: coloniasData } = useFetch(
+    `${BLOB_URL}/${project}/colonias.geojson`
+  );
   const [hoverInfo, setHoverInfo] = useState();
   const [hoverCenter, setHoverCenter] = useState(null);
   const [brushingRadius, setBrushingRadius] = useState(400); //radio esta en metros
@@ -115,10 +118,14 @@ export const LensMap = ({
         .filter((metric) => visible[metric] && metricsMapping[metric])
         .forEach((metric) => params.append("metrics", metricsMapping[metric]));
       const url = `http://127.0.0.1:8000/lens?${params.toString()}`;
-      const response = await fetch(url, { signal: abortController.signal });
-      const arrayBuffer = await response.arrayBuffer();
-      const data = await load(arrayBuffer, FlatGeobufLoader);
-      setOriginalData(data);
+      try {
+        const response = await fetch(url, { signal: abortController.signal });
+        const arrayBuffer = await response.arrayBuffer();
+        const data = await load(arrayBuffer, FlatGeobufLoader);
+        setOriginalData(data);
+      } catch (error) {
+        console.error(error);
+      }
     }
     fetchData();
   }, [hoverCenter]);
@@ -159,13 +166,12 @@ export const LensMap = ({
   const handleHover = useCallback((info) => {
     if (info.coordinate) {
       setHoverCenter([info.coordinate[0], info.coordinate[1]]);
-      console.log("center", [info.coordinate[0], info.coordinate[1]]);
     } else {
       setHoverCenter(null);
     }
   }, []);
 
-  const debouncedHover = useCallback(debounce(handleHover, 50), [handleHover]);
+  const debouncedHover = useCallback(debounce(handleHover, 100), [handleHover]);
 
   const colors = useMemo(() => {
     if (!dataLots) return [];
@@ -363,6 +369,31 @@ export const LensMap = ({
           domain={domain}
           metric={metric}
           legendTitles={legendTitles}
+        />
+      )}
+      {coloniasData && (
+        <TextLayer
+          id="municipios-text-layer"
+          data={coloniasData.features}
+          getPosition={(d) => [d.properties.longitude, d.properties.latitude]}
+          getText={(d) => d.properties.NOM_COL}
+          sizeUnits="pixels"
+          getSize={10}
+          backgroundPadding={[10, 10, 10, 10]}
+          fontWeight={600}
+          getPixelOffset={[0, -10]}
+          getColor={[0, 0, 0, 150]}
+          fontFamily="Inter, Courier, monospace"
+        />
+      )}
+      {coloniasData && (
+        <GeoJsonLayer
+          id="colonias-layer"
+          data={coloniasData.features}
+          filled={false}
+          stroked={true}
+          getLineColor={[40, 40, 80, 100]}
+          getLineWidth={5}
         />
       )}
     </DeckGL>
