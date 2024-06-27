@@ -15,6 +15,11 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Tag,
   TagCloseButton,
   TagLabel,
@@ -74,7 +79,7 @@ export const LotSidebar = ({
   ];
   return (
     <>
-      <Container m={2}>
+      <Container m={2}  width="90%">
         <Heading size="sm">Lotes</Heading>
         <Stack direction="row">
           {selectedLots.map((lot) => (
@@ -95,7 +100,7 @@ export const LotSidebar = ({
           ))}
         </Stack>
       </Container>
-      <Accordion defaultIndex={[0, 1, 2]} allowMultiple>
+      <Accordion defaultIndex={[0, 1, 2, 3]} allowMultiple>
         <AccordionItem>
           <AccordionButton>
             <AccordionIcon />
@@ -126,15 +131,14 @@ export const LotSidebar = ({
                     color="red.400"
                   >
                     <CircularProgressLabel>
-                      {(aggregatedInfo["underutilized_ratio"] * 100).toFixed(0)}
-                      %
+                      {(aggregatedInfo["underutilized_ratio"] * 100).toFixed(0)}%
                     </CircularProgressLabel>
                   </CircularProgress>
                 </Stat>
               </Box>
               <Box mx={3}>
                 <Stat>
-                  <StatLabel>Accesibildad a Servicios</StatLabel>
+                  <StatLabel>Accesibilidad a Servicios</StatLabel>
                   <CircularProgress
                     size="80px"
                     value={aggregatedInfo["minutes"] * 100}
@@ -227,12 +231,9 @@ export const LotSidebar = ({
                 <StatLabel>Número de Establecimientos</StatLabel>
                 <StatNumber>
                   <Icon as={FaBuilding} />
-                  {aggregatedInfo["num_establishments"].toLocaleString(
-                    "es-MX",
-                    {
-                      maximumFractionDigits: 0,
-                    }
-                  )}
+                  {aggregatedInfo["num_establishments"].toLocaleString("es-MX", {
+                    maximumFractionDigits: 0,
+                  })}
                 </StatNumber>
               </Stat>
               <Stat>
@@ -250,59 +251,89 @@ export const LotSidebar = ({
         <AccordionItem>
           <AccordionButton>
             <AccordionIcon />
-            <Heading size="md">Accesibildad a Servicios</Heading>
+            <Heading size="md">Accesibilidad a Servicios</Heading>
           </AccordionButton>
           <AccordionPanel pb={4}>
-      <SimpleGrid columns={2} spacing={5}>
-        {supermercados.activated && (
-          <Stat>
-            <StatLabel>Comercio al por menor</StatLabel>
-            <StatNumber>
-              <Icon as={FaShoppingCart} />
-              {aggregatedInfo["minutes_proximity_comercio"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-        {servicios.activated && (
-          <Stat>
-            <StatLabel>Servicios</StatLabel>
-            <StatNumber>
-              <Icon as={FaShoppingCart} />
-              {aggregatedInfo["minutes_proximity_servicios"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-        {salud.activated && (
-          <Stat>
-            <StatLabel>Salud</StatLabel>
-            <StatNumber>
-              <Icon as={FaStethoscope} />
-              {aggregatedInfo["minutes_proximity_salud"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-        {educacion.activated && (
-          <Stat>
-            <StatLabel>Educación</StatLabel>
-            <StatNumber>
-              <Icon as={MdSchool} />
-              {aggregatedInfo["minutes_proximity_educacion"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-        {servicios.activated && (
-          <Stat>
-            <StatLabel>Minutos</StatLabel>
-            <StatNumber>
-              <Icon as={MdOutlineRestaurant} />
-              {aggregatedInfo["minutes"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-      </SimpleGrid>
-    </AccordionPanel>
+            <SimpleGrid columns={2} spacing={5}>
+              {supermercados.activated && (
+                <Stat>
+                  <StatLabel>Comercio al por menor</StatLabel>
+                  <StatNumber>
+                    <Icon as={FaShoppingCart} />
+                    {aggregatedInfo["minutes_proximity_comercio"]?.toFixed(0)} min
+                  </StatNumber>
+                </Stat>
+              )}
+              {servicios.activated && (
+                <Stat>
+                  <StatLabel>Servicios</StatLabel>
+                  <StatNumber>
+                    <Icon as={FaShoppingCart} />
+                    {aggregatedInfo["minutes_proximity_servicios"]?.toFixed(0)} min
+                  </StatNumber>
+                </Stat>
+              )}
+              {salud.activated && (
+                <Stat>
+                  <StatLabel>Salud</StatLabel>
+                  <StatNumber>
+                    <Icon as={FaStethoscope} />
+                    {aggregatedInfo["minutes_proximity_salud"]?.toFixed(0)} min
+                  </StatNumber>
+                </Stat>
+              )}
+              {educacion.activated && (
+                <Stat>
+                  <StatLabel>Educación</StatLabel>
+                  <StatNumber>
+                    <Icon as={MdSchool} />
+                    {aggregatedInfo["minutes_proximity_educacion"]?.toFixed(0)} min
+                  </StatNumber>
+                </Stat>
+              )}
+              {servicios.activated && (
+                <Stat>
+                  <StatLabel>Minutos</StatLabel>
+                  <StatNumber>
+                    <Icon as={MdOutlineRestaurant} />
+                    {aggregatedInfo["minutes"]?.toFixed(0)} min
+                  </StatNumber>
+                </Stat>
+              )}
+            </SimpleGrid>
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <AccordionButton>
+            <AccordionIcon />
+            <Heading size="md">Secciones Adicionales</Heading>
+          </AccordionButton>
+          <AccordionPanel pb={4}>
+            <Tabs variant="soft-rounded" colorScheme="green">
+              <TabList>
+                <Tab>Población</Tab>
+                <Tab>Uso de Suelo</Tab>
+                <Tab>Infraestructura</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <p>Contenido de Población</p>
+                  {/* Agrega el contenido específico de Población aquí */}
+                </TabPanel>
+                <TabPanel>
+                  <p>Contenido de Uso de Suelo</p>
+                  {/* Agrega el contenido específico de Uso de Suelo aquí */}
+                </TabPanel>
+                <TabPanel>
+                  <p>Contenido de Infraestructura</p>
+                  {/* Agrega el contenido específico de Infraestructura aquí */}
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </AccordionPanel>
         </AccordionItem>
       </Accordion>
     </>
   );
+  
 };

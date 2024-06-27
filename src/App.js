@@ -14,6 +14,7 @@ import {Icon, IconButton} from '@chakra-ui/react';
 import { MdAdd, MdDelete, MdEdit, MdOutlineMotionPhotosOff } from "react-icons/md";
 import Legend from "./Legend"; 
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes"; 
+import {  Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 
 function App() {
   const [isActive, setIsActive] = useState(false);
@@ -200,7 +201,7 @@ function App() {
         <Box
           style={{
             position: "absolute",
-            width: "25%",
+            width: "30%",
             height: "100dvh",
             left: 0,
             backgroundColor: "rgba(255, 255, 255, 0.9)",
@@ -221,7 +222,7 @@ function App() {
           />
         </Box>
       )}
-      
+       
     </div>
   );
 }
