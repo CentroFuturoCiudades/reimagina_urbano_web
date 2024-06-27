@@ -46,7 +46,6 @@ export const LensMap = ({
   visible,
   coords,
   metric,
-  activeSketch,
   isSatellite,
 }) => {
   const project = window.location.pathname.split("/")[1];
@@ -122,6 +121,8 @@ export const LensMap = ({
         const response = await fetch(url, { signal: abortController.signal });
         const arrayBuffer = await response.arrayBuffer();
         const data = await load(arrayBuffer, FlatGeobufLoader);
+        const idsFromCircle = data.features.map((feature) => feature.properties.ID);
+        setSelectedLots(idsFromCircle);
         setOriginalData(data);
       } catch (error) {
         console.error(error);
@@ -192,9 +193,7 @@ export const LensMap = ({
 
     return (d) => {
       const color = d3.color(quantiles(dictData[d.properties["ID"]])).rgb();
-      return selectedLots.includes(d.properties["ID"])
-        ? [255, 0, 0, 150]
-        : [color.r, color.g, color.b];
+      return [color.r, color.g, color.b];
     };
   }, [dataLots, domain, colors, selectedLots, dictData]);
 
@@ -270,7 +269,7 @@ export const LensMap = ({
           opacity={isSatellite ? 0.4 : 1}
         />
       )}
-      {circleGeoJson && !activeSketch && (
+      {circleGeoJson && (
         <GeoJsonLayer
           key="circle-layer"
           id="circle"

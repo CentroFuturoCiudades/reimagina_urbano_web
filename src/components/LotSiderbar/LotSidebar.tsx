@@ -30,11 +30,10 @@ import { MdOutlineRestaurant, MdOutlineWork, MdSchool } from "react-icons/md";
 import { renderCustomizedLabel } from "../../utils";
 import { GenericObject } from "../../types";
 
-
 interface LotSidebarProps {
   aggregatedInfo?: GenericObject;
   selectedLots: string[];
-  setSelectedLots: ( arg0: string[] )=> void;
+  setSelectedLots: (arg0: string[]) => void;
 
   parques: any;
   salud: any;
@@ -90,27 +89,6 @@ const LotSidebar = ({
 
   return (
     <>
-      <Container m={2}>
-        <Heading size="sm">Lotes</Heading>
-        <Stack direction="row">
-          {selectedLots.map((lot) => (
-            <Tag
-              size="sm"
-              key={lot}
-              colorScheme="red"
-              borderRadius="full"
-              variant="solid"
-            >
-              <TagLabel>{lot}</TagLabel>
-              <TagCloseButton
-                onClick={() =>
-                  setSelectedLots(selectedLots.filter((x) => x !== lot))
-                }
-              />
-            </Tag>
-          ))}
-        </Stack>
-      </Container>
       <Accordion defaultIndex={[0, 1, 2]} allowMultiple>
         <AccordionItem>
           <AccordionButton>
@@ -150,14 +128,10 @@ const LotSidebar = ({
               </Box>
               <Box mx={3}>
                 <Stat>
-                  <StatLabel>Accesibildad a Servicios</StatLabel>
-                  <CircularProgress
-                    size="80px"
-                    value={aggregatedInfo["minutes"] * 100}
-                    color="red.400"
-                  >
+                  <StatLabel>Porcentaje con carro</StatLabel>
+                  <CircularProgress size="80px" value={50} color="red.400">
                     <CircularProgressLabel>
-                      {aggregatedInfo["minutes"].toFixed(0)} min
+                      {(aggregatedInfo["car_ratio"] * 100).toFixed(0)}%
                     </CircularProgressLabel>
                   </CircularProgress>
                 </Stat>
@@ -269,54 +243,63 @@ const LotSidebar = ({
             <Heading size="md">Accesibildad a Servicios</Heading>
           </AccordionButton>
           <AccordionPanel pb={4}>
-      <SimpleGrid columns={2} spacing={5}>
-        {supermercados.activated && (
-          <Stat>
-            <StatLabel>Comercio al por menor</StatLabel>
-            <StatNumber>
-              <Icon as={FaShoppingCart} />
-              {aggregatedInfo["minutes_proximity_comercio"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-        {servicios.activated && (
-          <Stat>
-            <StatLabel>Servicios</StatLabel>
-            <StatNumber>
-              <Icon as={FaShoppingCart} />
-              {aggregatedInfo["minutes_proximity_servicios"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-        {salud.activated && (
-          <Stat>
-            <StatLabel>Salud</StatLabel>
-            <StatNumber>
-              <Icon as={FaStethoscope} />
-              {aggregatedInfo["minutes_proximity_salud"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-        {educacion.activated && (
-          <Stat>
-            <StatLabel>Educación</StatLabel>
-            <StatNumber>
-              <Icon as={MdSchool} />
-              {aggregatedInfo["minutes_proximity_educacion"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-        {servicios.activated && (
-          <Stat>
-            <StatLabel>Minutos</StatLabel>
-            <StatNumber>
-              <Icon as={MdOutlineRestaurant} />
-              {aggregatedInfo["minutes"]?.toFixed(0)} min
-            </StatNumber>
-          </Stat>
-        )}
-      </SimpleGrid>
-    </AccordionPanel>
+            <SimpleGrid columns={2} spacing={5}>
+              {supermercados.activated && (
+                <Stat>
+                  <StatLabel>Comercio al por menor</StatLabel>
+                  <StatNumber>
+                    <Icon as={FaShoppingCart} />
+                    {aggregatedInfo["minutes_proximity_comercio"]?.toFixed(
+                      0
+                    )}{" "}
+                    min
+                  </StatNumber>
+                </Stat>
+              )}
+              {servicios.activated && (
+                <Stat>
+                  <StatLabel>Servicios</StatLabel>
+                  <StatNumber>
+                    <Icon as={FaShoppingCart} />
+                    {aggregatedInfo["minutes_proximity_servicios"]?.toFixed(
+                      0
+                    )}{" "}
+                    min
+                  </StatNumber>
+                </Stat>
+              )}
+              {salud.activated && (
+                <Stat>
+                  <StatLabel>Salud</StatLabel>
+                  <StatNumber>
+                    <Icon as={FaStethoscope} />
+                    {aggregatedInfo["minutes_proximity_salud"]?.toFixed(0)} min
+                  </StatNumber>
+                </Stat>
+              )}
+              {educacion.activated && (
+                <Stat>
+                  <StatLabel>Educación</StatLabel>
+                  <StatNumber>
+                    <Icon as={MdSchool} />
+                    {aggregatedInfo["minutes_proximity_educacion"]?.toFixed(
+                      0
+                    )}{" "}
+                    min
+                  </StatNumber>
+                </Stat>
+              )}
+              {servicios.activated && (
+                <Stat>
+                  <StatLabel>Minutos</StatLabel>
+                  <StatNumber>
+                    <Icon as={MdOutlineRestaurant} />
+                    {aggregatedInfo["minutes"]?.toFixed(0)} min
+                  </StatNumber>
+                </Stat>
+              )}
+            </SimpleGrid>
+          </AccordionPanel>
         </AccordionItem>
       </Accordion>
     </>

@@ -17,14 +17,13 @@ import { useFetchGeo } from "./utils";
 //import Legend from "./Legend";
 
 function App() {
-  const [isActive, setIsActive] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [selectedLots, setSelectedLots] = useState<string[]>([]);
   const [aggregatedInfo, setAggregatedInfo] = useState<GenericObject>();
   const [minutesData, setMinutesData] = useState<any[]>();
   const [configuration, setConfiguration] = useState<GenericObject>({
     condition: undefined,
-    metric: "minutes",
+    metric: "POBTOT",
     isSatellite: false,
     visible: {
       parking: true,
@@ -64,9 +63,6 @@ function App() {
     window.location.href = "/primavera";
   }
 
-  const handleIsActive = () => {
-    setIsActive((isActive) => !isActive);
-  };
   useEffect(() => {
     async function updateProject() {
       await axios.get(`${API_URL}/project/${project}`);
@@ -95,10 +91,6 @@ function App() {
     };
     fetchData();
   }, [selectedLots, coords]);
-
-  useEffect(() => {
-    if (isActive) setSelectedLots([]);
-  }, [isActive]);
 
   useEffect(()=> {
     setMinutesData( [] );
@@ -162,7 +154,6 @@ function App() {
           visible={configuration.visible}
           coords={coords}
           metric={configuration.metric}
-          activeSketch={isActive}
           isSatellite={configuration.isSatellite}
         />
       ) : (
@@ -174,7 +165,6 @@ function App() {
           visible={configuration.visible}
           coords={coords}
           metric={configuration.metric}
-          activeSketch={isActive}
           isSatellite={configuration.isSatellite}
         />
       )}
@@ -189,7 +179,10 @@ function App() {
         setSupermercados={setSupermercados}
       />
       <RadioGroup
-        onChange={setMode}
+        onChange={(v) => {
+          setMode(v);
+          setSelectedLots([]);
+        }}
         value={mode}
         style={{
           boxShadow: "2px 2px 2px 1px rgba(0, 0, 0, 0.2)",
@@ -206,30 +199,7 @@ function App() {
           <Radio value="explore">Explorar</Radio>
         </Stack>
       </RadioGroup>
-      <div
-        style={{
-          position: "absolute",
-          top: "20px",
-          right: "100px",
-          marginRight: "250px",
-        }}
-      >
-        <IconButton
-          aria-label=""
-          icon={
-            isActive ? (
-              <Icon as={MdOutlineMotionPhotosOff} />
-            ) : (
-              <Icon as={MdAdd} />
-            )
-          }
-          size="lg"
-          colorScheme={isActive ? "red" : "blue"}
-          isRound
-          onClick={handleIsActive}
-        />
-      </div>
-      {selectedLots.length > 0 && isActive && (
+      {selectedLots.length > 0 && (
         <Box
           style={{
             position: "absolute",

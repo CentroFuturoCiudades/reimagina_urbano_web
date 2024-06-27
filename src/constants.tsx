@@ -54,4 +54,8 @@ export const COLUMN_MAPPING: GenericObject = {
   combined_score: "Puntuación Combinada",
   minutes: "Minutos",
   accessibility: "Accesibilidad",
+  PEA: "Población Económicamente Activa",
+  P_0A5: "Población de 0 a 5 años",
+  P_65MAS: "Población de 65 años y más",
+  max_home_units: "Unidades Máximas de Vivienda",
 };
