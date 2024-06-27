@@ -24,7 +24,7 @@ function App() {
   const [minutesData, setMinutesData] = useState<GenericObject>();
   const [configuration, setConfiguration] = useState<GenericObject>({
     condition: undefined,
-    metric: "wasteful_ratio",
+    metric: "minutes",
     isSatellite: false,
     visible: {
       parking: true,
@@ -67,32 +67,6 @@ function App() {
   const handleIsActive = () => {
     setIsActive((isActive) => !isActive);
   };
-
-  useEffect( ()=> {
-    const url = `http://127.0.0.1:8000/minutes`;
-
-    const body = {
-      "accessibility_info": {
-        "proximity_small_park": 2,
-        "proximity_salud": 2,
-        "proximity_educacion": 1,
-        "proximity_servicios": 5,
-        "proximity_supermercado": 1
-      }
-    }
-
-    fetch(url, 
-      { 
-        method: "POST", 
-        body: JSON.stringify( body ),
-        headers: {
-          "Content-Type": "application/json",
-        }
-      }).then( (response) => {
-        console.log( response );
-      } )
-  }, [])
-
   useEffect(() => {
     async function updateProject() {
       await axios.get(`${API_URL}/project/${project}`);
@@ -129,12 +103,33 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       // console.log(configuration.metric); // wasteful_ratio, la metrica que se muestra
-      const response = await axios.post(`${API_URL}/query`, {
-        metric: configuration.metric,
-        condition: configuration.condition,
-        accessibility_info: configuration.accessibility_info,
-      });
-      setData(response.data);
+      
+      if( configuration.metric == "minutes" ){
+
+        const url = `${API_URL}/minutes`;
+        const body = {
+          accessibility_info: {
+            proximity_small_park: 2,
+            proximity_salud: 2,
+            proximity_educacion: 1,
+            proximity_servicios: 5,
+            proximity_supermercado: 1
+          }
+        }
+    
+        axios.post(url, body)
+          .then( (response) => {
+            setData(response.data)
+          } )
+
+      } else {
+        const response = await axios.post(`${API_URL}/query`, {
+          metric: configuration.metric,
+          condition: configuration.condition,
+          accessibility_info: configuration.accessibility_info,
+        });
+        setData(response.data);
+      }
     }
     fetchData();
   }, [
