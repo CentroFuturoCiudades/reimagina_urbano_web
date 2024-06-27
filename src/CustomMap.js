@@ -297,7 +297,10 @@ export const CustomMap = ({
         <GeoJsonLayer
           key="geojson-layer"
           id="geojson-layer"
-          data={dataLots}
+          data={dataLots.features.filter(d => {
+            if( getFillColor )
+              return true
+          })}
           filled={true}
           getFillColor={getFillColor}
           getLineWidth={0}

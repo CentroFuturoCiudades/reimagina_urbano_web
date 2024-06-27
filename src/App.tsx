@@ -18,10 +18,10 @@ import { useFetchGeo } from "./utils";
 
 function App() {
   const [isActive, setIsActive] = useState(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any[]>([]);
   const [selectedLots, setSelectedLots] = useState<string[]>([]);
   const [aggregatedInfo, setAggregatedInfo] = useState<GenericObject>();
-  const [minutesData, setMinutesData] = useState<GenericObject>();
+  const [minutesData, setMinutesData] = useState<any[]>();
   const [configuration, setConfiguration] = useState<GenericObject>({
     condition: undefined,
     metric: "minutes",
@@ -100,25 +100,29 @@ function App() {
     if (isActive) setSelectedLots([]);
   }, [isActive]);
 
+  useEffect(()=> {
+    setMinutesData( [] );
+  }, [configuration.accessibility_info])
+
   useEffect(() => {
     async function fetchData() {
       // console.log(configuration.metric); // wasteful_ratio, la metrica que se muestra
       
       if( configuration.metric == "minutes" ){
 
+        if( minutesData && minutesData.length ){
+          setData( minutesData );
+          return;
+        }
+
         const url = `${API_URL}/minutes`;
         const body = {
-          accessibility_info: {
-            proximity_small_park: 2,
-            proximity_salud: 2,
-            proximity_educacion: 1,
-            proximity_servicios: 5,
-            proximity_supermercado: 1
-          }
+          accessibility_info: configuration.accessibility_info
         }
     
         axios.post(url, body)
           .then( (response) => {
+            setMinutesData( response.data );
             setData(response.data)
           } )
 
