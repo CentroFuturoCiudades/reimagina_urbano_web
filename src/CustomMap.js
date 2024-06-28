@@ -67,7 +67,7 @@ export const CustomMap = ({
   //   }
   //   fetchData();
   // }, [hoverCenter]);
-
+  
   useEffect(() => {
     let editableLayer = new EditableGeoJsonLayer({
       id: "editable-layer",
@@ -117,14 +117,13 @@ export const CustomMap = ({
 
   const updateSelectedLots = (info) => {
     if (!activeSketch) {
-      // Si es el primer punto sacar su id
       const lote = info.object.properties["ID"];
       if (selectedLots.includes(lote)) {
         setSelectedLots(selectedLots.filter((lot) => lot !== lote));
       } else {
         setSelectedLots([...selectedLots, lote]);
       }
-      // console.log("selected lots", selectedLots);
+      console.log("selected lots", selectedLots);
     }
   };
 
@@ -181,9 +180,9 @@ export const CustomMap = ({
               id: layer.id,
               mode: new ViewMode(),
             })
-          )
-        );
-        
+        )
+      );
+
       // Create a new editable layer with a unique ID
       const newEditableLayer = new EditableGeoJsonLayer({
         id: `editable-layer-${editableLayers.length + 1}`, // Unique ID for the new editable layer
