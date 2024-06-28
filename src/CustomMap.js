@@ -35,6 +35,7 @@ export const CustomMap = ({
   const { data: dataLots } = useFetchGeo(`${BLOB_URL}/${project}/lots.fgb`);
   const [ isLotsReady, setLotsReady ] = useState( false );
   const [ thisSelectedLots, setThisSelectedLots ] = useState([])
+  const [sketchesCoords, setSketchesCoords] = useState([])
 
   // let abortController = new AbortController();
   // useEffect(() => {
@@ -152,6 +153,10 @@ export const CustomMap = ({
     };
   }, [dataLots, domain, colors, selectedLots, dictData]);
 
+  useEffect(() => {
+    console.log("SketchesCoords: ", sketchesCoords);
+  }, [sketchesCoords])
+
   const handleEdit2 = ({ updatedData, editType, editContext }) => {
     setData2(updatedData);
 
@@ -162,6 +167,7 @@ export const CustomMap = ({
       editType === "finish"
     ) {
       const selectedArea = updatedData.features[0];
+      setSketchesCoords((sketchCoords) => [...sketchCoords, selectedArea.geometry.coordinates])
       console.log(selectedArea);
       const selectedData = dataLots.features
         .filter((feature) => turf.booleanIntersects(selectedArea, feature))
