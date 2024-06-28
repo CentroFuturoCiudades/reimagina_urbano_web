@@ -59,6 +59,7 @@ export const CustomMap = ({
   const [brushingRadius, setBrushingRadius] = useState(500); //radio esta en metros
   const [maxHeightMap, setMaxHeightMap] = useState(new Map());
   const [numFloorsMap, setNumFloorsMap] = useState(new Map());
+  const [sketchesCoords, setSketchesCoords] = useState([])
 
   const [originalData, setOriginalData] = useState({
     type: "FeatureCollection",
@@ -96,6 +97,7 @@ export const CustomMap = ({
 
   let abortController = new AbortController();
   useEffect(() => {
+    // console.log("selectedLots", selectedLots);
     async function fetchData() {
       if (!hoverCenter) {
         setOriginalData({ features: [] });
@@ -206,13 +208,14 @@ export const CustomMap = ({
 
   const updateSelectedLots = (info) => {
     if (!activeSketch) {
+      // Si es el primer punto sacar su id
       const lote = info.object.properties["ID"];
       if (selectedLots.includes(lote)) {
         setSelectedLots(selectedLots.filter((lot) => lot !== lote));
       } else {
         setSelectedLots([...selectedLots, lote]);
       }
-      console.log("selected lots", selectedLots);
+      // console.log("selected lots", selectedLots);
     }
   };
 
@@ -251,12 +254,14 @@ export const CustomMap = ({
       editType === "finish"
     ) {
       const selectedArea = updatedData.features[0];
+      setSketchesCoords((sketchCoords) => [...sketchCoords, selectedArea.geometry.coordinates])
+
       const selectedData = dataLots.features
         .filter((feature) => turf.booleanIntersects(selectedArea, feature))
         .map((feature) => feature.properties.ID);
 
       setSelectedLots(selectedData);
-
+      
       // Set the existing editable layer to ViewMode
       setEditableLayers((layers) =>
         layers.map(
@@ -266,9 +271,9 @@ export const CustomMap = ({
               id: layer.id,
               mode: new ViewMode(),
             })
-        )
-      );
-
+          )
+        );
+        
       // Create a new editable layer with a unique ID
       const newEditableLayer = new EditableGeoJsonLayer({
         id: `editable-layer-${editableLayers.length + 1}`, // Unique ID for the new editable layer
