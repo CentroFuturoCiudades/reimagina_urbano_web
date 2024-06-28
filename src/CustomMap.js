@@ -57,6 +57,7 @@ export const CustomMap = ({
   const [hoverInfo, setHoverInfo] = useState();
   const [hoverCenter, setHoverCenter] = useState(null);
   const [brushingRadius, setBrushingRadius] = useState(500); //radio esta en metros
+  const [isDragging, setIsDragging] = useState(false);
   const [maxHeightMap, setMaxHeightMap] = useState(new Map());
   const [numFloorsMap, setNumFloorsMap] = useState(new Map());
 
@@ -191,6 +192,20 @@ export const CustomMap = ({
 
   const debouncedHover = useCallback(debounce(handleHover, 50), [handleHover]);
 
+
+  const handleStartDrag = (event) => {
+    console.log('entro al start y lo cambio')
+    setIsDragging(true)
+  }
+  const handleDrag = (event) => {
+    console.log('DRAG',event)
+  }
+  
+  const handleEndDrag = (event) => {
+    console.log('entro al start y lo cambio')
+    setIsDragging(false)
+  }
+
   // Memoized filtered GeoJSON data
   const filteredGeoJsonData = useMemo(() => {
     if (!selectedLots || selectedLots.length === 0) {
@@ -323,6 +338,7 @@ export const CustomMap = ({
         longitude: coords["longitud"],
       }}
       controller={true}
+      //controller={{ dragMode: 'pan' }}
       layers={
         activeSketch
           ? [editableLayer]
@@ -342,9 +358,16 @@ export const CustomMap = ({
       })*/
             ]
       }
-      onHover={(info, event) => {
+      /*onHover={(info, event) => {
         debouncedHover(info, event);
+      }}*/
+      onHover= {(info, event) => console.log('Hovered:', info, event)}
+      onDrag={handleDrag}
+      onDragStart={(info) => {
+        console.log('se movio con drag')
       }}
+      onMouseDown={console.log('se movio')}
+      onMouseMove={console.log('se movio2')}
     >
       <StaticMap
         width="100%"
@@ -395,6 +418,10 @@ export const CustomMap = ({
           getFillColor={getFillColor}
           getLineWidth={0}
           onClick={updateSelectedLots}
+          //onDragStart={handleStartDrag}
+          //onDrag={handleDrag}
+          //onDragEnd={handleEndDrag}
+          onHover= {(info, event) => console.log('Hovered:', info, event)}
           pickable={true}
           autoHighlight={true}
           highlightColor={(d) => {
