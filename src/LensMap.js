@@ -268,11 +268,6 @@ export const LensMap = ({
           }}
           getPosition={(d) => d.position}
           opacity={isSatellite ? 0.4 : 1}
-          onDragStart={() => {setIsDrag(true)}}
-          onDragEnd={(info, event) => {
-            setIsDrag(false)
-            debouncedHover(info, event);
-          }}
         />
       )}
       {circleGeoJson && (
@@ -284,6 +279,12 @@ export const LensMap = ({
           getFillColor={[0, 120, 0, 25]}
           getLineColor={[0, 120, 0, 255]}
           getLineWidth={5}
+          pickable={true}
+          onDragStart={() => {setIsDrag(true)}}
+          onDragEnd={(info, event) => {
+            setIsDrag(false)
+            debouncedHover(info, event);
+          }}
         />
       )}
       {visible.building && (
