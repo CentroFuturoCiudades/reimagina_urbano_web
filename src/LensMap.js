@@ -54,10 +54,11 @@ export const LensMap = ({
     `${BLOB_URL}/${project}/colonias.geojson`
   );
   const [hoverInfo, setHoverInfo] = useState();
-  const [hoverCenter, setHoverCenter] = useState([-107.39946642007864,24.75266323048898]);
+  const [hoverCenter, setHoverCenter] = useState([-107.39367959923534, 24.753450686162093]);
   const [brushingRadius, setBrushingRadius] = useState(400); //radio esta en metros
   const [maxHeightMap, setMaxHeightMap] = useState(new Map());
   const [numFloorsMap, setNumFloorsMap] = useState(new Map());
+  const [isDrag, setIsDrag] = useState(false);
 
   const [originalData, setOriginalData] = useState({
     type: "FeatureCollection",
@@ -167,7 +168,6 @@ export const LensMap = ({
   const handleHover = useCallback((info) => {
     if (info.coordinate) {
       setHoverCenter([info.coordinate[0], info.coordinate[1]]);
-      console.log([info.coordinate[0], info.coordinate[1]])
     } else {
       setHoverCenter(null);
     }
@@ -209,10 +209,10 @@ export const LensMap = ({
         latitude: coords["latitud"],
         longitude: coords["longitud"],
       }}
-      controller={true}
-      onHover={(info, event) => {
+      controller={{dragPan: !isDrag}}
+      /*onHover={(info, event) => {
         debouncedHover(info, event);
-      }}
+      }}*/
     >
       <StaticMap
         width="100%"
@@ -268,6 +268,11 @@ export const LensMap = ({
           }}
           getPosition={(d) => d.position}
           opacity={isSatellite ? 0.4 : 1}
+          onDragStart={() => {setIsDrag(true)}}
+          onDragEnd={(info, event) => {
+            setIsDrag(false)
+            debouncedHover(info, event);
+          }}
         />
       )}
       {circleGeoJson && (
