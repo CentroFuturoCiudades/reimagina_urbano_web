@@ -54,7 +54,7 @@ export const LensMap = ({
     `${BLOB_URL}/${project}/colonias.geojson`
   );
   const [hoverInfo, setHoverInfo] = useState();
-  const [hoverCenter, setHoverCenter] = useState(null);
+  const [hoverCenter, setHoverCenter] = useState([-107.39946642007864,24.75266323048898]);
   const [brushingRadius, setBrushingRadius] = useState(400); //radio esta en metros
   const [maxHeightMap, setMaxHeightMap] = useState(new Map());
   const [numFloorsMap, setNumFloorsMap] = useState(new Map());
@@ -167,6 +167,7 @@ export const LensMap = ({
   const handleHover = useCallback((info) => {
     if (info.coordinate) {
       setHoverCenter([info.coordinate[0], info.coordinate[1]]);
+      console.log([info.coordinate[0], info.coordinate[1]])
     } else {
       setHoverCenter(null);
     }
