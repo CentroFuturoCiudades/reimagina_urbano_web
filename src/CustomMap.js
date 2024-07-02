@@ -39,6 +39,8 @@ export const CustomMap = ({
   const { data: coloniasData } = useFetch(
     `${BLOB_URL}/${project}/colonias.geojson`
   );
+  const [sketchesCoords, setSketchesCoords] = useState([])
+
 
   // let abortController = new AbortController();
   // useEffect(() => {
@@ -71,7 +73,7 @@ export const CustomMap = ({
   //   }
   //   fetchData();
   // }, [hoverCenter]);
-
+  
   useEffect(() => {
     let editableLayer = new EditableGeoJsonLayer({
       id: "editable-layer",
@@ -157,6 +159,10 @@ export const CustomMap = ({
   }, [dataLots, domain, colors, selectedLots, dictData]);
   const [activeSketch, setActiveSketch] = useState(false);
 
+  useEffect(() => {
+    console.log("SketchesCoords: ", sketchesCoords);
+  }, [sketchesCoords])
+
   const handleEdit2 = ({ updatedData, editType, editContext }) => {
     setData2(updatedData);
 
@@ -167,6 +173,7 @@ export const CustomMap = ({
       editType === "finish"
     ) {
       const selectedArea = updatedData.features[0];
+      setSketchesCoords((sketchCoords) => [...sketchCoords, selectedArea.geometry.coordinates])
       console.log(selectedArea);
       const selectedData = dataLots.features
         .filter((feature) => turf.booleanIntersects(selectedArea, feature))
