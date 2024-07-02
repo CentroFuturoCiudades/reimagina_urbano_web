@@ -54,10 +54,11 @@ export const LensMap = ({
     `${BLOB_URL}/${project}/colonias.geojson`
   );
   const [hoverInfo, setHoverInfo] = useState();
-  const [hoverCenter, setHoverCenter] = useState(null);
+  const [hoverCenter, setHoverCenter] = useState([-107.39367959923534, 24.753450686162093]);
   const [brushingRadius, setBrushingRadius] = useState(400); //radio esta en metros
   const [maxHeightMap, setMaxHeightMap] = useState(new Map());
   const [numFloorsMap, setNumFloorsMap] = useState(new Map());
+  const [isDrag, setIsDrag] = useState(false);
 
   const [originalData, setOriginalData] = useState({
     type: "FeatureCollection",
@@ -208,10 +209,10 @@ export const LensMap = ({
         latitude: coords["latitud"],
         longitude: coords["longitud"],
       }}
-      controller={true}
-      onHover={(info, event) => {
+      controller={{dragPan: !isDrag}}
+      /*onHover={(info, event) => {
         debouncedHover(info, event);
-      }}
+      }}*/
     >
       <StaticMap
         width="100%"
@@ -278,6 +279,12 @@ export const LensMap = ({
           getFillColor={[0, 120, 0, 25]}
           getLineColor={[0, 120, 0, 255]}
           getLineWidth={5}
+          pickable={true}
+          onDragStart={() => {setIsDrag(true)}}
+          onDragEnd={(info, event) => {
+            setIsDrag(false)
+            debouncedHover(info, event);
+          }}
         />
       )}
       {visible.building && (
