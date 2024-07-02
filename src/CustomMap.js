@@ -3,13 +3,15 @@ import { BLOB_URL, INITIAL_STATE } from "./constants";
 import { useFetch, useFetchGeo } from "./utils";
 
 import * as turf from "@turf/turf";
-import { DeckGL, GeoJsonLayer } from "deck.gl";
+import { DeckGL, GeoJsonLayer, TextLayer } from "deck.gl";
 import { Map as StaticMap } from "react-map-gl";
 import { Tooltip, Legend } from "./components";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
 
 import * as d3 from "d3";
+import { Icon, IconButton } from "@chakra-ui/react";
+import { MdAdd, MdOutlineMotionPhotosOff } from "react-icons/md";
 
 export const CustomMap = ({
   aggregatedInfo,
@@ -19,7 +21,6 @@ export const CustomMap = ({
   visible,
   coords,
   metric,
-  activeSketch,
   isSatellite,
 }) => {
   const project = window.location.pathname.split("/")[1];
@@ -33,9 +34,13 @@ export const CustomMap = ({
   const [mode, setMode] = useState(new DrawPolygonMode());
   const [editableLayers, setEditableLayers] = useState([]);
   const { data: dataLots } = useFetchGeo(`${BLOB_URL}/${project}/lots.fgb`);
-  const [ isLotsReady, setLotsReady ] = useState( false );
-  const [ thisSelectedLots, setThisSelectedLots ] = useState([])
+  const [isLotsReady, setLotsReady] = useState(false);
+  const [thisSelectedLots, setThisSelectedLots] = useState([]);
+  const { data: coloniasData } = useFetch(
+    `${BLOB_URL}/${project}/colonias.geojson`
+  );
   const [sketchesCoords, setSketchesCoords] = useState([])
+
 
   // let abortController = new AbortController();
   // useEffect(() => {
@@ -152,6 +157,7 @@ export const CustomMap = ({
         : [color.r, color.g, color.b];
     };
   }, [dataLots, domain, colors, selectedLots, dictData]);
+  const [activeSketch, setActiveSketch] = useState(false);
 
   useEffect(() => {
     console.log("SketchesCoords: ", sketchesCoords);
@@ -175,7 +181,7 @@ export const CustomMap = ({
       console.log(selectedData);
 
       setSelectedLots(selectedData);
-      setThisSelectedLots( selectedData );
+      setThisSelectedLots(selectedData);
 
       // Set the existing editable layer to ViewMode
       setEditableLayers((layers) =>
@@ -229,6 +235,10 @@ export const CustomMap = ({
     if(data2.features[0])
       console.log('ya se cerro el primer poligono')
   }, [mode, activeSketch]);*/
+
+  useEffect(() => {
+    if (activeSketch) setSelectedLots([]);
+  }, [activeSketch]);
 
   if (!coords) {
     return <div>Loading</div>;
@@ -342,6 +352,54 @@ export const CustomMap = ({
           domain={domain}
           metric={metric}
           legendTitles={{}}
+        />
+      )}
+      <div
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "100px",
+          marginRight: "250px",
+        }}
+      >
+        <IconButton
+          aria-label=""
+          icon={
+            activeSketch ? (
+              <Icon as={MdOutlineMotionPhotosOff} />
+            ) : (
+              <Icon as={MdAdd} />
+            )
+          }
+          size="lg"
+          colorScheme={activeSketch ? "red" : "blue"}
+          isRound
+          onClick={() => setActiveSketch(!activeSketch)}
+        />
+      </div>
+      {coloniasData && (
+        <TextLayer
+          id="municipios-text-layer"
+          data={coloniasData.features}
+          getPosition={(d) => [d.properties.longitude, d.properties.latitude]}
+          getText={(d) => d.properties.NOM_COL}
+          sizeUnits="pixels"
+          getSize={10}
+          backgroundPadding={[10, 10, 10, 10]}
+          fontWeight={600}
+          getPixelOffset={[0, -10]}
+          getColor={[0, 0, 0, 150]}
+          fontFamily="Inter, Courier, monospace"
+        />
+      )}
+      {coloniasData && (
+        <GeoJsonLayer
+          id="colonias-layer"
+          data={coloniasData.features}
+          filled={false}
+          stroked={true}
+          getLineColor={[40, 40, 80, 100]}
+          getLineWidth={5}
         />
       )}
     </DeckGL>

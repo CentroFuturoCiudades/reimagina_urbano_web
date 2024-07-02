@@ -189,7 +189,6 @@ const ConfigurationToolbar = ({
           </AccordionItem>
         </Accordion>
       )}
-      <br />
       <Switch
         isChecked={configuration.visible.building}
         onChange={(e) =>
