@@ -22,6 +22,8 @@ export const CustomMap = ({
   coords,
   metric,
   isSatellite,
+  viewState,
+  changeViewState
 }) => {
   const project = window.location.pathname.split("/")[1];
   const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
@@ -246,12 +248,29 @@ export const CustomMap = ({
 
   return (
     <DeckGL
-      initialViewState={{
+      /*initialViewState={{
         ...INITIAL_STATE,
+        latitude: coords["latitud"],
+        longitude: coords["longitud"],
+      }}*/
+      viewState={{
+        ...viewState,
         latitude: coords["latitud"],
         longitude: coords["longitud"],
       }}
       controller={true}
+      /*onViewStateChange={({ viewState }) => {
+        viewState.longitude = Math.min(
+          LONGITUDE_RANGE[1],
+          Math.max(LONGITUDE_RANGE[0], viewState.longitude)
+        );
+        viewState.latitude = Math.min(
+          LATITUDE_RANGE[1],
+          Math.max(LATITUDE_RANGE[0], viewState.latitude)
+        );
+        changeViewState(viewState);
+        }}*/
+      //onViewStateChange={({ viewState }) => changeViewState(viewState)}
       layers={
         activeSketch
           ? [editableLayer]

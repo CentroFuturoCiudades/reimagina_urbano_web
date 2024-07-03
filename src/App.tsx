@@ -1,19 +1,20 @@
-import { Box, Radio, RadioGroup, Stack } from "@chakra-ui/react";
+import { Box, Radio, RadioGroup, Stack, ButtonGroup } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import axios from "axios";
 
 import { Custom3DMap } from "./Custom3DMap";
 import { CustomMap } from "./CustomMap";
-import { API_URL } from "./constants";
+import { API_URL, INITIAL_STATE } from "./constants";
 import "./App.css";
 import { Chat, LotSidebar, ConfigurationToolbar } from "./components";
 import { Icon, IconButton } from "@chakra-ui/react";
-import { MdAdd, MdOutlineMotionPhotosOff } from "react-icons/md";
+import { MdAdd, MdDoDisturb } from "react-icons/md";
 import React from "react";
 import { Configuration, GenericObject } from "./types";
 import { LensMap } from "./LensMap";
 import { useFetchGeo } from "./utils";
+import { zoom } from "d3";
 //import Legend from "./Legend";
 
 function App() {
@@ -57,6 +58,39 @@ function App() {
   });
   const project = window.location.pathname.split("/")[1];
   const [mode, setMode] = useState("analysis");
+  const [viewState, setViewState] = useState(INITIAL_STATE)
+
+  /*const zoomIn = () => {
+    console.log('zoomin')
+    if(viewState.zoom < viewState.maxZoom)
+    {
+      setViewState({...viewState, zoom: viewState.zoom + 1})
+    }
+  }*/
+
+  const zoomIn = () => {
+    setViewState((v) => ({
+      ...v,
+      zoom: v.zoom + 1,
+      transitionDuration: 100,
+    }));
+  };
+
+  /*const zoomOut = () => {
+    console.log('zoomout')
+    if(viewState.zoom > viewState.minZoom)
+    {
+      setViewState({...viewState, zoom: viewState.zoom - 1})
+    }
+  }*/
+
+  const zoomOut = () => {
+    setViewState((v) => ({
+      ...v,
+      zoom: v.zoom - 1,
+      transitionDuration: 100,
+    }));
+  };
 
   // if project is undefined, redirect to /primavera
   if (project === "") {
@@ -145,6 +179,20 @@ function App() {
           })
         }
       /> */}
+      <div style={{ position: "absolute", bottom: 10, right: 200, zIndex: 500 }}>
+        <ButtonGroup isAttached size="sm" colorScheme="blackAlpha">
+            <IconButton
+              aria-label="Zoom-In"
+              onClick={zoomIn}
+              icon={<MdDoDisturb/>}
+            />
+            <IconButton
+              aria-label="Zoom-In"
+              onClick={zoomOut}
+              icon={<MdAdd/>}
+            />
+        </ButtonGroup>
+      </div>
       {mode === "explore" ? (
         <LensMap
           aggregatedInfo={aggregatedInfo}
@@ -166,6 +214,8 @@ function App() {
           coords={coords}
           metric={configuration.metric}
           isSatellite={configuration.isSatellite}
+          viewState = {viewState}
+          changeViewState = {setViewState}
         />
       )}
       <ConfigurationToolbar
