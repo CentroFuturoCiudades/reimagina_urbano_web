@@ -15,8 +15,10 @@ export const INITIAL_STATE = {
   pitch: 60,
   maxPitch: 100,
   bearing: 0,
-  minZoom: 8.5,
-  maxZoom: 22,
+  //minZoom: 8.5,
+  minZoom: 13,
+  //maxZoom: 22,
+  maxZoom: 17,
 };
 
 export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";

@@ -59,38 +59,59 @@ function App() {
   const project = window.location.pathname.split("/")[1];
   const [mode, setMode] = useState("analysis");
   const [viewState, setViewState] = useState(INITIAL_STATE)
-
-  /*const zoomIn = () => {
-    console.log('zoomin')
-    if(viewState.zoom < viewState.maxZoom)
-    {
-      setViewState({...viewState, zoom: viewState.zoom + 1})
-    }
-  }*/
+  const [variableZoom, setVariableZoom] = useState(15)
 
   const zoomIn = () => {
-    setViewState((v) => ({
-      ...v,
-      zoom: v.zoom + 1,
-      transitionDuration: 100,
-    }));
-  };
-
-  /*const zoomOut = () => {
-    console.log('zoomout')
-    if(viewState.zoom > viewState.minZoom)
+    checkZoom()
+    if(viewState.zoom < viewState.maxZoom)
     {
-      setViewState({...viewState, zoom: viewState.zoom - 1})
+      setViewState((v) => ({
+        ...v,
+        zoom: v.zoom + 1,
+        transitionDuration: 100,
+      }));
+      console.log('zoom',viewState.zoom)
     }
-  }*/
+    else
+    {
+      outOfBound()      
+    }
+  };
 
   const zoomOut = () => {
-    setViewState((v) => ({
-      ...v,
-      zoom: v.zoom - 1,
-      transitionDuration: 100,
-    }));
+    checkZoom()
+    if(viewState.zoom > viewState.minZoom)
+    {
+      setViewState((v) => ({
+        ...v,
+        zoom: v.zoom - 1,
+        transitionDuration: 100,
+      }));
+    }
+    else
+    {
+      outOfBound()
+    }
   };
+
+  const outOfBound = () => {
+    console.log('max zoom reached')
+  }
+
+  const reachedZoom = () => {
+    console.log('specific zoom reached')
+  }
+
+  const checkZoom = () => {
+    if(viewState.zoom == variableZoom)
+    {
+      reachedZoom()
+    }
+    else
+    {
+      outOfBound()
+    }
+  }
 
   // if project is undefined, redirect to /primavera
   if (project === "") {
@@ -184,12 +205,12 @@ function App() {
             <IconButton
               aria-label="Zoom-In"
               onClick={zoomIn}
-              icon={<MdDoDisturb/>}
+              icon={<MdAdd/>}
             />
             <IconButton
               aria-label="Zoom-In"
               onClick={zoomOut}
-              icon={<MdAdd/>}
+              icon={<MdDoDisturb/>}
             />
         </ButtonGroup>
       </div>
