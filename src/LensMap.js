@@ -47,6 +47,9 @@ export const LensMap = ({
   coords,
   metric,
   isSatellite,
+  viewState,
+  setViewState,
+  checkZoom
 }) => {
   const project = window.location.pathname.split("/")[1];
   const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
@@ -202,6 +205,13 @@ export const LensMap = ({
     return <div>Loading</div>;
   }
 
+
+  const handleViewStateChange = ({ viewState }) => {
+    setViewState(viewState);
+    console.log('Zoom level LENS:', viewState.zoom);
+    checkZoom()
+  };
+
   return (
     <DeckGL
       initialViewState={{
@@ -209,6 +219,8 @@ export const LensMap = ({
         latitude: coords["latitud"],
         longitude: coords["longitud"],
       }}
+      //viewState={viewState}
+      onViewStateChange={handleViewStateChange}
       controller={{dragPan: !isDrag}}
       /*onHover={(info, event) => {
         debouncedHover(info, event);

@@ -87,6 +87,7 @@ function App() {
         zoom: v.zoom - 1,
         transitionDuration: 100,
       }));
+      console.log('zoom',viewState.zoom)
     }
     else
     {
@@ -95,7 +96,7 @@ function App() {
   };
 
   const outOfBound = () => {
-    console.log('max zoom reached')
+    console.log('max zoom reached, OUT OF BOUND')
   }
 
   const reachedZoom = () => {
@@ -103,7 +104,7 @@ function App() {
   }
 
   const checkZoom = () => {
-    if(viewState.zoom == variableZoom)
+    if(viewState.zoom >= variableZoom && viewState.zoom < viewState.maxZoom)
     {
       reachedZoom()
     }
@@ -200,6 +201,7 @@ function App() {
           })
         }
       /> */}
+
       <div style={{ position: "absolute", bottom: 10, right: 200, zIndex: 500 }}>
         <ButtonGroup isAttached size="sm" colorScheme="blackAlpha">
             <IconButton
@@ -214,6 +216,7 @@ function App() {
             />
         </ButtonGroup>
       </div>
+      
       {mode === "explore" ? (
         <LensMap
           aggregatedInfo={aggregatedInfo}
@@ -224,6 +227,9 @@ function App() {
           coords={coords}
           metric={configuration.metric}
           isSatellite={configuration.isSatellite}
+          viewState = {viewState}
+          setViewState = {setViewState}
+          checkZoom = {checkZoom}
         />
       ) : (
         <CustomMap

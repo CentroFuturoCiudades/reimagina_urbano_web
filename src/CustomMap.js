@@ -238,6 +238,12 @@ export const CustomMap = ({
       console.log('ya se cerro el primer poligono')
   }, [mode, activeSketch]);*/
 
+  const handleViewStateChange = ({ viewState }) => {
+    changeViewState(viewState);
+    console.log('Zoom level:', viewState.zoom);
+    // Agregar más lógica aquí si es necesario
+  };
+
   useEffect(() => {
     if (activeSketch) setSelectedLots([]);
   }, [activeSketch]);
@@ -258,6 +264,7 @@ export const CustomMap = ({
         latitude: coords["latitud"],
         longitude: coords["longitud"],
       }}
+      onViewStateChange={handleViewStateChange}
       controller={true}
       /*onViewStateChange={({ viewState }) => {
         viewState.longitude = Math.min(
