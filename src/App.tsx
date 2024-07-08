@@ -21,6 +21,7 @@ function App() {
   const [selectedLots, setSelectedLots] = useState<string[]>([]);
   const [aggregatedInfo, setAggregatedInfo] = useState<GenericObject>();
   const [minutesData, setMinutesData] = useState<any[]>();
+  const [selectedLotsCoords, setSelectedLotsCoords]  = useState<any[]>();
   const [configuration, setConfiguration] = useState<GenericObject>({
     condition: undefined,
     metric: "POBTOT",
@@ -166,6 +167,7 @@ function App() {
           coords={coords}
           metric={configuration.metric}
           isSatellite={configuration.isSatellite}
+          setSelectedLotsCoords={setSelectedLotsCoords}
         />
       )}
       <ConfigurationToolbar
@@ -221,6 +223,7 @@ function App() {
             educacion={educacion}
             servicios={servicios}
             supermercados={supermercados}
+            coords={selectedLotsCoords}
           />
         </Box>
       )}

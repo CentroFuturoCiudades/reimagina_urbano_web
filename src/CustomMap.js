@@ -22,6 +22,7 @@ export const CustomMap = ({
   coords,
   metric,
   isSatellite,
+  setSelectedLotsCoords
 }) => {
   const project = window.location.pathname.split("/")[1];
   const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
@@ -40,7 +41,6 @@ export const CustomMap = ({
     `${BLOB_URL}/${project}/colonias.geojson`
   );
   const [sketchesCoords, setSketchesCoords] = useState([])
-
 
   // let abortController = new AbortController();
   // useEffect(() => {
@@ -161,6 +161,7 @@ export const CustomMap = ({
 
   useEffect(() => {
     console.log("SketchesCoords: ", sketchesCoords);
+    setSelectedLotsCoords(sketchesCoords)
   }, [sketchesCoords])
 
   const handleEdit2 = ({ updatedData, editType, editContext }) => {
@@ -178,7 +179,6 @@ export const CustomMap = ({
       const selectedData = dataLots.features
         .filter((feature) => turf.booleanIntersects(selectedArea, feature))
         .map((feature) => feature.properties.ID);
-      console.log(selectedData);
 
       setSelectedLots(selectedData);
       setThisSelectedLots(selectedData);

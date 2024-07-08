@@ -27,8 +27,27 @@ import { FaPerson } from "react-icons/fa6";
 import { FaBuilding, FaShoppingCart, FaStethoscope } from "react-icons/fa";
 import { MdOutlineRestaurant, MdOutlineWork, MdSchool } from "react-icons/md";
 
-import { renderCustomizedLabel } from "../../utils";
+import { renderCustomizedLabel, useFetch } from "../../utils";
 import { GenericObject } from "../../types";
+import { BLOB_URL } from "../../constants";
+
+interface Feature {
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: number[][][];
+  };
+  properties: {
+    POB2010: number;
+    [key: string]: any;
+  };
+}
+
+interface FeatureCollection {
+  type: string;
+  features: Feature[];
+}
+
 
 interface LotSidebarProps {
   aggregatedInfo?: GenericObject;
@@ -40,6 +59,7 @@ interface LotSidebarProps {
   educacion: any;
   servicios: any;
   supermercados: any;
+  coords: any;
 }
 
 const LotSidebar = ({
@@ -51,7 +71,14 @@ const LotSidebar = ({
   educacion,
   servicios,
   supermercados,
+  coords
 }: LotSidebarProps) => {
+  const project = window.location.pathname.split("/")[1];
+  const { data } = useFetch(`${BLOB_URL}/${project}/colonias.geojson`);
+  const coloniasData = data as FeatureCollection | undefined;
+
+  if (!aggregatedInfo || !coloniasData) return null;
+
   if (!aggregatedInfo) return null;
 
   const chartData = [
@@ -86,6 +113,55 @@ const LotSidebar = ({
       color: "rgb(200, 100, 100)",
     },
   ];
+
+// Función para limpiar la estructura de coords
+const limpiarCoords = (coords: number[][][][]): number[][] => {
+  return coords.flatMap(lote => lote.flatMap(punto => punto));
+};
+
+// Función para obtener la población
+const getPopulation = (coloniasData: any, coords: number[][]) => {
+  let population = 0;
+
+  if (coloniasData) {
+    coords.forEach((punto) => {
+      coloniasData.features.forEach((colonia: any) => {
+        const coloniaCoords = colonia.geometry.coordinates[0][0];
+        console.log(punto)
+        coloniaCoords.forEach((coloniaPunto: number[]) => {
+          if (
+            coloniaPunto[1] === punto[1] && 
+            coloniaPunto[0] === punto[0]
+          ) {
+            population += colonia.properties.POB2010 ?? 0;
+          }
+        });
+      });
+    });
+  }
+
+  return population;
+};
+
+// Ejemplo de uso
+const coords2 = [
+  [
+    [
+      [-107.39553742861015, 24.76243764787449]
+    ],
+    [
+      [
+        -107.39578543157289, 
+        24.759997082746327]
+    ]
+  ]
+]
+
+const cleanedCoords = limpiarCoords(coords);
+console.log('Cleaned Coords:', cleanedCoords); // Esto es para verificar el contenido de cleanedCoords
+const population = getPopulation(coloniasData, cleanedCoords);
+console.log('Population:', population);
+
 
   return (
     <>
