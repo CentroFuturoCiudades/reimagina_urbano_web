@@ -7,7 +7,7 @@ import { Custom3DMap } from "./Custom3DMap";
 import { CustomMap } from "./CustomMap";
 import { API_URL, INITIAL_STATE } from "./constants";
 import "./App.css";
-import { Chat, LotSidebar, ConfigurationToolbar } from "./components";
+import { Chat, LotSidebar, ConfigurationToolbar, MainSidebar, BaseMap } from "./components";
 import { Icon, IconButton } from "@chakra-ui/react";
 import { MdAdd, MdDoDisturb } from "react-icons/md";
 import React from "react";
@@ -155,7 +155,7 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       // console.log(configuration.metric); // wasteful_ratio, la metrica que se muestra
-      
+
       if( configuration.metric == "minutes" ){
 
         if( minutesData && minutesData.length ){
@@ -167,7 +167,7 @@ function App() {
         const body = {
           accessibility_info: configuration.accessibility_info
         }
-    
+
         axios.post(url, body)
           .then( (response) => {
             setMinutesData( response.data );
@@ -201,23 +201,10 @@ function App() {
           })
         }
       /> */}
-
-      <div style={{ position: "absolute", bottom: 10, right: 200, zIndex: 500 }}>
-        <ButtonGroup isAttached size="sm" colorScheme="blackAlpha">
-            <IconButton
-              aria-label="Zoom-In"
-              onClick={zoomIn}
-              icon={<MdAdd/>}
-            />
-            <IconButton
-              aria-label="Zoom-In"
-              onClick={zoomOut}
-              icon={<MdDoDisturb/>}
-            />
-        </ButtonGroup>
-      </div>
-      
-      {mode === "explore" ? (
+      <MainSidebar>
+      </MainSidebar>
+      <BaseMap></BaseMap>
+      {/* {mode === "explore" ? (
         <LensMap
           aggregatedInfo={aggregatedInfo}
           data={data}
@@ -244,8 +231,8 @@ function App() {
           viewState = {viewState}
           changeViewState = {setViewState}
         />
-      )}
-      <ConfigurationToolbar
+      )} */}
+      {/* <ConfigurationToolbar
         configuration={configuration}
         setConfiguration={setConfiguration}
         supermercados={supermercados}
@@ -254,28 +241,8 @@ function App() {
         setEducacion={setEducacion}
         setServicios={setServicios}
         setSupermercados={setSupermercados}
-      />
-      <RadioGroup
-        onChange={(v) => {
-          setMode(v);
-          setSelectedLots([]);
-        }}
-        value={mode}
-        style={{
-          boxShadow: "2px 2px 2px 1px rgba(0, 0, 0, 0.2)",
-          background: "white",
-          padding: "0.75rem 1rem",
-          borderRadius: "1rem",
-          position: "absolute",
-          top: "20px",
-          right: "500px",
-        }}
-      >
-        <Stack direction="row">
-          <Radio value="analysis">Analizar</Radio>
-          <Radio value="explore">Explorar</Radio>
-        </Stack>
-      </RadioGroup>
+      /> */}
+
       {selectedLots.length > 0 && (
         <Box
           style={{

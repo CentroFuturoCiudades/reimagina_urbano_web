@@ -8,17 +8,15 @@ export const AMOUNT = 8;
 export const COLORS = generateGradientColors(startColor, endColor, AMOUNT);
 
 export const INITIAL_STATE = {
-  latitude: 25.65,
-  longitude: -100.287419,
-  zoom: 15,
-  transitionDuration: 100,
-  pitch: 60,
-  maxPitch: 100,
-  bearing: 0,
-  //minZoom: 8.5,
-  minZoom: 13,
-  //maxZoom: 22,
-  maxZoom: 17,
+    latitude: 25.65,
+    longitude: -100.287419,
+    zoom: 15,
+    transitionDuration: 100,
+    pitch: 60,
+    maxPitch: 85,
+    bearing: 0,
+    minZoom: 12,
+    maxZoom: 22,
 };
 
 export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";

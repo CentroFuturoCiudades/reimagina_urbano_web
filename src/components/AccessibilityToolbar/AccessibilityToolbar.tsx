@@ -23,13 +23,13 @@ const mappingLabels: GenericObject = {
   proximity_supermercado: "Supermercado",
 };
 
-interface ConfigurationToolbarProps {
+interface AccessibilityToolbarProps {
   configuration: GenericObject;
 }
 
-const ConfigurationToolbar = ({
+const AccessibilityToolbar = ({
   configuration,
-}: ConfigurationToolbarProps) => {
+}: AccessibilityToolbarProps) => {
 
     const dispatch = useDispatch();
 
@@ -117,4 +117,4 @@ const ConfigurationToolbar = ({
   );
 };
 
-export default ConfigurationToolbar;
+export default AccessibilityToolbar;
