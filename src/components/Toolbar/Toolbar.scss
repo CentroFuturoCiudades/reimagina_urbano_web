@@ -14,6 +14,7 @@
         color:white;
         text-align:center;
         flex: 1;
+        font-size: small;
     }
 
     &__vista {
@@ -22,9 +23,10 @@
         flex-wrap:nowrap;
         width: 100%;
         //justify-content:center;
-        border:1px solid lightgrey;
+        //border:1px solid lightgrey;
 
         img {
+            height: 70px;
             min-width: 50px;
             max-width: 100px;
             border:1px solid lightgrey;
@@ -46,13 +48,14 @@
         flex-direction:column;
         width:100%;
         flex:1;
-        border:1px solid lightgrey;
+        margin-left: 5px;
+        margin-right: 5px;
+        
 
         span {
             border:1px solid lightgrey; 
             color:white; 
             flex-grow:1;
-            padding:10px;
             cursor: pointer;
             
             &:hover{
@@ -66,7 +69,8 @@
         flex-direction:row;
         width:100%;
         flex:1;
-        border:1px solid lightgrey;
+        margin-left: 10px;
+        margin-right: 10px;
     }
 
     &__colzoom{
@@ -79,7 +83,7 @@
             border:1px solid lightgrey;
             color:white;
             flex-grow:1;
-            padding:10px;
+            //padding:10px;
             cursor: pointer;
             
             &:hover{
