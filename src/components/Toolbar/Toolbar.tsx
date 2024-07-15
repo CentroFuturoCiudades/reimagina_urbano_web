@@ -60,11 +60,11 @@ const Toolbar = () => {
                     ZOOM
                     {/* opciones dentro de ZOOM */}
                     <div className="toolbar__zoom">
-                        <div className="toolbar__colzoom">
+                        <div className="toolbar__zoomitems">
                             <span> + </span>
                             <span> - </span>
                         </div>
-                        <div className="toolbar__colzoom">
+                        <div className="toolbar__zoomitems">
                             <span> 15 </span>
                         </div>
                     </div>
