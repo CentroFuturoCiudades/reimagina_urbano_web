@@ -1,9 +1,45 @@
-.mainSidebar{
+.mainSidebar {
     position: absolute;
-    background-color: rgba( 255, 255, 255, 0.5 );
-    height: 100vh;
     z-index: 50;
-    padding: 1rem;
-    width: fit-content;
+    width: 100%;
     max-width: 340px;
+
+    .chakra-tabs__tablist {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .chakra-tabs__tab {
+        flex: 1;
+        text-align: center;
+        border-radius: 0;
+        padding: 1rem;
+        background-color: rgba(255, 255, 255, 1); /* Color sólido */
+        transition: background-color 0.3s;
+        color: white;
+        transition: none;
+
+        
+    }
+
+    .tab-visor {
+        background-color: rgba(137, 151, 77, 0.8); /* color del Visor */
+
+    }
+
+    .tab-accesibilidad {
+        background-color: rgba(133, 156, 190, 0.8); /* color de Accesibilidad */
+        
+    }
+
+    .tab-potencial {
+        background-color: rgba(206, 173, 102, 0.8); /* color de Potencial */
+        
+    }
+
+    .chakra-tabs__tabpanel {
+        padding: 1rem;
+        height: calc(100% - 3rem); /* ajusta la altura según el tamaño de las pestañas */
+        overflow-y: auto;
+    }
 }
