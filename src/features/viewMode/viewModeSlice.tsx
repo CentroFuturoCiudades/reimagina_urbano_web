@@ -1,18 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { VIEW_MODES } from '../../constants';
 
 interface ViewModeState {
-    viewMode: string;
+    viewMode: VIEW_MODES;
 }
 
 const initialState: ViewModeState = {
-    viewMode: "full"
+    viewMode: VIEW_MODES.FULL
 };
 
 const viewModeSlice = createSlice({
     name: 'viewMode',
     initialState,
     reducers: {
-        setViewMode: (state, action: PayloadAction< string >) => {
+        setViewMode: (state, action: PayloadAction< VIEW_MODES >) => {
             state.viewMode = action.payload;
         }
     }
