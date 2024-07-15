@@ -19,12 +19,11 @@ const Toolbar = () => {
             {/*2nd row*/}
             <div style={{
                 display:"flex", 
-                flexDirection:"row", 
-                width:"100%", //creo q se lo puedo quitar
+                //flexDirection:"row", 
                 border:"1px solid lightgrey", 
             }}>
                 {/* VISTA SECC.1 */}
-                <div className="toolbar__title">
+                <div className="toolbar__section">
                     VISTA
                     {/* opciones dentro de VISTA */}
                     <div className="toolbar__vista">
@@ -47,7 +46,7 @@ const Toolbar = () => {
                 </div>
                 
                 {/* DIM SECC.2 */}
-                <div className="toolbar__title">
+                <div className="toolbar__section">
                     DIM
                     {/* opciones dentro de DIM */}
                     <div className="toolbar__dim">
@@ -57,7 +56,7 @@ const Toolbar = () => {
                 </div>
 
                 {/* ZOOM SECC.3*/}
-                <div className="toolbar__title">
+                <div className="toolbar__section">
                     ZOOM
                     {/* opciones dentro de ZOOM */}
                     <div className="toolbar__zoom">
@@ -72,7 +71,7 @@ const Toolbar = () => {
                 </div>
 
                 {/* ESCALA SECC.4 */}
-                <div className="toolbar__title">
+                <div className="toolbar__section">
                     ESCALA
                     {/* 3rd row dentro de vista */}
                     <div className="toolbar__vista">
