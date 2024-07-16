@@ -34,6 +34,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     const queryMetric = useSelector( (state: RootState) => state.queryMetric.queryMetric );
     const viewMode = useSelector( (state: RootState) => state.viewMode.viewMode );
     const proximityOptions: GenericObject = useSelector((state: RootState) => state.accSettings.accSettings );
+    const zoomLevel = useSelector((state: RootState) => state.zoomLevel);
 
     //TODO: MOVE THIS TO A COMPONENT
     const [ circleCoords, setCircleCoords ] = useState([-107.39367959923534, 24.753450686162093]);
@@ -296,11 +297,18 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     return (
         //@ts-ignore
         <DeckGL
-            initialViewState={{
+            /*initialViewState={{
                 ...INITIAL_STATE,
                 latitude: coords["latitud"],
                 longitude: coords["longitud"]
+            }}*/
+            
+            viewState={{
+                ...zoomLevel,
+                latitude: coords["latitud"],
+                longitude: coords["longitud"]
             }}
+
             controller={{ dragPan: !isDrag }}
             layers={ [ poligonLayer, lotsLayer, ...Object.values(viewLayers) ]}
         >

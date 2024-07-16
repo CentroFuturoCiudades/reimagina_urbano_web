@@ -1,15 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./Toolbar.scss";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setViewMode } from "../../features/viewMode/viewModeSlice";
 import { center } from "@turf/turf";
 import { Flex } from "@chakra-ui/react";
+import { setZoomLevel } from "../../features/zoomLevel/zoomLevelSlice";
 
 const Toolbar = () => {
 
     const dispatch: AppDispatch = useDispatch();
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode );
+    const zoomLevel = useSelector( (state: RootState) => state.zoomLevel);
+
+    useEffect(() => {
+        console.log('zzoom', zoomLevel)
+    },[zoomLevel])
+
+    const zoomIn = () => {
+        dispatch(setZoomLevel(zoomLevel.zoom + 1))
+    }
+
+    const zoomOut = () => {
+        dispatch(setZoomLevel(zoomLevel.zoom - 1))
+    }
+
+
 
     return (
         <div className="toolbar">
@@ -61,8 +77,12 @@ const Toolbar = () => {
                     {/* opciones dentro de ZOOM */}
                     <div className="toolbar__zoom">
                         <div className="toolbar__zoomitems">
-                            <span> + </span>
-                            <span> - </span>
+                            <span
+                            onClick={zoomIn}
+                            > + </span>
+                            <span
+                            onClick={zoomOut}
+                            > - </span>
                         </div>
                         <div className="toolbar__zoomitems">
                             <span> 15 </span>
