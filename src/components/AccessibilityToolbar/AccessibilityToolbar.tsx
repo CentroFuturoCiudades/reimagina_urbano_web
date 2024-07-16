@@ -33,6 +33,7 @@ const AccessibilityToolbar = ({
 
     const dispatch = useDispatch();
 
+
     let proximityOptions: GenericObject = useSelector((state: RootState) => state.accSettings.accSettings );
 
   const handleProximityChange = (type: string, value: any, key: string) => {

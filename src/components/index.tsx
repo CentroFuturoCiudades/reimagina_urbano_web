@@ -1,4 +1,3 @@
-// export { default as AccessibilityToolbar } from "./AccessibilityToolbar";
 export { default as AccessibilityToolbar } from "./AccessibilityToolbar";
 export { default as BaseMap } from "./BaseMap";
 export { default as Chat } from "./Chat";
