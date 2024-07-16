@@ -14,6 +14,9 @@ import { GenericObject } from "../../types";
 import { useDispatch, useSelector } from "react-redux";
 import { setAccSettings } from "../../features/accSettings/accSettingsSlice";
 import { RootState } from "../../app/store";
+import { SelectAutoComplete } from "../";
+
+
 
 const mappingLabels: GenericObject = {
   proximity_small_park: "Parque",
@@ -71,7 +74,6 @@ const ConfigurationToolbar = ({
 
       }}
     >
-
       { true && (
         <Accordion allowMultiple my={4}>
           <AccordionItem>
