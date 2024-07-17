@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../app/store';
 import * as d3 from "d3";
 import { GenericObject } from '../../types';
-import { PickInfo, RGBAColor } from 'deck.gl';
+import { Layer, PickInfo, RGBAColor } from 'deck.gl';
 import * as turf from "@turf/turf";
 import { debounce } from 'lodash';
 import { load } from '@loaders.gl/core';
@@ -17,6 +17,8 @@ import { FlatGeobufLoader } from '@loaders.gl/flatgeobuf';
 import { setSelectedLots } from '../../features/selectedLots/selectedLotsSlice';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { DrawPolygonMode, ViewMode, TranslateMode } from "@nebula.gl/edit-modes";
+import Layers from '../Layers';
+import { setDrag } from '../../features/lensSettings/lensSettingsSlice';
 
 interface BaseMapProps {
   isSatellite?: boolean;
@@ -36,6 +38,8 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     //Redux
     const dispatch: AppDispatch = useDispatch();
 
+    const layers = useSelector((state: RootState) => state.layers.layers );
+    const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag );
     const baseColor = useSelector((state: RootState) => state.baseColor.baseColor );
     const queryMetric = useSelector( (state: RootState) => state.queryMetric.queryMetric );
     const viewMode = useSelector( (state: RootState) => state.viewMode.viewMode );
@@ -43,7 +47,6 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
 
     //TODO: MOVE THIS TO A COMPONENT
     const [ circleCoords, setCircleCoords ] = useState([-107.39367959923534, 24.753450686162093]);
-    const [isDrag, setIsDrag] = useState(false);
     const [brushingRadius, setBrushingRadius] = useState(400); //radio esta en metros
 
     const handleHover = useCallback((info: PickInfo<unknown>) => {
@@ -287,11 +290,11 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                     getLineColor: [0, 120, 0, 255],
                     getLineWidth: 5,
                     pickable: true,
-                    onDragStart: () => { setIsDrag(true) },
+                    onDragStart: () => { dispatch( setDrag( true ) ) },
                     onDrag: (info, event) => { if(info && info.coordinate) setCircleCoords( [info.coordinate[0], info.coordinate[1]] ) },
                     onDragEnd: (info, event) => {
-                      setIsDrag(false)
-                      debouncedHover(info);
+                        dispatch( setDrag( true ) )
+                        debouncedHover(info);
                     }
                 })
 
@@ -390,7 +393,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
 
             setLotsLayer( layer )
         }
-    }, [dataLots, colorFunction, baseColor] );
+    }, [dataLots, colorFunction, baseColor, layers] );
 
     const poligonLayer =
         new GeoJsonLayer({
@@ -406,27 +409,41 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
         return <div>Loading</div>;
     }
 
+    let deckLayers: Layer<any>[]= [ poligonLayer ];
+
+    if( layers && layers.length ){
+        layers.forEach( props => {
+            deckLayers.push( new GeoJsonLayer( props ) )
+        })
+    }
+
+    console.log( deckLayers );
+
     return (
-        //@ts-ignore
-        <DeckGL
-            initialViewState={{
-                ...INITIAL_STATE,
-                latitude: coords["latitud"],
-                longitude: coords["longitud"]
-            }}
-            controller={{ dragPan: !isDrag }}
-            layers={ [ poligonLayer, lotsLayer, ...Object.values(viewLayers) ]}
-        >
-            <Map
-                mapStyle={
-                    isSatellite
-                        ? "mapbox://styles/mapbox/satellite-v9"
-                        : "mapbox://styles/lameouchi/clw841tdm00io01ox4vczgtkl"
-                }
-                mapboxAccessToken="pk.eyJ1IjoibGFtZW91Y2hpIiwiYSI6ImNsa3ZqdHZtMDBjbTQzcXBpNzRyc2ljNGsifQ.287002jl7xT9SBub-dbBbQ"
-                attributionControl={false}
-            />
-        </DeckGL>
+        <>
+            <Layers></Layers>
+
+            {/* @ts-ignore */}
+            <DeckGL
+                initialViewState={{
+                    ...INITIAL_STATE,
+                    latitude: coords["latitud"],
+                    longitude: coords["longitud"]
+                }}
+                controller={{ dragPan: !isDrag }}
+                layers={ deckLayers }
+            >
+                <Map
+                    mapStyle={
+                        isSatellite
+                            ? "mapbox://styles/mapbox/satellite-v9"
+                            : "mapbox://styles/lameouchi/clw841tdm00io01ox4vczgtkl"
+                    }
+                    mapboxAccessToken="pk.eyJ1IjoibGFtZW91Y2hpIiwiYSI6ImNsa3ZqdHZtMDBjbTQzcXBpNzRyc2ljNGsifQ.287002jl7xT9SBub-dbBbQ"
+                    attributionControl={false}
+                />
+            </DeckGL>
+        </>
     );
 };
 

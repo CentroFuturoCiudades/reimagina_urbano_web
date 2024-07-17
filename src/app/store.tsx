@@ -5,6 +5,8 @@ import viewModeReducer from "../features/viewMode/viewModeSlice";
 import accSettingsReducer from '../features/accSettings/accSettingsSlice';
 import accessibilityListReducer from '../features/accessibilityList/accessibilityListSlice';
 import selectedLotsReducer from '../features/selectedLots/selectedLotsSlice'
+import layersReducer from '../features/layers/layersSlice';
+import lensSettingsReducer from '../features/lensSettings/lensSettingsSlice';
 
 const store = configureStore({
   reducer: {
@@ -14,6 +16,8 @@ const store = configureStore({
     accSettings: accSettingsReducer,
     accessibilityList: accessibilityListReducer,
     selectedLots: selectedLotsReducer,
+    layers: layersReducer,
+    lensSettings: lensSettingsReducer
   }
 });
 
