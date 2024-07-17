@@ -75,7 +75,7 @@ const Layers = () => {
             dispatch(
                 setLayers([
                     ...toolLayers,
-                    ...await LayersMapping.PopulationPoints( { viewMode: viewMode ,coords: circleCoords, radius: brushingRadius } ),
+                    //...await LayersMapping.PopulationPoints( { viewMode: viewMode ,coords: circleCoords, radius: brushingRadius } ),
                     ...await LayersMapping.AmenitiesLayer()
                 ])
              );
