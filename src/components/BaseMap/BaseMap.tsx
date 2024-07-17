@@ -5,8 +5,8 @@ import { Map } from 'react-map-gl';
 import { lightenColor, useFetch, useFetchGeo } from '../../utils';
 import { API_URL, BLOB_URL, INITIAL_STATE } from '../../constants';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../../app/store';
 import * as d3 from "d3";
 import { GenericObject } from '../../types';
 import { PickInfo, RGBAColor } from 'deck.gl';
@@ -14,6 +14,7 @@ import * as turf from "@turf/turf";
 import { debounce } from 'lodash';
 import { load } from '@loaders.gl/core';
 import { FlatGeobufLoader } from '@loaders.gl/flatgeobuf';
+import { setViewState, ViewStateState } from "../../features/viewState/viewStateSlice";
 
 interface BaseMapProps {
   isSatellite?: boolean;
@@ -34,7 +35,9 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     const queryMetric = useSelector( (state: RootState) => state.queryMetric.queryMetric );
     const viewMode = useSelector( (state: RootState) => state.viewMode.viewMode );
     const proximityOptions: GenericObject = useSelector((state: RootState) => state.accSettings.accSettings );
-    const zoomLevel = useSelector((state: RootState) => state.zoomLevel);
+    //const zoomLevel = useSelector((state: RootState) => state.zoomLevel);
+    const viewState = useSelector ( (state: RootState) => state.viewState)
+    const dispatch: AppDispatch = useDispatch();
 
     //TODO: MOVE THIS TO A COMPONENT
     const [ circleCoords, setCircleCoords ] = useState([-107.39367959923534, 24.753450686162093]);
@@ -293,21 +296,29 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     if (!coords) {
         return <div>Loading</div>;
     }
-
+    
+    const handleViewStateChange = ({ viewState }: { viewState: ViewStateState }) => {
+        dispatch(setViewState(viewState));
+        console.log('zoommanual', viewState);
+    };
+    
     return (
         //@ts-ignore
         <DeckGL
-            /*initialViewState={{
+            initialViewState={{
                 ...INITIAL_STATE,
                 latitude: coords["latitud"],
                 longitude: coords["longitud"]
-            }}*/
+            }}
             
-            viewState={{
-                ...zoomLevel,
+            /*viewState={{
+               // ...zoomLevel,
+               ...viewState,
                 latitude: coords["latitud"],
                 longitude: coords["longitud"]
-            }}
+            }}*/
+
+            onViewStateChange={handleViewStateChange}
 
             controller={{ dragPan: !isDrag }}
             layers={ [ poligonLayer, lotsLayer, ...Object.values(viewLayers) ]}

@@ -3,7 +3,8 @@ import baseColorReducer from '../features/baseColor/baseColorSlice';
 import queryMetricReducer from "../features/queryMetric/queryMetricSlice"
 import viewModeReducer from "../features/viewMode/viewModeSlice";
 import accSettingsReducer from '../features/accSettings/accSettingsSlice';
-import zoomLevelReducer from '../features/zoomLevel/zoomLevelSlice';
+//import zoomLevelReducer from '../features/viewState/viewStateSlice';
+import viewStateReducer from '../features/viewState/viewStateSlice';
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     queryMetric: queryMetricReducer,
     viewMode: viewModeReducer,
     accSettings: accSettingsReducer,
-    zoomLevel: zoomLevelReducer
+    //zoomLevel: zoomLevelReducer
+    viewState: viewStateReducer,
   }
 });
 

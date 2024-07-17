@@ -5,24 +5,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { setViewMode } from "../../features/viewMode/viewModeSlice";
 import { center } from "@turf/turf";
 import { Flex } from "@chakra-ui/react";
-import { setZoomLevel } from "../../features/zoomLevel/zoomLevelSlice";
+import { setViewState } from "../../features/viewState/viewStateSlice";
 
 const Toolbar = () => {
 
     const dispatch: AppDispatch = useDispatch();
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode );
-    const zoomLevel = useSelector( (state: RootState) => state.zoomLevel);
+    //const zoomLevel = useSelector( (state: RootState) => state.zoomLevel);
+    const viewState = useSelector ( (state: RootState) => state.viewState)
 
-    useEffect(() => {
-        console.log('zzoom', zoomLevel)
-    },[zoomLevel])
+   /* useEffect(() => {
+        console.log('zzoom', viewState.zoom)
+    },[viewState])*/
 
     const zoomIn = () => {
-        dispatch(setZoomLevel(zoomLevel.zoom + 1))
+       // dispatch(setViewState(zoomLevel.zoom + 1))
+       dispatch (setViewState({
+        ...viewState,
+        zoom: viewState.zoom + 1
+       }));
     }
 
     const zoomOut = () => {
-        dispatch(setZoomLevel(zoomLevel.zoom - 1))
+        //dispatch(setViewState(zoomLevel.zoom - 1))
+        dispatch (setViewState({
+            ...viewState,
+            zoom: viewState.zoom - 1
+        }));
     }
 
 
