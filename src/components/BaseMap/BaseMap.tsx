@@ -298,9 +298,17 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     }
     
     const handleViewStateChange = ({ viewState }: { viewState: ViewStateState }) => {
-        dispatch(setViewState(viewState));
+        //dispatch(setViewState(viewState));
         console.log('zoommanual', viewState);
+        checkZoomLevel()
     };
+
+    const checkZoomLevel = () => {
+        if(viewState.zoom > 16) //si el zoom actual es mayor que equis cantidad de zoom espefico
+        {
+            console.log('x zoom reached')
+        }
+    }
     
     return (
         //@ts-ignore
@@ -310,14 +318,12 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 latitude: coords["latitud"],
                 longitude: coords["longitud"]
             }}
-            
             /*viewState={{
-               // ...zoomLevel,
-               ...viewState,
-                latitude: coords["latitud"],
-                longitude: coords["longitud"]
-            }}*/
-
+                // ...zoomLevel,
+                ...viewState,
+                 latitude: coords["latitud"],
+                 longitude: coords["longitud"]
+             }}*/
             onViewStateChange={handleViewStateChange}
 
             controller={{ dragPan: !isDrag }}
