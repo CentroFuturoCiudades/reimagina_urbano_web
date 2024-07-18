@@ -43,6 +43,9 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     const [ circleCoords, setCircleCoords ] = useState([-107.39367959923534, 24.753450686162093]);
     const [isDrag, setIsDrag] = useState(false);
     const [brushingRadius, setBrushingRadius] = useState(400); //radio esta en metros
+    const [processedViewState, setProcessedViewState] = useState({
+        ...viewState,
+    });
 
     const handleHover = useCallback((info: PickInfo<unknown>) => {
         if (info && info.coordinate) {
@@ -56,6 +59,11 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     let abortController = new AbortController();
 
     const [ viewLayers, setViewLayers ] = useState<any>({});
+
+    useEffect (() => {
+        console.log('cambio el viewState')
+        //dispatch(setViewState({...viewState}))
+    },[viewState])
 
     useEffect(() => {
         async function fetchData() {
@@ -293,22 +301,26 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
             getLineWidth: 10,
         });
 
+
     if (!coords) {
         return <div>Loading</div>;
     }
     
     const handleViewStateChange = ({ viewState }: { viewState: ViewStateState }) => {
         //dispatch(setViewState(viewState));
-        console.log('zoommanual', viewState);
-        checkZoomLevel()
+        //console.log('zoommanual', viewState);
+        if(viewState.zoom > 16) //si el zoom actual es mayor que equis cantidad de zoom espefico
+        {
+            //console.log('el zoom de viewState es:', viewState.zoom)
+            checkZoomLevel()
+        }
     };
 
     const checkZoomLevel = () => {
-        if(viewState.zoom > 16) //si el zoom actual es mayor que equis cantidad de zoom espefico
-        {
-            console.log('x zoom reached')
-        }
+        console.log('x zoom reached')
     }
+
+    
     
     return (
         //@ts-ignore
@@ -318,13 +330,16 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 latitude: coords["latitud"],
                 longitude: coords["longitud"]
             }}
-            /*viewState={{
+            //para zoom con botones
+            viewState={{
                 // ...zoomLevel,
                 ...viewState,
                  latitude: coords["latitud"],
                  longitude: coords["longitud"]
-             }}*/
-            onViewStateChange={handleViewStateChange}
+             }}
+            onViewStateChange={handleViewStateChange} //este es para zoom de usuario
+           
+            
 
             controller={{ dragPan: !isDrag }}
             layers={ [ poligonLayer, lotsLayer, ...Object.values(viewLayers) ]}
