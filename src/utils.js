@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { FlatGeobufLoader } from '@loaders.gl/flatgeobuf';
 import { load } from '@loaders.gl/core';
 import { geojson } from 'flatgeobuf';
+import { API_URL } from "./constants";
 
 export function lightenColor(color, factor) {
   var lightened = color.map(function (c) {
@@ -209,4 +210,28 @@ export const renderCustomizedLabel = ({
       {`${(percent * 100).toFixed(0)}%`}
     </text>
   );
+};
+
+export const fetchPolygonData = async ({
+    coordinates,
+    layer,
+}) => {
+    const url = `${API_URL}/poligon`;
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            body: JSON.stringify({
+                coordinates,
+                layer,
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const arrayBuffer = await response.arrayBuffer();
+        const data = await load(arrayBuffer, FlatGeobufLoader);
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
 };

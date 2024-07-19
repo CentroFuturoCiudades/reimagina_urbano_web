@@ -1,98 +1,172 @@
-import React, { useCallback, useEffect, useState } from "react";
-import * as LayersMapping from "../../layers/index";
-import { load } from "@loaders.gl/core";
-import { FlatGeobufLoader } from "@loaders.gl/flatgeobuf";
-import DeckGL from "@deck.gl/react";
+import React, { useEffect, useMemo, useState } from "react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { setLayers } from "../../features/layers/layersSlice";
-import PopulationPointsLayer from "../../layers/PopulationPointsLayer";
-import { VIEW_MODES } from "../../constants";
-import * as turf from "@turf/turf";
-import { debounce } from "lodash";
-import { Layer, PickInfo } from "deck.gl";
-import { setCoords, setDrag } from "../../features/lensSettings/lensSettingsSlice";
+import { API_URL, VIEW_MODES } from "../../constants";
+import { RGBAColor } from "deck.gl";
+import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
+import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
+import { EditableGeoJsonLayer } from "@nebula.gl/layers";
+import axios from "axios";
+import { GenericObject } from "../../types";
+import { LotsLayer, useLensLayer } from "../../layers";
+import * as d3 from "d3";
+import { fetchPolygonData } from "../../utils";
+import PointsLayer from "../../layers/PointsLayer";
+
+const useDrawPoligonLayer = () => {
+    const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+
+    const [polygon, setPolygon] = useState<any>({
+        type: "FeatureCollection",
+        features: [],
+    });
+
+    const handleEdit = ({ updatedData, editType, editContext }: any) => {
+        const selectedArea = updatedData.features[0];
+        if (selectedArea) {
+            setPolygon({
+                type: "FeatureCollection",
+                features: updatedData.features,
+            });
+        }
+    };
+
+    if (viewMode !== VIEW_MODES.POLIGON) {
+        return { drawPoligonData: polygon, layers: [] };
+    }
+
+    const drawLayer = new EditableGeoJsonLayer({
+        id: "editable-layer",
+        data: polygon,
+        mode: polygon.features.length === 0 ? new DrawPolygonMode() : new ViewMode(),
+        selectedFeatureIndexes: [0],
+        onEdit: handleEdit,
+        pickable: true,
+        getTentativeFillColor: [255, 255, 255, 50],
+        getFillColor: [0, 0, 0, 100],
+        getTentativeLineColor: [0, 0, 255, 200],
+        getLineColor: [0, 0, 255, 200],
+    });
+
+    return { drawPoligonData: polygon, layers: [drawLayer] };
+};
 
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
 
-    const [ toolLayers, setToolLayers ] = useState<any>([]);
+    const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const metric = useSelector((state: RootState) => state.queryMetric.queryMetric);
+    const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
 
-    const selectedLots = useSelector( (state: RootState) => state.selectedLots.selectedLots );
+    const [coords, setCoords] = useState({
+        latitud: 24.753450686162093,
+        longitud: -107.39367959923534,
+    });
+    const [queryData, setQueryData] = useState<any>({});
+    const [coordinates, setCoordinates] = useState<any>([]);
+    const [dataLayers, setDataLayers] = useState<any[]>([]);
 
-    //LENS PROPS
-    const viewMode = useSelector( (state: RootState) => state.viewMode.viewMode );
-    const circleCoords = useSelector( (state: RootState) => state.lensSettings.coords );
-    const brushingRadius = useSelector( (state: RootState) => state.lensSettings.brushingRadius );
-    const isDrag = useSelector( (state: RootState) => state.lensSettings.isDrag );
+    const { lensData, layers: lensLayers } = useLensLayer({ coords });
+    const { drawPoligonData, layers: drawPoligonLayers } = useDrawPoligonLayer();
 
-    const handleHover = useCallback((info: PickInfo<unknown>) => {
-        if (info && info.coordinate) {
-            dispatch( setCoords([info.coordinate[0], info.coordinate[1]]) );
-        } else {
-            dispatch( setCoords( [0, 0] ) );
-        }
-      }, []);
-    const debouncedHover = useCallback(debounce(handleHover, 100), [handleHover]);
-
-
-    useEffect(()=> {
-
-        switch( viewMode ){
-            case VIEW_MODES.FULL:
-                dispatch( setLayers( [] ))
-                break;
-
-            case VIEW_MODES.LENS:
-                const circleLayer = {
-                    key:"circle-layer",
-                    id:"circle",
-                    data: turf.circle(circleCoords, brushingRadius, { units: "meters" }),
-                    filled: true,
-                    getFillColor: [0, 120, 0, 25],
-                    getLineColor: [0, 120, 0, 255],
-                    getLineWidth: 5,
-                    pickable: true,
-                    onDragStart: () => { dispatch( setDrag( true ) ) },
-                    onDrag: (info: any, _: any) => { if(info && info.coordinate) dispatch( setCoords([info.coordinate[0], info.coordinate[1]]) ); },
-                    onDragEnd: (info: any, _: any) => {
-                        dispatch( setDrag( false ) )
-                        debouncedHover(info);
-                    }
-                }
-
-                setToolLayers( [ circleLayer ] )
-
-                break;
-        }
-
-    }, [ viewMode, circleCoords ])
+    //String values allow the serialization of those properties. Avoids infinite re-rendering
+    const lensDataString = useMemo(() => JSON.stringify(lensData), [lensData]);
+    const drawPoligonDataString = useMemo(() => JSON.stringify(drawPoligonData), [drawPoligonData]);
 
     useEffect(() => {
+        setDataLayers([]);
 
-        const fetchData = async () => {
-            dispatch(
-                setLayers([
-                    ...toolLayers,
-                    //...await LayersMapping.PopulationPoints( { viewMode: viewMode ,coords: circleCoords, radius: brushingRadius } ),
-                    ...await LayersMapping.AmenitiesLayer()
-                ])
-             );
-        };
+        let temp =
+            viewMode === VIEW_MODES.LENS
+                ? lensData?.geometry.coordinates[0]
+                : drawPoligonData?.features
+                ? drawPoligonData.features[0]?.geometry.coordinates[0]
+                : null;
 
-        if(!isDrag){
-            fetchData();
-        } else {
-            dispatch(
-                setLayers( toolLayers )
-            )
+        setCoordinates(temp);
+    }, [viewMode, lensDataString, drawPoligonDataString]);
+
+    useEffect(() => {
+        if (isDrag) {
+            return;
         }
 
-    }, [ circleCoords, toolLayers ]);
+        async function fetchData() {
+            if (!metric || !coordinates) return;
+            const response = await axios.post(`${API_URL}/query`, {
+                metric: metric,
+                accessibility_info: {},
+                coordinates,
+            });
+            if (response && response.data) {
+                const queryDataByProductId: GenericObject = {};
 
+                const ids: string[]  = response.data.map((x: any) => x.ID) ;
+                dispatch( setSelectedLots( ids ));
 
-    return <></>
+                response.data.forEach((data: any) => {
+                    queryDataByProductId[data["ID"]] = data["value"];
+                });
+
+                setQueryData(queryDataByProductId);
+            }
+        }
+        fetchData();
+    }, [metric, coordinates, isDrag]);
+
+    useEffect(() => {
+        const getFillColor = (d: any): RGBAColor => {
+            if (d.properties.ID in queryData) {
+                const value = queryData[d.properties.ID];
+                const domain = [
+                    Math.min(...(Object.values(queryData) as any)),
+                    Math.max(...(Object.values(queryData) as any)),
+                ];
+                const colors = d3.quantize(
+                    d3.interpolateRgb(
+                        `rgba(200, 255, 200, 1)`,
+                        `rgba(0, 100, 0, 1)`
+                    ),
+                    8
+                );
+                const quantiles = d3
+                    .scaleQuantize<string>()
+                    .domain(domain)
+                    .range(colors);
+                const colorString = quantiles(value);
+                const color = d3.color(colorString)?.rgb();
+                return color ? [color.r, color.g, color.b] : [255, 255, 255];
+            }
+            return [255, 0, 0];
+        };
+
+        const getData = async () => {
+            const layer = await LotsLayer({ coordinates, getFillColor });
+            if (layer) {
+                setDataLayers( (dataLayers)=> {
+                    return [...dataLayers, layer]
+                });
+            }
+
+            const points = await PointsLayer({ coordinates, getFillColor: [255, 0, 0, 255] });
+            if (layer) {
+                setDataLayers( (dataLayers)=> {
+                    return [...dataLayers, points]
+                });
+            }
+        };
+
+        getData();
+    }, [queryData]);
+
+    const layers: any[] = [...dataLayers, ...lensLayers, ...drawPoligonLayers];
+
+    return { layers };
 };
 
 export default Layers;
+
+
+
+
