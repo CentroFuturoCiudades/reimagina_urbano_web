@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { AccessibilityToolbar } from "../components";
-import { useDispatch } from "react-redux";
 import { GenericObject } from "../types";
+import { SelectAutoComplete } from "../components";
+
 
 const Accesibilidad = ()=> {
 
@@ -30,6 +31,7 @@ const Accesibilidad = ()=> {
     return (
         <div>
             <AccessibilityToolbar configuration={configuration}></AccessibilityToolbar>
+            <SelectAutoComplete />
         </div>
     )
 }

@@ -3,6 +3,7 @@ import "./Toolbar.scss";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setViewMode } from "../../features/viewMode/viewModeSlice";
+import { VIEW_MODES } from "../../constants";
 
 const Toolbar = () => {
 
@@ -13,20 +14,20 @@ const Toolbar = () => {
         <div className="toolbar">
             <div className="toolbar__tools">
                 <span
-                    className={ viewMode == "full" ? "toolbar__tools--active" : ""}
-                    onClick={ ()=> dispatch(setViewMode("full")) }
+                    className={ viewMode === VIEW_MODES.FULL ? "toolbar__tools--active" : ""}
+                    onClick={ ()=> dispatch(setViewMode( VIEW_MODES.FULL )) }
                 >
                         Completo
                 </span>
                 <span
-                    className={ viewMode == "poligon" ? "toolbar__tools--active" : ""}
-                    onClick={ ()=> dispatch(setViewMode("poligon")) }
+                    className={ viewMode === VIEW_MODES.POLIGON ? "toolbar__tools--active" : ""}
+                    onClick={ ()=> dispatch(setViewMode( VIEW_MODES.POLIGON )) }
                 >
                         Poligono
                 </span>
                 <span
-                    className={ viewMode == "lens" ? "toolbar__tools--active" : ""}
-                    onClick={ ()=> dispatch(setViewMode("lens")) }
+                    className={ viewMode === VIEW_MODES.LENS ? "toolbar__tools--active" : ""}
+                    onClick={ ()=> dispatch( setViewMode( VIEW_MODES.LENS )) }
                 >
                         Lupa
                 </span>

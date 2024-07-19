@@ -59,3 +59,9 @@ export const COLUMN_MAPPING: GenericObject = {
   P_65MAS: "Población de 65 años y más",
   max_home_units: "Unidades Máximas de Vivienda",
 };
+
+export enum VIEW_MODES {
+    FULL,
+    POLIGON,
+    LENS
+}
