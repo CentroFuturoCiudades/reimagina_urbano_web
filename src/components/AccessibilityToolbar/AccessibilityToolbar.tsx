@@ -9,11 +9,14 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Text,
 } from "@chakra-ui/react";
 import { GenericObject } from "../../types";
 import { useDispatch, useSelector } from "react-redux";
 import { setAccSettings } from "../../features/accSettings/accSettingsSlice";
 import { RootState } from "../../app/store";
+import { useState } from "react";
+import './Accesibilidad.scss';
 
 const mappingLabels: GenericObject = {
   proximity_small_park: "Parque",
@@ -32,7 +35,11 @@ const AccessibilityToolbar = ({
 }: AccessibilityToolbarProps) => {
 
     const dispatch = useDispatch();
+    const [isOpen, setIsOpen] = useState(true);
 
+    const toggleAccordion = () => {
+        setIsOpen(!isOpen);
+    };
 
     let proximityOptions: GenericObject = useSelector((state: RootState) => state.accSettings.accSettings );
 
@@ -66,22 +73,28 @@ const AccessibilityToolbar = ({
   };
 
   return (
-    <Box
-      style={{
+    <>
+      <div className="accordion-header2" onClick={toggleAccordion}>
+          <Box flex="1" textAlign="left">
+              Servicios de proximidad
+          </Box>
+      </div>
+      <Box
+        style={{
 
-      }}
-    >
+        }}
+      >
 
-      { true && (
-        <Accordion allowMultiple my={4}>
+      { isOpen && (
+        <Accordion className="visor-container2" allowMultiple >
           <AccordionItem>
-            <AccordionButton>
-              <Box flex="1" textAlign="left">
-                Seleccionar Proximidad
-              </Box>
-            </AccordionButton>
+          <Box className="stat-row" >
+            <Box className="stat-title-box">
+                <Text className="stat-title">Servicios y equipamientos</Text>
+            </Box>
+          </Box>
               {Object.entries(proximityOptions).map(([key, initialValue]) => (
-                <Box key={key} display="flex" alignItems="center" mb={2}>
+                <Box key={key} display="flex" alignItems="center" mb={2} className="checkbox-container">
                   <Checkbox
                     isChecked={!!configuration.accessibility_info[key]}
                     onChange={(e) =>
@@ -113,7 +126,7 @@ const AccessibilityToolbar = ({
           </AccordionItem>
         </Accordion>
       )}
-    </Box>
+    </Box></>
   );
 };
 

@@ -3,7 +3,6 @@ import { AccessibilityToolbar } from "../components";
 import { useDispatch } from "react-redux";
 import { GenericObject } from "../types";
 
-
 const Accesibilidad = ()=> {
 
     const [configuration, setConfiguration] = useState<GenericObject>({
