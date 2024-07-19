@@ -4,7 +4,6 @@ import { GenericObject } from "../types";
 import { SelectAutoComplete } from "../components";
 
 
-
 const Accesibilidad = ()=> {
 
     const [configuration, setConfiguration] = useState<GenericObject>({
