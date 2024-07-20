@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { DeckGL } from '@deck.gl/react';
 import { GeoJsonLayer } from '@deck.gl/layers';
 import { Map } from 'react-map-gl';
@@ -43,9 +43,9 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     const [ circleCoords, setCircleCoords ] = useState([-107.39367959923534, 24.753450686162093]);
     const [isDrag, setIsDrag] = useState(false);
     const [brushingRadius, setBrushingRadius] = useState(400); //radio esta en metros
-    const [processedViewState, setProcessedViewState] = useState({
-        ...viewState,
-    });
+
+    const [localViewState, setLocalViewState] = useState(viewState) //una copia del viewState de redux (no podia hacer dos setViewState de redux porque tronaba)
+    const memoViewState = useMemo(() => JSON.stringify(viewState),[viewState]);
 
     const handleHover = useCallback((info: PickInfo<unknown>) => {
         if (info && info.coordinate) {
@@ -60,10 +60,17 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
 
     const [ viewLayers, setViewLayers ] = useState<any>({});
 
+    //Cada que haya un cambio en los botones, actualiza el local
     useEffect (() => {
-        console.log('cambio el viewState')
-        //dispatch(setViewState({...viewState}))
+        console.log("Actualizando localViewState de reduxViewState")
+        setLocalViewState(viewState)
+        if(localViewState.zoom > 16)
+        {
+            checkZoomLevel()
+        }
     },[viewState])
+
+    
 
     useEffect(() => {
         async function fetchData() {
@@ -308,12 +315,8 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     
     const handleViewStateChange = ({ viewState }: { viewState: ViewStateState }) => {
         //dispatch(setViewState(viewState));
-        //console.log('zoommanual', viewState);
-        if(viewState.zoom > 16) //si el zoom actual es mayor que equis cantidad de zoom espefico
-        {
-            //console.log('el zoom de viewState es:', viewState.zoom)
-            checkZoomLevel()
-        }
+        setLocalViewState(viewState)
+
     };
 
     const checkZoomLevel = () => {
@@ -331,12 +334,12 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 longitude: coords["longitud"]
             }}
             //para zoom con botones
-            viewState={{
-                // ...zoomLevel,
-                ...viewState,
+            /*viewState={{
+                //...viewState,
+                ...localViewState,
                  latitude: coords["latitud"],
                  longitude: coords["longitud"]
-             }}
+             }}*/
             onViewStateChange={handleViewStateChange} //este es para zoom de usuario
            
             
