@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FocusEvent } from 'react';
+import React, { useState, ChangeEvent, FocusEvent, useEffect } from 'react';
 import {
   Box,
   Input,
@@ -16,10 +16,9 @@ import {
 import { IoClose } from 'react-icons/io5';
 import { setAccessibilityList } from '../../features/accessibilityList/accessibilityListSlice';
 import { AppDispatch } from "../../app/store";
-import { useDispatch } from "react-redux";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-
+import { GenericObject } from '../../types';
 
 const options = [
   { value: 'landuse_park', label: 'Parque' },
@@ -27,66 +26,41 @@ const options = [
   { value: 'establishments', label: 'Establecimientos' },
 ];
 
-interface Option {
-  value: string;
-  label: string;
-}
 
 const SelectAutoComplete = () => {
-  const [filteredOptions, setFilteredOptions] = useState<Option[]>(options);
+  const [filteredOptions, setFilteredOptions] = useState<GenericObject[]>(options);
   const [search, setSearch] = useState<string>('');
-  const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const accessibilityList = useSelector((state: RootState) => state.accessibilityList.accessibilityList);
-
-
   const dispatch: AppDispatch = useDispatch();
 
+  useEffect(() => {
+    setFilteredOptions(
+      options.filter(
+        (option) =>
+          option.label.toLowerCase().includes(search.toLowerCase()) &&
+          !accessibilityList.some((selected) => selected.value === option.value)
+      )
+    );
+  }, [search, accessibilityList]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearch(value);
-    setFilteredOptions(
-      options.filter(
-        (option) =>
-          option.label.toLowerCase().includes(value.toLowerCase()) &&
-          !accessibilityList.some((selected) => selected.value === option.value)
-      )
-    );
   };
 
-  const handleOptionClick = (option: Option) => {
-    const updatedSelectedOptions = [...selectedOptions, option];
-    dispatch(setAccessibilityList([...accessibilityList, option]));
-    setSelectedOptions(updatedSelectedOptions);
+  const handleOptionClick = (option: GenericObject) => {
+    const updatedSelectedOptions = [...accessibilityList, option];
+    dispatch(setAccessibilityList(updatedSelectedOptions));
     setSearch('');
-    setFilteredOptions(
-      options.filter(
-        (opt) =>
-          !updatedSelectedOptions.some((selected) => selected.value === opt.value) &&
-          opt.label.toLowerCase().includes('')
-      )
-    );
     setIsFocused(false);
   };
 
-  const handleRemoveOption = (option: Option) => {
-    const updatedSelectedOptions = selectedOptions.filter(
+  const handleRemoveOption = (option: GenericObject) => {
+    const updatedSelectedOptions = accessibilityList.filter(
       (selected) => selected.value !== option.value
     );
-    setSelectedOptions(updatedSelectedOptions);
-    setFilteredOptions(
-      options.filter(
-        (opt) =>
-          !updatedSelectedOptions.some((selected) => selected.value === opt.value) &&
-          opt.label.toLowerCase().includes(search)
-      )
-    );
-    dispatch(setAccessibilityList(
-      selectedOptions.filter(
-        (selected) => selected.value !== option.value
-      )
-    ))
+    dispatch(setAccessibilityList(updatedSelectedOptions));
   };
 
   const handleFocus = (e: FocusEvent<HTMLInputElement>) => {
@@ -101,12 +75,12 @@ const SelectAutoComplete = () => {
     <Box position="relative">
       <Input
         variant="outline"
-        placeholder={"Selecciona una opción"}
+        placeholder="Selecciona una opción"
         value={search}
         onChange={handleSearchChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        size={"sm"}
+        size="sm"
       />
       {isFocused && (
         <Box
@@ -120,7 +94,7 @@ const SelectAutoComplete = () => {
           bg="white"
           zIndex="1"
         >
-          <List size={"sm"} spacing={1}>
+          <List size="sm" spacing={1}>
             {filteredOptions.map((option) => (
               <ListItem
                 key={option.value}
@@ -130,36 +104,29 @@ const SelectAutoComplete = () => {
                 _hover={{ backgroundColor: 'gray.100' }}
                 onMouseDown={() => handleOptionClick(option)}
               >
-                <Text>
-                  {option.label}
-
-                </Text>
+                <Text>{option.label}</Text>
               </ListItem>
             ))}
           </List>
         </Box>
       )}
       <Box mt={2}>
-        {selectedOptions.length > 0 && selectedOptions.map((option) => (
-          <Flex key={option.value} align="center" mt={2}>
-            <Button size={"xs"} bg={"white"} borderWidth={"1px"} marginRight={"1dvw"} onClick={() => handleRemoveOption(option)}>
-              <IoClose color="red" />
-            </Button>
-            <NumberInput
-                    width="50px"
-                    size="xs"
-                    defaultValue={0}
-                    min={0}
-                  >
-              <NumberInputField />
+        {accessibilityList.length > 0 &&
+          accessibilityList.map((option) => (
+            <Flex key={option.value} align="center" mt={2}>
+              <Button size="xs" bg="white" borderWidth="1px" marginRight="1dvw" onClick={() => handleRemoveOption(option)}>
+                <IoClose color="red" />
+              </Button>
+              <NumberInput width="50px" size="xs" defaultValue={0} min={0}>
+                <NumberInputField />
                 <NumberInputStepper>
                   <NumberIncrementStepper fontSize="8px" />
                   <NumberDecrementStepper fontSize="8px" />
                 </NumberInputStepper>
-            </NumberInput>
-            <Text marginStart={3}>{option.label}</Text>
-          </Flex>
-        ))}
+              </NumberInput>
+              <Text marginStart={3}>{option.label}</Text>
+            </Flex>
+          ))}
       </Box>
     </Box>
   );

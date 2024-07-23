@@ -155,22 +155,17 @@ const Layers = () => {
             }
 
             const points = await PointsLayer({ coordinates, getFillColor: [255, 0, 0, 255] });
+            const amenities = await AmenitiesLayer({ amenitiesArray });
             if (layer) {
                 setDataLayers( (dataLayers)=> {
-                    return [...dataLayers, points]
+                    return [...dataLayers, points, amenities]
                 });
             }
-
-            const amenities = await AmenitiesLayer(amenitiesArray);
-            if (layer) {
-                setDataLayers( (dataLayers)=> {
-                    return [...dataLayers, amenities]
-                });
-            }
+            
         };
 
         getData();
-    }, [queryData]);
+    }, [queryData, amenitiesArray]);
 
     const layers: any[] = [...dataLayers, ...lensLayers, ...drawPoligonLayers];
 

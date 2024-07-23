@@ -14,11 +14,10 @@ const METRIC_COLOR: GenericObject = {
 
 const AmenitiesLayer = async (props: any) => {
   const amenitiesArray = props;
-  const layers: any[] = []; // Initialize layers as an empty array
+  const layers: any[] = [];
 
 
   for (let i = 0; i < amenitiesArray.length; i++) {
-    console.log("layer", amenitiesArray[i]);
     let response = await fetch(`http://127.0.0.1:8000/layers?layers=${amenitiesArray[i].value}`, {
       cache: "reload"
     });
