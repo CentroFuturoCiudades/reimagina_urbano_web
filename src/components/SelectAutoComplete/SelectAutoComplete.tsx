@@ -22,11 +22,9 @@ import { RootState } from "../../app/store";
 
 
 const options = [
-  { value: 'parque', label: 'Parque' },
-  { value: 'salud', label: 'Salud' },
-  { value: 'educacion', label: 'Educación' },
-  { value: 'servicios', label: 'Servicios' },
-  { value: 'supermercado', label: 'Supermercado' },
+  { value: 'landuse_park', label: 'Parque' },
+  { value: 'landuse_equipment', label: 'Equipamiento' },
+  { value: 'establishments', label: 'Establecimientos' },
 ];
 
 interface Option {

@@ -14,6 +14,9 @@ import { debounce } from "lodash";
 import { Layer, PickInfo } from "deck.gl";
 import { setCoords, setDrag } from "../../features/lensSettings/lensSettingsSlice";
 
+import { GenericObject } from "../../types";
+
+
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
 
@@ -36,6 +39,12 @@ const Layers = () => {
       }, []);
     const debouncedHover = useCallback(debounce(handleHover, 100), [handleHover]);
 
+    let amenitiesArray: GenericObject = useSelector((state: RootState) => state.accessibilityList.accessibilityList );
+
+
+    // useEffect(() => {
+    //   console.log("AmenitiesArray:", amenitiesArray);
+    // }, [amenitiesArray])
 
     useEffect(()=> {
 
@@ -76,7 +85,7 @@ const Layers = () => {
                 setLayers([
                     ...toolLayers,
                     //...await LayersMapping.PopulationPoints( { viewMode: viewMode ,coords: circleCoords, radius: brushingRadius } ),
-                    ...await LayersMapping.AmenitiesLayer()
+                    ...await LayersMapping.AmenitiesLayer(amenitiesArray) 
                 ])
              );
         };
@@ -89,7 +98,7 @@ const Layers = () => {
             )
         }
 
-    }, [ circleCoords, toolLayers ]);
+    }, [ circleCoords, toolLayers, amenitiesArray ]);
 
 
     return <></>
