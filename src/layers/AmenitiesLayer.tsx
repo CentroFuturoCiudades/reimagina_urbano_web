@@ -1,6 +1,8 @@
 import { load } from "@loaders.gl/core";
 import { FlatGeobufLoader } from "@loaders.gl/flatgeobuf";
 import { GenericObject } from '../types';
+import { fetchPolygonData } from "../utils";
+import { GeoJsonLayer } from "deck.gl";
 
 const METRIC_COLOR: GenericObject = {
   landuse_parking: [120, 120, 120, 255],
@@ -13,25 +15,23 @@ const METRIC_COLOR: GenericObject = {
 }
 
 const AmenitiesLayer = async (props: any) => {
-  const amenitiesArray = props;
+  const amenitiesArray = props.amenitiesArray;
   const layers: any[] = [];
+  const coordinates = props.coordinates;
 
 
   for (let i = 0; i < amenitiesArray.length; i++) {
-    let response = await fetch(`http://127.0.0.1:8000/layers?layers=${amenitiesArray[i].value}`, {
-      cache: "reload"
-    });
-    let arrayBuffer = await response.arrayBuffer();
-    let loadedData = await load(arrayBuffer, FlatGeobufLoader);
+    const layer = amenitiesArray[i].value
+    const data = await fetchPolygonData({ coordinates, layer: layer });
 
-    layers.push({
-      id: `points-${i}`,
-      data: loadedData.features,
-      filled: true,
-      wireframe: false,
-      getLineWidth: 0,
-      getFillColor: METRIC_COLOR[amenitiesArray[i].value],
-    });
+    layers.push( new GeoJsonLayer({
+        id: layer,
+        data: data,
+        filled: true,
+        getFillColor: METRIC_COLOR[amenitiesArray[i].value],
+        getLineWidth: 0,
+        pickable: true,
+    }))
 
   }
 
