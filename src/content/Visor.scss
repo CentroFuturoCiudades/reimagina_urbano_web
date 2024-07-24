@@ -36,6 +36,13 @@
             padding: 0.5rem;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             margin-bottom: 0.3rem;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+
+            &:hover {
+                color:rgba(134,151,64, 0.8);
+            }
         }
 
         .stat-title {

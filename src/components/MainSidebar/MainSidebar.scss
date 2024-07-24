@@ -19,7 +19,7 @@
         color: white;
         transition: none;
 
-        
+
     }
 
     .tab-visor {
@@ -29,17 +29,25 @@
 
     .tab-accesibilidad {
         background-color: rgba(133, 156, 190, 0.8); /* color de Accesibilidad */
-        
+
     }
 
     .tab-potencial {
         background-color: rgba(206, 173, 102, 0.8); /* color de Potencial */
-        
+
     }
 
     .chakra-tabs__tabpanel {
         padding: 1rem;
         height: calc(100% - 3rem); /* ajusta la altura según el tamaño de las pestañas */
         overflow-y: auto;
+    }
+}
+
+.visor{
+    &__icon {
+        &--active {
+            color: rgba(134,151,64, 0.8) !important;
+        }
     }
 }
