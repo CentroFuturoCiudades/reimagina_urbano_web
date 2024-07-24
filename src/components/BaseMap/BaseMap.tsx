@@ -46,20 +46,10 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
 
     const [localViewState, setLocalViewState] = useState(viewState) //una copia del viewState de redux (no podia hacer dos setViewState de redux porque tronaba)
     const memoViewState = useMemo(() => JSON.stringify(viewState),[viewState]); //el string tal cual del viewstate
-    const memoizedViewState = useMemo(() => {
-        return {
-          ...localViewState,
-          //latitude: coords?.["latitud"] ?? localViewState.latitude,
-          //longitude: coords?.["longitud"] ?? localViewState.longitude,
-          latitude:  localViewState.latitude,
-          longitude: localViewState.longitude,
-        };
-      }, [localViewState, coords]);
-
-
-    const mm = useMemo(() => JSON.stringify({...localViewState, latitude:  localViewState.latitude,
-        longitude: localViewState.longitude}),[localViewState])
-    
+    const memoLocal = useMemo(() => (localViewState),[localViewState])
+    const memoZoom = useMemo(() => (localViewState.zoom),[localViewState.zoom])
+    const memoCoordsLat = useMemo(() => (localViewState.latitude),[localViewState.latitude])
+    const memoCoordsLong = useMemo(() => (localViewState.longitude),[localViewState.longitude])
 
     const handleHover = useCallback((info: PickInfo<unknown>) => {
         if (info && info.coordinate) {
@@ -76,7 +66,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
 
     //Cada que haya un cambio en los botones, actualiza el local
     useEffect (() => {
-        console.log("Actualizando localViewState de reduxViewState!!", viewState)
+        //console.log("Actualizando localViewState de reduxViewState!!", viewState)
         setLocalViewState({...viewState,
             latitude: coords?.["latitud"] ?? 0,
             longitude: coords?.["longitud"] ?? 0
@@ -89,10 +79,30 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     },[viewState])
 
     useEffect(() => {
-        console.log('por alguna razon cambia', mm)
-        //dispatch(setViewState(memoizedViewState))
-    }, [mm])
+        dispatch(setViewState({
+            //...localViewState
+            ...viewState,
+            //latitude: memoCoordsLat,
+            //longitude: memoCoordsLong,
+            zoom: memoZoom,
+        }));
+    }, [memoZoom])
 
+
+
+
+   /* const lensDataString = useMemo(() => JSON.stringify(lensDataString),[lensDataString])
+    const drawPolygonDataString = useMemo(() => JSON.stringify(drawPolygonDataString),[drawPolygonDataString])
+
+    useEffect(() => {
+        let temp =
+            viewMode === VIEW_MODES.lens
+            ? lensData?.geometry.coordinates[0]
+            : drawPolygonData?.features
+            ? drawPolygonData.features[0]?.geometry.coordinates[0]
+            : null;
+        setCoordinates(temp)
+    },[viewMode, lensDataString, drawPolygonDataString])*/
     
 
     useEffect(() => {
@@ -352,7 +362,6 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
           };*/
 
         setLocalViewState(viewState)
-        setViewState(localViewState)
 
         /*dispatch(setViewState({
             ...memoizedViewState,
