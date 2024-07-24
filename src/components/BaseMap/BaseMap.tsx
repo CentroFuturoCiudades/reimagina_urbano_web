@@ -45,7 +45,21 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     const [brushingRadius, setBrushingRadius] = useState(400); //radio esta en metros
 
     const [localViewState, setLocalViewState] = useState(viewState) //una copia del viewState de redux (no podia hacer dos setViewState de redux porque tronaba)
-    const memoViewState = useMemo(() => JSON.stringify(viewState),[viewState]);
+    const memoViewState = useMemo(() => JSON.stringify(viewState),[viewState]); //el string tal cual del viewstate
+    const memoizedViewState = useMemo(() => {
+        return {
+          ...localViewState,
+          //latitude: coords?.["latitud"] ?? localViewState.latitude,
+          //longitude: coords?.["longitud"] ?? localViewState.longitude,
+          latitude:  localViewState.latitude,
+          longitude: localViewState.longitude,
+        };
+      }, [localViewState, coords]);
+
+
+    const mm = useMemo(() => JSON.stringify({...localViewState, latitude:  localViewState.latitude,
+        longitude: localViewState.longitude}),[localViewState])
+    
 
     const handleHover = useCallback((info: PickInfo<unknown>) => {
         if (info && info.coordinate) {
@@ -62,13 +76,22 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
 
     //Cada que haya un cambio en los botones, actualiza el local
     useEffect (() => {
-        console.log("Actualizando localViewState de reduxViewState")
-        setLocalViewState(viewState)
+        console.log("Actualizando localViewState de reduxViewState!!", viewState)
+        setLocalViewState({...viewState,
+            latitude: coords?.["latitud"] ?? 0,
+            longitude: coords?.["longitud"] ?? 0
+            
+        })
         if(localViewState.zoom > 16)
         {
             checkZoomLevel()
         }
     },[viewState])
+
+    useEffect(() => {
+        console.log('por alguna razon cambia', mm)
+        //dispatch(setViewState(memoizedViewState))
+    }, [mm])
 
     
 
@@ -226,8 +249,15 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
           await axios.get(`${API_URL}/project/${project}`);
           const coords = await axios.get(`${API_URL}/coords`);
           setCoords(coords.data);
+
+          setLocalViewState((prevState) => ({
+            ...prevState,
+            latitude: coords.data.latitud,
+            longitude: coords.data.longitud
+          }));
         }
         updateProject();
+
     }, [project]);
 
 
@@ -315,8 +345,20 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     
     const handleViewStateChange = ({ viewState }: { viewState: ViewStateState }) => {
         //dispatch(setViewState(viewState));
-        setLocalViewState(viewState)
+        /*const updatedViewState = {
+            ...viewState,
+            latitude: coords?.["latitud"] ?? viewState.latitude,
+            longitude: coords?.["longitud"] ?? viewState.longitude
+          };*/
 
+        setLocalViewState(viewState)
+        setViewState(localViewState)
+
+        /*dispatch(setViewState({
+            ...memoizedViewState,
+            transitionDuration: 100,
+          }));*/
+        
     };
 
     const checkZoomLevel = () => {
@@ -333,13 +375,9 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 latitude: coords["latitud"],
                 longitude: coords["longitud"]
             }}
-            //para zoom con botones
-            /*viewState={{
-                //...viewState,
-                ...localViewState,
-                 latitude: coords["latitud"],
-                 longitude: coords["longitud"]
-             }}*/
+            //viewState={localViewState}
+            //viewState={memoizedViewState}
+            viewState={localViewState}
             onViewStateChange={handleViewStateChange} //este es para zoom de usuario
            
             
