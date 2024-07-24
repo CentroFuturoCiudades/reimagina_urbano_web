@@ -9,7 +9,7 @@ import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
 import { GenericObject } from "../../types";
-import { LotsLayer, useLensLayer } from "../../layers";
+import { AmenitiesLayer, LotsLayer, useLensLayer } from "../../layers";
 import * as d3 from "d3";
 import { fetchPolygonData } from "../../utils";
 import PointsLayer from "../../layers/PointsLayer";
@@ -44,13 +44,15 @@ const useDrawPoligonLayer = () => {
         onEdit: handleEdit,
         pickable: true,
         getTentativeFillColor: [255, 255, 255, 50],
-        getFillColor: [0, 0, 0, 100],
+        getFillColor: [0, 0, 0, 50],
         getTentativeLineColor: [0, 0, 255, 200],
         getLineColor: [0, 0, 255, 200],
     });
 
     return { drawPoligonData: polygon, layers: [drawLayer] };
 };
+
+
 
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -74,6 +76,9 @@ const Layers = () => {
     const lensDataString = useMemo(() => JSON.stringify(lensData), [lensData]);
     const drawPoligonDataString = useMemo(() => JSON.stringify(drawPoligonData), [drawPoligonData]);
 
+    const amenitiesArray: GenericObject = useSelector((state: RootState) => state.accessibilityList.accessibilityList );
+
+
     useEffect(() => {
         setDataLayers([]);
 
@@ -94,22 +99,26 @@ const Layers = () => {
 
         async function fetchData() {
             if (!metric || !coordinates) return;
-            const response = await axios.post(`${API_URL}/query`, {
-                metric: metric,
-                accessibility_info: {},
-                coordinates,
-            });
-            if (response && response.data) {
-                const queryDataByProductId: GenericObject = {};
-
-                const ids: string[]  = response.data.map((x: any) => x.ID) ;
-                dispatch( setSelectedLots( ids ));
-
-                response.data.forEach((data: any) => {
-                    queryDataByProductId[data["ID"]] = data["value"];
+            try {
+                const response = await axios.post(`${API_URL}/query`, {
+                    metric: metric,
+                    accessibility_info: {},
+                    coordinates,
                 });
+                if (response && response.data) {
+                    const queryDataByProductId: GenericObject = {};
 
-                setQueryData(queryDataByProductId);
+                    const ids: string[]  = response.data.map((x: any) => x.ID) ;
+                    dispatch( setSelectedLots( ids ));
+
+                    response.data.forEach((data: any) => {
+                        queryDataByProductId[data["ID"]] = data["value"];
+                    });
+
+                    setQueryData(queryDataByProductId);
+                }
+            } catch (e){
+                console.log( e );
             }
         }
         fetchData();
@@ -142,6 +151,7 @@ const Layers = () => {
         };
 
         const getData = async () => {
+
             const layer = await LotsLayer({ coordinates, getFillColor });
             if (layer) {
                 setDataLayers( (dataLayers)=> {
@@ -150,15 +160,23 @@ const Layers = () => {
             }
 
             const points = await PointsLayer({ coordinates, getFillColor: [255, 0, 0, 255] });
-            if (layer) {
+            if (points) {
                 setDataLayers( (dataLayers)=> {
                     return [...dataLayers, points]
                 });
             }
+
+            const amenities = await AmenitiesLayer({ coordinates, amenitiesArray });
+            if( amenities && amenities.length ){
+                setDataLayers( (dataLayers)=> {
+                    return [...dataLayers, ...amenities]
+                });
+            }
+
         };
 
         getData();
-    }, [queryData]);
+    }, [queryData, amenitiesArray]);
 
     const layers: any[] = [...dataLayers, ...lensLayers, ...drawPoligonLayers];
 
