@@ -10,6 +10,7 @@ import { setBaseColor } from "../../features/baseColor/baseColorSlice";
 import Toolbar from "../Toolbar";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import { Accesibilidad } from "../../content";
+import { Potencial } from "../../content";
 
 const MainSidebar = () => {
     const [metrics, setMetrics] = useState<any>({});
@@ -67,8 +68,8 @@ const MainSidebar = () => {
                     <Accesibilidad></Accesibilidad>
                 </TabPanel>
                 <TabPanel>
-                    <p>Contenido de Potencial</p>
                     {/* Agrega el contenido específico de Infraestructura aquí */}
+                    <Potencial/>
                 </TabPanel>
             </TabPanels>
             <Toolbar></Toolbar>

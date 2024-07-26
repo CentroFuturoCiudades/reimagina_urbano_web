@@ -79,11 +79,8 @@ const AccessibilityToolbar = ({
               Servicios de proximidad
           </Box>
       </div>
-      <Box
-        style={{
-
-        }}
-      >
+      
+      <Box>
 
       { isOpen && (
         <Accordion className="visor-container2" allowMultiple >
