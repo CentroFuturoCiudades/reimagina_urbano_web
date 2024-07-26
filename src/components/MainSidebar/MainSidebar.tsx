@@ -4,8 +4,8 @@ import "./MainSidebar.scss";
 import { API_URL } from "../../constants";
 import axios from "axios";
 import Visor from "../../content/Visor";
-import { AppDispatch } from "../../app/store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../app/store";
+import { useDispatch, useSelector } from "react-redux";
 import { setBaseColor } from "../../features/baseColor/baseColorSlice";
 import Toolbar from "../Toolbar";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
@@ -15,15 +15,33 @@ import { Potencial } from "../../content";
 const MainSidebar = () => {
     const [metrics, setMetrics] = useState<any>({});
 
+    const selectedLots = useSelector((state: RootState) => state.selectedLots.selectedLots );
+
     const dispatch: AppDispatch = useDispatch();
 
-    useEffect(() => {
-        axios.get(`${API_URL}/predios/`).then((response) => {
-            if (response && response.data) {
-                setMetrics(response.data);
-            }
-        });
-    }, []);
+    useEffect( ()=> {
+        let url = `${API_URL}/predios/`;
+
+        if( selectedLots && selectedLots.length ){
+
+            url += "?";
+
+            url += selectedLots
+                .filter(x => x != undefined )
+                .map((x) => {
+                    return `predio=${x}`
+                })
+                .join("&");
+
+        }
+
+        axios.get( url )
+            .then( (response) => {
+                if( response && response.data ){
+                    setMetrics( response.data )
+                }
+            } )
+    }, [ selectedLots ])
 
     return (
         <Tabs className="mainSidebar" variant="soft-rounded" colorScheme="green">

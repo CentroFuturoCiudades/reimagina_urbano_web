@@ -3,10 +3,10 @@ import { DeckGL } from '@deck.gl/react';
 import { GeoJsonLayer } from '@deck.gl/layers';
 import { Map } from 'react-map-gl';
 import { lightenColor, useFetch, useFetchGeo } from '../../utils';
-import { API_URL, BLOB_URL, INITIAL_STATE } from '../../constants';
+import { API_URL, BLOB_URL, INITIAL_STATE, VIEW_MODES } from '../../constants';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../app/store';
 import * as d3 from "d3";
 import { GenericObject } from '../../types';
 import { PickInfo, RGBAColor } from 'deck.gl';
@@ -14,6 +14,9 @@ import * as turf from "@turf/turf";
 import { debounce } from 'lodash';
 import { load } from '@loaders.gl/core';
 import { FlatGeobufLoader } from '@loaders.gl/flatgeobuf';
+import { setSelectedLots } from '../../features/selectedLots/selectedLotsSlice';
+import { EditableGeoJsonLayer } from '@nebula.gl/layers';
+import { DrawPolygonMode, ViewMode, TranslateMode } from "@nebula.gl/edit-modes";
 
 interface BaseMapProps {
   isSatellite?: boolean;
@@ -25,11 +28,14 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     const [ coords, setCoords ] = useState();
     const [ lotsLayer, setLotsLayer ] = useState< any >( null );
     const [ colorFunction, setColorFunction ] = useState< ( arg0: any) => RGBAColor >();
+    const [ queryData, setQueryData ] = useState<GenericObject>({});
 
     const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
     const { data: dataLots } = useFetchGeo(`${BLOB_URL}/${project}/lots.fgb`) as any;
 
     //Redux
+    const dispatch: AppDispatch = useDispatch();
+
     const baseColor = useSelector((state: RootState) => state.baseColor.baseColor );
     const queryMetric = useSelector( (state: RootState) => state.queryMetric.queryMetric );
     const viewMode = useSelector( (state: RootState) => state.viewMode.viewMode );
@@ -55,7 +61,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
 
     useEffect(() => {
         async function fetchData() {
-            if (!circleCoords) {
+            if ( !circleCoords ) {
                 return;
             }
 
@@ -81,6 +87,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 equipment: "landuse_equipment",
                 establishments: "establishments",
                 building: "landuse_building",
+                points: "points"
             };
           // use visible to show or not the metrics
         //   Object.keys(visible)
@@ -94,8 +101,6 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 const arrayBuffer = await response.arrayBuffer();
                 const data = await load(arrayBuffer, FlatGeobufLoader);
                 const idsFromCircle = data.features.map((feature: any) => feature.properties.ID);
-                //setSelectedLots(idsFromCircle);
-                //setOriginalData(data);
 
                 let originalData = data;
 
@@ -106,9 +111,10 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                     landuse_park:[0, 130, 0, 255],
                     establishments: [0, 255, 0, 255],
                     landuse_building: [255, 255, 0, 255],
+                    points: [255, 0, 0, 255]
                 }
 
-                const dataLots = originalData.features.filter(
+                const lensLots = originalData.features.filter(
                     (feature: any) => feature.properties["metric"] === "lots"
                   );
                 const dataPark = originalData.features.filter(
@@ -123,6 +129,9 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 const dataParking = originalData.features.filter(
                 (feature: any) => feature.properties["metric"] === "landuse_parking"
                 );
+                const dataPoints = originalData.features.filter(
+                    (feature: any) => feature.properties["metric"] === "points"
+                );
                 const dataEstablishments = originalData.features.filter(
                 (feature: any) => feature.properties["metric"] === "establishments"
                 );
@@ -130,9 +139,26 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 (feature: any) => feature.properties["metric"] === "landuse_building"
                 );
 
-                const dataSections = [ dataPark, dataEquipment, dataGreen, dataPark, dataEquipment ]
-
+                const dataSections = [
+                    dataPark,
+                    dataEquipment,
+                    dataGreen,
+                    dataPark,
+                    dataEquipment,
+                    dataParking,
+                    dataPoints
+                 ];
                 const layers: any = {}
+
+                layers["lens-lots"] =
+                    new GeoJsonLayer({
+                        id: "lens-lots",
+                        data: lensLots,
+                        filled: true,
+                        wireframe: false,
+                        getLineWidth: 0,
+                        getFillColor: colorFunction
+                    })
 
                 dataSections.forEach( (section, index) => {
                     const layer = new GeoJsonLayer({
@@ -154,26 +180,104 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                          ...layers
                     });
 
+                dispatch(setSelectedLots(idsFromCircle));
+
             } catch (error) {
                 console.error(error);
             }
         }
-        if( viewMode == "lens"){
+        if( viewMode == VIEW_MODES.LENS ){
             fetchData();
         }
     }, [ circleCoords ]);
 
     useEffect( ()=>{
-       setViewLayers( [] );
+       setViewLayers( { } );
        setCircleCoords( [-107.39367959923534, 24.753450686162093] );
+       dispatch( setSelectedLots( [] ) );
     }, [viewMode])
 
+    const handleEdit2 = ({ updatedData, editType, editContext }: any ) => {
+        if (
+            editType === "addFeature" ||
+            editType === "finishMovePosition" ||
+            editType === "finish"
+          ) {
+            const selectedArea = updatedData.features[0];
+
+            fetch("http://127.0.0.1:8000/poligon",
+            {
+                method: "POST",
+                body: JSON.stringify({ coordinates:  selectedArea.geometry.coordinates[0]}),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            .then( async (response) => {
+                if( response ){
+
+                    const arrayBuffer = await response.arrayBuffer();
+                    const data = await load(arrayBuffer, FlatGeobufLoader);
+
+                    let colorLayer = new GeoJsonLayer({
+                        id: "color-layer",
+                        data: data,
+                        filled: true,
+                        wireframe: false,
+                        getLineWidth: 0,
+                        getFillColor: colorFunction
+                    })
+                    const idsFromCircle = data.features.map((feature: any) => feature.properties.ID);
+
+                    setViewLayers( {...viewLayers, colorLayer });
+                    dispatch( setSelectedLots( idsFromCircle ));
+                }
+            })
+
+            setViewLayers( ()=> {
+
+                let editableLayer = viewLayers["editableLayer1"];
+                viewLayers["editableLayer1"] =  new EditableGeoJsonLayer({
+                    ...editableLayer.props,
+                    id: editableLayer.id,
+                    mode: new ViewMode(),
+                  })
+
+                return viewLayers
+            } )
+
+          }
+    }
+    //VIEW MODE LAYERS
     useEffect( ()=>{
         switch( viewMode ){
-            case "full":
+            case VIEW_MODES.FULL:
                 break;
 
-            case "lens":
+            case VIEW_MODES.POLIGON:
+                const layerId = "editableLayer1"
+                let drawLayer = new EditableGeoJsonLayer({
+                    id: layerId,
+                    data: { type: "FeatureCollection", features: [] },
+                    mode: new DrawPolygonMode(),
+                    selectedFeatureIndexes: [0],
+                    onEdit: handleEdit2,
+                    pickable: true,
+                    getTentativeFillColor: [ 255, 255, 255, 50],
+                    getFillColor: [0, 0, 0, 100],
+                    getTentativeLineColor: [0, 0, 255, 200],
+                    getLineColor: [0, 0, 255, 200],
+                  });
+
+
+                  setViewLayers(
+                    {
+                        [layerId]: drawLayer
+                    });
+
+                break;
+
+            case VIEW_MODES.LENS:
                 const circleLayer = new GeoJsonLayer({
                     key:"circle-layer",
                     id:"circle",
@@ -192,7 +296,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 })
 
                 setViewLayers(
-                    {...viewLayers,
+                    {
                         circle: circleLayer
                     });
 
@@ -229,32 +333,41 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                         queryDataByProductId[ data["ID"] ] = data["value"];
                     });
 
-                    const values = Object.values( queryDataByProductId );
-                    const domain = [ Math.min(...values), Math.max(...values) ];
-                    const lightColor = lightenColor( baseColor, 0.3 )
-                    const colors = d3.quantize(d3.interpolateRgb(
-                        `rgba(${lightColor.join(",")})`, `rgba(${baseColor.join(",")})`)
-                        , 8
-                    );
+                    setQueryData( queryDataByProductId );
 
-                    const quantiles = d3.scaleQuantize<string>().domain(domain).range(colors);
 
-                    const myFunc = () => (d: any): RGBAColor => {
-
-                        if( !d ){
-                            return baseColor;
-                        }
-
-                        const colorString = quantiles(queryDataByProductId[d.properties["ID"]]);
-                        const color = d3.color(colorString)?.rgb();
-                        return color ? [color.r, color.g, color.b] : [255, 255, 255];
-                    };
-
-                    setColorFunction( myFunc );
                 }
             })
         }
-    }, [queryMetric, dataLots, proximityOptions])
+    }, [queryMetric, dataLots, proximityOptions ])
+
+    useEffect( ()=> {
+        if( queryData && Object.keys( queryData ).length ){
+            const values = Object.values( queryData );
+            const domain = [ Math.min(...values), Math.max(...values) ];
+            const lightColor = lightenColor( baseColor, 0.3 )
+            const colors = d3.quantize(d3.interpolateRgb(
+                `rgba(${lightColor.join(",")})`, `rgba(${baseColor.join(",")})`)
+                , 8
+            );
+
+            const quantiles = d3.scaleQuantize<string>().domain(domain).range(colors);
+
+            const myFunc = () => (d: any): RGBAColor => {
+
+                if( !d ){
+                    return baseColor;
+                }
+
+                const colorString = quantiles( queryData[d.properties["ID"]]);
+                const color = d3.color(colorString)?.rgb();
+                return color ? [color.r, color.g, color.b] : [255, 255, 255];
+            };
+
+            setColorFunction( myFunc );
+        }
+
+    }, [queryData, viewMode] );
 
     useEffect( () => {
         if( dataLots && colorFunction ){
@@ -263,7 +376,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                     key: "lots-layer",
                     id: 'lots-layer',
                     data: dataLots.features.filter( (d:any) => {
-                        if( baseColor )
+                        if( baseColor && viewMode != null )
                           return true}),
                     filled: true,
                     getLineWidth: 0,
@@ -272,7 +385,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                     getPosition: (d: any) => d.position,
                     opacity: isSatellite ? 0.4 : 1,
                     highlightColor: baseColor,
-                    getFillColor: colorFunction
+                    getFillColor: (viewMode == VIEW_MODES.FULL ?  colorFunction :  [ 215, 215, 215 ])
                 })
 
             setLotsLayer( layer )
