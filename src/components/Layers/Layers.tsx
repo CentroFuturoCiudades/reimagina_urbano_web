@@ -13,6 +13,7 @@ import { AmenitiesLayer, LotsLayer, useLensLayer } from "../../layers";
 import * as d3 from "d3";
 import { fetchPolygonData } from "../../utils";
 import PointsLayer from "../../layers/PointsLayer";
+import { setQueryData } from "../../features/queryData/queryDataSlice";
 
 const useDrawPoligonLayer = () => {
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
@@ -65,7 +66,7 @@ const Layers = () => {
         latitud: 24.753450686162093,
         longitud: -107.39367959923534,
     });
-    const [queryData, setQueryData] = useState<any>({});
+    const [queryData, setQueryDataState] = useState<any>({});
     const [coordinates, setCoordinates] = useState<any>([]);
     const [dataLayers, setDataLayers] = useState<any[]>([]);
 
@@ -120,7 +121,8 @@ const Layers = () => {
                         queryDataByProductId[data["ID"]] = data["value"];
                     });
 
-                    setQueryData(queryDataByProductId);
+                    setQueryDataState(queryDataByProductId);
+                    dispatch( setQueryData( queryDataByProductId ) )
                 }
             } catch (e){
                 console.log( e );

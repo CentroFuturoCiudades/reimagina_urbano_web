@@ -18,7 +18,7 @@ import { setSelectedLots } from '../../features/selectedLots/selectedLotsSlice';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { DrawPolygonMode, ViewMode, TranslateMode } from "@nebula.gl/edit-modes";
 import { setDrag } from '../../features/lensSettings/lensSettingsSlice';
-import { Layers } from '../index';
+import { Layers, Legend } from '../index';
 
 interface BaseMapProps {
   isSatellite?: boolean;
@@ -82,6 +82,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                     attributionControl={false}
                 />
             </DeckGL>
+            <Legend></Legend>
         </>
     );
 };

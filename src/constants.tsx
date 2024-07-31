@@ -65,3 +65,10 @@ export enum VIEW_MODES {
     POLIGON,
     LENS
 }
+
+export const VIEW_COLORS_RGBA = {
+    "VISOR" : {
+        light: `rgba(200, 255, 200, 1)`,
+        dark: "rgba(0, 100, 0, 1)"
+    }
+}

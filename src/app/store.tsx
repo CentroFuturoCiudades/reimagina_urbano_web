@@ -7,6 +7,7 @@ import accessibilityListReducer from '../features/accessibilityList/accessibilit
 import selectedLotsReducer from '../features/selectedLots/selectedLotsSlice'
 import layersReducer from '../features/layers/layersSlice';
 import lensSettingsReducer from '../features/lensSettings/lensSettingsSlice';
+import queryDataReducer from '../features/queryData/queryDataSlice';
 
 const store = configureStore({
   reducer: {
@@ -17,7 +18,8 @@ const store = configureStore({
     accessibilityList: accessibilityListReducer,
     selectedLots: selectedLotsReducer,
     layers: layersReducer,
-    lensSettings: lensSettingsReducer
+    lensSettings: lensSettingsReducer,
+    queryData: queryDataReducer
   }
 });
 
