@@ -8,6 +8,7 @@ import selectedLotsReducer from '../features/selectedLots/selectedLotsSlice'
 import layersReducer from '../features/layers/layersSlice';
 import lensSettingsReducer from '../features/lensSettings/lensSettingsSlice';
 import queryDataReducer from '../features/queryData/queryDataSlice';
+import viewStateReducer from '../features/viewState/viewStateSlice';
 
 const store = configureStore({
   reducer: {
@@ -19,7 +20,8 @@ const store = configureStore({
     selectedLots: selectedLotsReducer,
     layers: layersReducer,
     lensSettings: lensSettingsReducer,
-    queryData: queryDataReducer
+    queryData: queryDataReducer,
+    viewState: viewStateReducer,
   }
 });
 

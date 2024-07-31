@@ -14,7 +14,6 @@ import * as turf from "@turf/turf";
 import { debounce, set } from "lodash";
 import { load } from "@loaders.gl/core";
 import { FlatGeobufLoader } from "@loaders.gl/flatgeobuf";
-import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import {
     DrawPolygonMode,
@@ -34,6 +33,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     });
 
     const { lensData, layers: lensLayers } = useLensLayer({ coords });
+
     const { analysisData, layers: analysisLayers } = useAnalysisLayer();
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const metric = useSelector(
@@ -98,7 +98,6 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                 const queryDataByProductId: GenericObject = {};
 
                 const ids = response.data.map((x: any) => x.ID);
-                dispatch(setSelectedLots(ids));
 
                 response.data.forEach((data: any) => {
                     queryDataByProductId[data["ID"]] = data["value"];

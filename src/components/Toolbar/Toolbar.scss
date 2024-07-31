@@ -2,6 +2,93 @@
     position: absolute;
     top: 0;
     left: 100%;
+    border: 1px solid lightgrey;
+
+    &__title {
+        font-size: 0.75rem;
+    }
+
+    &__section {
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content:center;
+        background-color:rgba(50, 50, 50, 0.8);
+        border:1px solid lightgrey;
+        color:white;
+        text-align:center;
+        flex: 1;
+        font-size: 0.6rem;
+    }
+
+    &__vista {
+        display:flex;
+        //flex-direction:row;
+        //flex-wrap:nowrap;
+        //width: 100%;
+
+        img {
+            height: auto;
+            min-width: 50px;
+            max-width: 48px;
+            border:1px solid lightgrey;
+            cursor: pointer;
+
+            &:hover{
+                background-color: rgba(50, 50, 50, 1);
+            }
+        }
+        &--active{
+            background-color: white !important;
+            color: black !important;
+        }
+
+    }
+
+    &__dim {
+        display:flex;
+        flex-direction:column;
+        width:100%;
+        flex:1;
+        margin-inline: 5px;
+
+
+        span {
+            border:1px solid lightgrey;
+            color:white;
+            flex-grow:1;
+            cursor: pointer;
+
+            &:hover{
+                background-color: rgba(50, 50, 50, 1);
+            }
+        }
+    }
+
+    &__zoom {
+        display:flex;
+        flex-direction:row;
+        width:100%;
+        flex:1;
+        margin-inline: 10px;
+    }
+
+    &__zoomitems{
+        display:flex;
+        flex-direction:column;
+        flex:1;
+
+        span {
+            border:1px solid lightgrey;
+            color:white;
+            flex-grow:1;
+            cursor: pointer;
+
+            &:hover{
+                background-color: rgba(50, 50, 50, 1);
+            }
+        }
+    }
 
     &__tools {
         display: flex;
@@ -23,4 +110,5 @@
             color: black !important;
         }
     }
+
 }

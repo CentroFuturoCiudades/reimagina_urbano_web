@@ -19,6 +19,7 @@ import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { DrawPolygonMode, ViewMode, TranslateMode } from "@nebula.gl/edit-modes";
 import { setDrag } from '../../features/lensSettings/lensSettingsSlice';
 import { Layers, Legend } from '../index';
+import { setViewState } from '../../features/viewState/viewStateSlice';
 
 interface BaseMapProps {
   isSatellite?: boolean;
@@ -27,14 +28,19 @@ interface BaseMapProps {
 const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
 
     const project = window.location.pathname.split("/")[1];
+
     const [ coords, setCoords ] = useState();
+    const [localViewState, setLocalViewState] = useState( INITIAL_STATE );
 
     const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
 
     const { layers } = Layers();
 
     //Redux
+    const dispatch: AppDispatch = useDispatch();
+
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag );
+    const viewState = useSelector((state: RootState) => state.viewState );
 
     useEffect(() => {
         async function updateProject() {
@@ -44,6 +50,47 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
         }
         updateProject();
     }, [project]);
+
+    useEffect (() => {
+        setLocalViewState({
+            ...localViewState,
+            zoom: viewState.zoom
+        })
+
+        if( viewState.zoom > 16)
+        {
+            checkZoomLevel()
+        }
+    },[viewState])
+
+    useEffect(()=> {
+        if( coords ){
+            setLocalViewState({
+                ...localViewState,
+                latitude: coords["latitud"],
+                longitude: coords["longitud"]
+            })
+        }
+
+    }, [coords])
+
+    useEffect( ()=> {
+        dispatch( setViewState( {
+            zoom: localViewState.zoom
+        }))
+    }, [localViewState.zoom]);
+
+    const checkZoomLevel = () => {
+        console.log('x zoom reached')
+    };
+
+    const handleViewStateChange = useCallback(
+
+        debounce(({ viewState }) => {
+            setLocalViewState( viewState )
+        }, 5),
+        []
+    );
 
     //LAYER THAT MARKS THE LIMIT OF THE POLIGON
     const poligonLayer =
@@ -71,6 +118,8 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 }}
                 controller={{ dragPan: !isDrag }}
                 layers={ [ poligonLayer, ...layers ] }
+                viewState={ {...localViewState} }
+                onViewStateChange={handleViewStateChange}
             >
                 <Map
                     mapStyle={
