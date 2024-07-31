@@ -67,8 +67,12 @@ export enum VIEW_MODES {
 }
 
 export const VIEW_COLORS_RGBA = {
-    "VISOR" : {
+    VISOR : {
         light: `rgba(200, 255, 200, 1)`,
         dark: "rgba(0, 100, 0, 1)"
+    },
+    ACCESIBILIDAD : {
+        light: `lightblue`,
+        dark: "darkblue"
     }
 }

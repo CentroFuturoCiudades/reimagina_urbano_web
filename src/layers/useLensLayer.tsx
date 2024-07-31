@@ -50,7 +50,7 @@ const useLensLayer = ({ coords }: any) => {
         id: "circle",
         data: data,
         filled: true,
-        getFillColor: [0, 120, 0, 25],
+        getFillColor: [ 255, 255, 255, 0],
         getLineColor: [0, 120, 0, 255],
         getLineWidth: 5,
         pickable: true,

@@ -31,7 +31,6 @@ const Accesibilidad = ()=> {
     return (
         <div>
             <AccessibilityToolbar configuration={configuration}></AccessibilityToolbar>
-            <SelectAutoComplete />
         </div>
     )
 }

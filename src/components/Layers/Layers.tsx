@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { API_URL, VIEW_MODES } from "../../constants";
+import { API_URL, VIEW_COLORS_RGBA, VIEW_MODES } from "../../constants";
 import { RGBAColor } from "deck.gl";
 import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
@@ -105,8 +105,8 @@ const Layers = () => {
                     metric: metric,
                     accessibility_info: [
                         {
-                            name: "proximity_small_park",
-                            radius: 400
+                            name: "Farmacia",
+                            radius: 1600
                         }
                     ],
                     coordinates
@@ -141,8 +141,8 @@ const Layers = () => {
                 ];
                 const colors = d3.quantize(
                     d3.interpolateRgb(
-                        `rgba(200, 255, 200, 1)`,
-                        `rgba(0, 100, 0, 1)`
+                        VIEW_COLORS_RGBA.ACCESIBILIDAD.light,
+                        VIEW_COLORS_RGBA.ACCESIBILIDAD.dark
                     ),
                     8
                 );
@@ -154,7 +154,7 @@ const Layers = () => {
                 const color = d3.color(colorString)?.rgb();
                 return color ? [color.r, color.g, color.b] : [255, 255, 255];
             }
-            return [255, 0, 0];
+            return [220, 220, 200];
         };
 
         const getData = async () => {

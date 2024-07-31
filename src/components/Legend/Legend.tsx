@@ -19,8 +19,8 @@ const Legend = ( ) => {
 
     const colors = d3.quantize(
         d3.interpolateRgb(
-            VIEW_COLORS_RGBA.VISOR.light,
-            VIEW_COLORS_RGBA.VISOR.dark
+            VIEW_COLORS_RGBA.ACCESIBILIDAD.light,
+            VIEW_COLORS_RGBA.ACCESIBILIDAD.dark
         ),
         8
     );

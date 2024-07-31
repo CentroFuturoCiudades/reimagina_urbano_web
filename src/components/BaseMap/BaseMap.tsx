@@ -33,6 +33,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
     const [localViewState, setLocalViewState] = useState( INITIAL_STATE );
 
     const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
+    const { data: colonias } = useFetch(`${BLOB_URL}/${project}/colonias.geojson`);
 
     const { layers } = Layers();
 
@@ -103,6 +104,16 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
             getLineWidth: 10,
         });
 
+    const coloniasLayer =
+        new GeoJsonLayer({
+            id: 'colonias-layer',
+            data: colonias,
+            filled: true,
+            getFillColor: [0, 0, 0, 0],
+            getLineColor: [ 0, 0, 10, 255],
+            getLineWidth: 8,
+        });
+
     if (!coords) {
         return <div>Loading</div>;
     }
@@ -117,7 +128,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                     longitude: coords["longitud"]
                 }}
                 controller={{ dragPan: !isDrag }}
-                layers={ [ poligonLayer, ...layers ] }
+                layers={ [ poligonLayer, , ...layers, coloniasLayer ] }
                 viewState={ {...localViewState} }
                 onViewStateChange={handleViewStateChange}
             >
