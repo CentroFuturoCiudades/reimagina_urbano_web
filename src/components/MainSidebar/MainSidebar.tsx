@@ -34,7 +34,11 @@ const MainSidebar = () => {
 
         }
 
-        axios.get( url )
+        axios.get( url, {
+            headers: {
+                'Cache-Control': 'public, max-age=3600',
+            }
+        } )
             .then( (response) => {
                 if( response && response.data ){
                     setMetrics( response.data )

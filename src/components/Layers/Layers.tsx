@@ -98,12 +98,17 @@ const Layers = () => {
         }
 
         async function fetchData() {
-            if (!metric || !coordinates) return;
+            if (!metric || !coordinates || viewMode == VIEW_MODES.FULL ) return;
             try {
                 const response = await axios.post(`${API_URL}/query`, {
                     metric: metric,
-                    accessibility_info: {},
-                    coordinates,
+                    accessibility_info: [
+                        {
+                            name: "proximity_small_park",
+                            radius: 400
+                        }
+                    ],
+                    coordinates
                 });
                 if (response && response.data) {
                     const queryDataByProductId: GenericObject = {};
@@ -159,12 +164,12 @@ const Layers = () => {
                 });
             }
 
-            const points = await PointsLayer({ coordinates, getFillColor: [255, 0, 0, 255] });
-            if (points) {
-                setDataLayers( (dataLayers)=> {
-                    return [...dataLayers, points]
-                });
-            }
+            // const points = await PointsLayer({ coordinates, getFillColor: [255, 0, 0, 255] });
+            // if (points) {
+            //     setDataLayers( (dataLayers)=> {
+            //         return [...dataLayers, points]
+            //     });
+            // }
 
             const amenities = await AmenitiesLayer({ coordinates, amenitiesArray });
             if( amenities && amenities.length ){
