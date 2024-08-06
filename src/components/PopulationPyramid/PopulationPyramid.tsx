@@ -8,8 +8,8 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts"; 
-import "./PopulationPyramid.scss"; 
+} from "recharts";
+import "./PopulationPyramid.scss";
 
 interface PopulationPyramidProps {
   data: { age: string; male: number; female: number; total: number }[];
@@ -33,15 +33,19 @@ const PopulationPyramid: React.FC<PopulationPyramidProps> = ({ data }) => {
     return null;
   };
 
-  console.log(data)
+  console.log(data);
+
+  if( !data ){
+    return <></>
+  }
 
   return (
-    <ResponsiveContainer className={"pyramidContainer"} width={200} height={400}>
-      <BarChart    // ------- Revisar renderizado 
+    <ResponsiveContainer className={"pyramidContainer"} width={300} height={400}>
+      <BarChart    // ------- Revisar renderizado
         layout="vertical"
-        data = {data}
+        data = { data }
 
-      // -------------- Cambio 
+      // -------------- Cambio
 
         // data={[{
         //   name: 'Page A',
@@ -54,20 +58,17 @@ const PopulationPyramid: React.FC<PopulationPyramidProps> = ({ data }) => {
         //   uv: 3000,
         //   pv: 1398,
         //   amt: 2210,
-        // },]} 
+        // },]}
 
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey={"name"}
-          // type="number"
-          // tickFormatter={(tick) => `${Math.abs(tick)}`}
-        />
+        <XAxis dataKey="male" type="number" />
+
         <YAxis type="category" dataKey="age" />
-        {/* <Tooltip content={renderTooltip} /> */}
+        <Tooltip />
         <Legend />
-        
+
         <Bar dataKey="male" fill="#8884d8" name="Hombres" />
         <Bar dataKey="female" fill="#ff7f7f" name="Mujeres" />
 
