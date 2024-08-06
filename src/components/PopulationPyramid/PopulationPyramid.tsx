@@ -66,7 +66,7 @@ const PopulationPyramid: React.FC<PopulationPyramidProps> = ({ data }) => {
         <XAxis dataKey="male" type="number" />
 
         <YAxis type="category" dataKey="age" />
-        <Tooltip />
+        <Tooltip content={renderTooltip}/>
         <Legend />
 
         <Bar dataKey="male" fill="#8884d8" name="Hombres" />
