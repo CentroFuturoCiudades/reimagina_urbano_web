@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Icon, VStack, Box, Text } from "@chakra-ui/react";
 import React from "react";
 import { BiSolidHome } from "react-icons/bi";
-import { FaBuilding, FaEye, FaEyeSlash, FaPerson } from "react-icons/fa6";
+import { FaBuilding, FaChevronUp, FaEye, FaEyeSlash, FaPerson } from "react-icons/fa6";
 import { MdOutlineWork } from "react-icons/md";
 import { TbHomeCancel } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { setQueryMetric } from "../features/queryMetric/queryMetricSlice";
 import './Visor.scss';
 import { RootState } from "../app/store";
+import { FaChevronDown } from "react-icons/fa6";
 
 const Visor = ({ metrics }: { metrics: any }) => {
     const dispatch = useDispatch();
@@ -34,9 +35,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
     return (
         <div className="accordion-container">
             <div className="accordion-header" onClick={toggleAccordion}>
-                <Box flex="1" textAlign="left">
-                    Perfil poblacional
-                </Box>
+                Perfil sociodemográfico { isOpen? <Icon as={ FaChevronDown }></Icon>: <Icon as={ FaChevronUp }></Icon>}
             </div>
             {isOpen && (
                 <VStack spacing={4} className="visor-container">

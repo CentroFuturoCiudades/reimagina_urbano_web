@@ -1,9 +1,8 @@
-
 .accordion-header {
     margin-top: -01rem;
     margin-left: -1rem;
     width: 21.23rem;
-    background-color: rgba(134,151,64, 0.8); /* Color de fondo */
+    background-color: var(--visor-primary-opacity); /* Color de fondo */
     color: white; /* Color del texto */
     padding-left: 0.5rem; /* Espaciado interno */
     padding-right: 0.5rem;
@@ -11,7 +10,12 @@
     padding-bottom: 0.2rem;
     cursor: pointer; /* Indicador de clic */
     text-align: left; /* Alineación del texto */
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
 .visor-container {
     background-color: rgba(255, 255, 255, 0.6);
     margin-top: -0.30rem;
@@ -21,7 +25,7 @@
     width: 21.23rem;
     margin-left: -1rem;
     padding-bottom: 5rem;
-    border: 2px solid rgba(134,151,64, 0.8);
+    border: 2px solid var(--visor-primary-opacity);
     height: 90 bvh;
 
     .stat-row {
@@ -41,7 +45,7 @@
             cursor: pointer;
 
             &:hover {
-                color:rgba(134,151,64, 0.8);
+                color:var(--visor-primary);
             }
         }
 

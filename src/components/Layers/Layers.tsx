@@ -99,7 +99,7 @@ const Layers = () => {
         }
 
         async function fetchData() {
-            if (!metric || !coordinates || viewMode == VIEW_MODES.FULL ) return;
+            if ( (!metric || !coordinates) && viewMode != VIEW_MODES.FULL ) return;
             try {
                 const response = await axios.post(`${API_URL}/query`, {
                     metric: metric,
@@ -129,7 +129,7 @@ const Layers = () => {
             }
         }
         fetchData();
-    }, [metric, coordinates, isDrag]);
+    }, [metric, coordinates, isDrag, viewMode]);
 
     useEffect(() => {
         const getFillColor = (d: any): RGBAColor => {
@@ -159,7 +159,7 @@ const Layers = () => {
 
         const getData = async () => {
 
-            const layer = await LotsLayer({ coordinates, getFillColor });
+            const layer = await LotsLayer({ coordinates, getFillColor, viewMode });
             if (layer) {
                 setDataLayers( (dataLayers)=> {
                     return [...dataLayers, layer]

@@ -23,17 +23,16 @@
     }
 
     .tab-visor {
-        background-color: rgba(137, 151, 77, 0.8); /* color del Visor */
-
+        background-color: var(--visor-primary-opacity)
     }
 
     .tab-accesibilidad {
-        background-color: rgba(133, 156, 190, 0.8); /* color de Accesibilidad */
+        background-color: #996699cc;
 
     }
 
     .tab-potencial {
-        background-color: rgba(206, 173, 102, 0.8); /* color de Potencial */
+        background-color: #cc9933cc;
 
     }
 
@@ -47,7 +46,7 @@
 .visor{
     &__icon {
         &--active {
-            color: rgba(134,151,64, 0.8) !important;
+            color:  #6b7f14 !important;
         }
     }
 }

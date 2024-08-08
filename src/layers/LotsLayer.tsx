@@ -1,10 +1,13 @@
 import { GeoJsonLayer } from "deck.gl";
 import { fetchPolygonData } from "../utils";
+import { VIEW_MODES } from "../constants";
 
-const LotsLayer = async ({ coordinates, getFillColor }: any) => {
-    if (!coordinates || coordinates.length === 0) {
+const LotsLayer = async ({ coordinates, getFillColor, viewMode }: any) => {
+
+    if ( ( !coordinates || coordinates.length === 0) && viewMode != VIEW_MODES.FULL ) {
         return null;
     }
+
     const data = await fetchPolygonData({ coordinates, layer: "lots" });
 
     return new GeoJsonLayer({

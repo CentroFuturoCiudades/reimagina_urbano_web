@@ -1,3 +1,10 @@
+
+:root {
+    --visor-primary: #6b7f14;
+    --visor-primary-opacity: #6b7f14cc
+}
+
+
 body {
   overflow: hidden;
 }
