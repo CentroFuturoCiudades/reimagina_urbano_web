@@ -39,34 +39,19 @@ const Visor = ({ metrics }: { metrics: any }) => {
 
     const[pyramidData, setPyramidData] = useState<any[]>([])
 
-    // useEffect (()=> {
-    //     setPyramidData(metrics ? [
-    //         { age: "0-2", male: metrics.P_0A2_M, female: metrics.P_0A2_F, total: metrics.P_0A2_M + metrics.P_0A2_F },
-    //         { age: "3-5", male: metrics.P_3A5_M, female: metrics.P_3A5_F, total: metrics.P_3A5_M + metrics.P_3A5_F },
-    //         { age: "6-11", male: metrics.P_6A11_M, female: metrics.P_6A11_F, total: metrics.P_6A11_M + metrics.P_6A11_F },
-    //         { age: "12-14", male: metrics.P_12A14_M, female: metrics.P_12A14_F, total: metrics.P_12A14_M + metrics.P_12A14_F },
-    //         { age: "15-17", male: metrics.P_15A17_M, female: metrics.P_15A17_F, total: metrics.P_15A17_M + metrics.P_15A17_F },
-    //         { age: "18-24", male: metrics.P_18A24_M, female: metrics.P_18A24_F, total: metrics.P_18A24_M + metrics.P_18A24_F },
-    //         { age: "25-59", male: metrics.P_25A59_M, female: metrics.P_25A59_F, total: metrics.P_25A59_M + metrics.P_25A59_F },
-    //         { age: "60+", male: metrics.P_60YMAS_M, female: metrics.P_60YMAS_F, total: metrics.P_60YMAS_M + metrics.P_60YMAS_F },
-    //     ] : [])
-    // },
-    // [metrics])
-
-    useEffect(() => {
-        setPyramidData([
-            { age: "0-2", male: 10, female: 10, total: 20 },
-            { age: "3-5", male: 10, female: 10, total: 20 },
-            { age: "6-11", male: 10, female: 10, total: 20 },
-            { age: "12-14", male: 10, female: 10, total: 20 },
-            { age: "15-17", male: 10, female: 10, total: 20 },
-            { age: "18-24", male: 10, female: 10, total: 20 },
-            { age: "25-59", male: 10, female: 10, total: 20 },
-            { age: "60+", male: 10, female: 10, total: 20 },
-        ]);
-    }, []);
-    console.log(pyramidData, metrics);
-
+    useEffect (()=> {
+        setPyramidData(metrics ? [
+            { age: "0-2", male: metrics.P_0A2_M, female: metrics.P_0A2_F, total: metrics.P_0A2_M + metrics.P_0A2_F },
+            { age: "3-5", male: metrics.P_3A5_M, female: metrics.P_3A5_F, total: metrics.P_3A5_M + metrics.P_3A5_F },
+            { age: "6-11", male: metrics.P_6A11_M, female: metrics.P_6A11_F, total: metrics.P_6A11_M + metrics.P_6A11_F },
+            { age: "12-14", male: metrics.P_12A14_M, female: metrics.P_12A14_F, total: metrics.P_12A14_M + metrics.P_12A14_F },
+            { age: "15-17", male: metrics.P_15A17_M, female: metrics.P_15A17_F, total: metrics.P_15A17_M + metrics.P_15A17_F },
+            { age: "18-24", male: metrics.P_18A24_M, female: metrics.P_18A24_F, total: metrics.P_18A24_M + metrics.P_18A24_F },
+            { age: "25-59", male: metrics.P_25A59_M, female: metrics.P_25A59_F, total: metrics.P_25A59_M + metrics.P_25A59_F },
+            { age: "60+", male: metrics.P_60YMAS_M, female: metrics.P_60YMAS_F, total: metrics.P_60YMAS_M + metrics.P_60YMAS_F },
+        ] : [])
+    },
+    [metrics])
 
     const puntajeHogarDigno = metrics["puntuaje_hogar_digno"]?.toFixed(2);
     const pobPorCuarto = metrics["pob_por_cuarto"]?.toFixed(1);
@@ -100,7 +85,6 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             <Text className="stat-title">Pirámide Poblacional</Text>
                         </Box>
                         <Box className="stat-value">
-                            {/* <SimpleBarChart /> */}
                             <PopulationPyramid data={pyramidData} />
                         </Box>
                     </Box>

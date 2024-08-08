@@ -41,25 +41,9 @@ const PopulationPyramid: React.FC<PopulationPyramidProps> = ({ data }) => {
 
   return (
     <ResponsiveContainer className={"pyramidContainer"} width={300} height={400}>
-      <BarChart    // ------- Revisar renderizado
+      <BarChart    
         layout="vertical"
         data = { data }
-
-      // -------------- Cambio
-
-        // data={[{
-        //   name: 'Page A',
-        //   uv: 4000,
-        //   pv: 2400,
-        //   amt: 2400,
-        // },
-        // {
-        //   name: 'Page B',
-        //   uv: 3000,
-        //   pv: 1398,
-        //   amt: 2210,
-        // },]}
-
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
@@ -71,12 +55,6 @@ const PopulationPyramid: React.FC<PopulationPyramidProps> = ({ data }) => {
 
         <Bar dataKey="male" fill="#8884d8" name="Hombres" />
         <Bar dataKey="female" fill="#ff7f7f" name="Mujeres" />
-
-        {/* CAMBIO ALEX */}
-
-        {/* <Bar dataKey="uv" fill="#8884d8" name="Hombres" />
-        <Bar dataKey="pv" fill="#ff7f7f" name="Mujeres" /> */}
-
 
       </BarChart>
     </ResponsiveContainer>
