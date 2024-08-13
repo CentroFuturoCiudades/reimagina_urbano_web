@@ -13,16 +13,25 @@ import { RootState } from "../app/store";
 import { FaChevronDown } from "react-icons/fa6";
 import PopulationPyramid from "../components/PopulationPyramid";
 import LotSiderbar from "../components/LotSiderbar";
+import { VIEW_COLORS_RGBA } from "../constants";
 
 const Visor = ({ metrics }: { metrics: any }) => {
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(true);
+    const [isOpen2, setIsOpen2] = useState(false);
 
     const queryMetric = useSelector((state: RootState) => state.queryMetric.queryMetric );
 
     const toggleAccordion = () => {
         setIsOpen(!isOpen);
+        setIsOpen2(false);
     };
+
+    const toggleAccordion2 = () => {
+        setIsOpen(false);
+        setIsOpen2(!isOpen2);
+    };
+
 
     const configureMetric = (metric: string) => {
         dispatch(setQueryMetric(metric));
@@ -59,12 +68,12 @@ const Visor = ({ metrics }: { metrics: any }) => {
     const pafil_ipriv = metrics["PAFIL_IPRIV"] ? Math.round(metrics["PAFIL_IPRIV"]).toLocaleString("es-MX") : "0";
 
     return (
-        <div className="accordion-container">
+        <div className="visor tab__main">
             <div className="accordion-header" onClick={toggleAccordion}>
                 Perfil sociodemográfico { isOpen? <Icon as={ FaChevronDown }></Icon>: <Icon as={ FaChevronUp }></Icon>}
             </div>
             {isOpen && (
-                <VStack spacing={4} className="visor-container">
+                <VStack spacing={4} className="accordion-body">
                     <Box className="stat-row" onClick={() => { configureMetric("POBTOT") }}>
                         <Box className="stat-title-box">
                             <Text className="stat-title">Población</Text>
@@ -191,18 +200,45 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             <Text>{pobPorCuarto} Personas</Text>
                         </Box>
                     </Box>
+                </VStack>
+            )}
+
+            {/* TAB PERFILE SOCIO ECONOMICO */}
+            <div className="accordion-header" onClick={toggleAccordion2}>
+                Perfil sociodemográfico { isOpen2? <Icon as={ FaChevronDown }></Icon>: <Icon as={ FaChevronUp }></Icon>}
+            </div>
+            {isOpen2 && (
+                <VStack spacing={4} className="accordion-body">
+
                     <Box className="stat-row">
                         <Box className="stat-title-box">
-                            <Text className="stat-title">% Población con Carro</Text>
+                            <Text className="stat-title">% de viviendas con Tinaco</Text>
                         </Box>
                         <Box className="stat-value">
                             <CircularProgress
                                 size="100px"
-                                value={metrics["car_ratio"] * 100}
-                                color="red.400"
+                                value={metrics["VPH_TINACO"]/metrics["VIVPAR_HAB"] * 100}
+                                color={ VIEW_COLORS_RGBA.VISOR.primary }
                             >
                                 <CircularProgressLabel>
-                                    {(metrics["car_ratio"] * 100).toFixed(0)}%
+                                    {(metrics["VPH_TINACO"]/metrics["VIVPAR_HAB"] * 100).toFixed(0)}%
+                                </CircularProgressLabel>
+                            </CircularProgress>
+                        </Box>
+                    </Box>
+
+                    <Box className="stat-row">
+                        <Box className="stat-title-box">
+                            <Text className="stat-title">% de viviendas con Computadora</Text>
+                        </Box>
+                        <Box className="stat-value">
+                            <CircularProgress
+                                size="100px"
+                                value={ metrics["VPH_PC"]/metrics["VIVPAR_HAB"] * 100 }
+                                color={ VIEW_COLORS_RGBA.VISOR.secondary }
+                            >
+                                <CircularProgressLabel>
+                                    {(metrics["VPH_PC"]/metrics["VIVPAR_HAB"] * 100).toFixed(0)}%
                                 </CircularProgressLabel>
                             </CircularProgress>
                         </Box>

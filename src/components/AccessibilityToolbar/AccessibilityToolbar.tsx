@@ -36,11 +36,7 @@ const AccessibilityToolbar = ({
 }: AccessibilityToolbarProps) => {
 
     const dispatch = useDispatch();
-    const [isOpen, setIsOpen] = useState(true);
 
-    const toggleAccordion = () => {
-        setIsOpen(!isOpen);
-    };
 
     let proximityOptions: GenericObject = useSelector((state: RootState) => state.accSettings.accSettings );
 
@@ -74,33 +70,14 @@ const AccessibilityToolbar = ({
   };
 
   return (
-    <>
-      <div className="accordion-header2" onClick={toggleAccordion}>
-          <Box flex="1" textAlign="left">
-              Servicios de proximidad
-          </Box>
-      </div>
-      <Box
-        style={{
-
-        }}
-      >
-
-      { isOpen && (
-        <Accordion className="visor-container2" allowMultiple >
-          <AccordionItem>
-            <Box className="stat-row" >
-                <Box className="stat-title-box">
-                    <Text className="stat-title">Servicios y equipamientos</Text>
-                </Box>
-            </Box>
-            <Box>
-                <SelectAutoComplete />
-            </Box>
-          </AccordionItem>
-        </Accordion>
-      )}
-    </Box></>
+    <Box className="stat-row" >
+        <Box className="stat-title-box">
+            <Text className="stat-title">Servicios y equipamientos</Text>
+        </Box>
+        <Box className="stat-value" style={{ width: "100%", padding:"0 1rem"}}>
+            <SelectAutoComplete />
+        </Box>
+    </Box>
   );
 };
 

@@ -41,7 +41,7 @@ const PopulationPyramid: React.FC<PopulationPyramidProps> = ({ data }) => {
 
   return (
     <ResponsiveContainer className={"pyramidContainer"} width={300} height={400}>
-      <BarChart    
+      <BarChart
         layout="vertical"
         data = { data }
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}

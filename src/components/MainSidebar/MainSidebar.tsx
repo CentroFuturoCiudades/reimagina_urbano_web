@@ -61,7 +61,7 @@ const MainSidebar = () => {
                 </Tab>
                 <Tab
                     className="tab-accesibilidad"
-                    _selected={{ bg: "rgba(133, 156, 190, 0.8)", color: "white" }}
+                    _selected={{ bg: "var(--accesibilidad-primary-opacity)", color: "white" }}
 
                     onClick={() => {
                         dispatch(setQueryMetric("minutes"));
@@ -85,7 +85,7 @@ const MainSidebar = () => {
                     <Visor metrics={metrics}></Visor>
                 </TabPanel>
                 <TabPanel>
-                    <Accesibilidad></Accesibilidad>
+                    <Accesibilidad metrics={metrics}></Accesibilidad>
                 </TabPanel>
                 <TabPanel>
                     <p>Contenido de Potencial</p>

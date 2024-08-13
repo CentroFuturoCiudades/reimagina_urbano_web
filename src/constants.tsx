@@ -68,6 +68,8 @@ export enum VIEW_MODES {
 
 export const VIEW_COLORS_RGBA = {
     VISOR : {
+        primary: "rgb(107, 127, 20)",
+        secondary: "rgb(163, 177, 108)",
         light: `rgba(200, 255, 200, 1)`,
         dark: "rgba(0, 100, 0, 1)"
     },
