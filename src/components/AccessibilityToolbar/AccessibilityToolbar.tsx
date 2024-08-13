@@ -17,6 +17,7 @@ import { setAccSettings } from "../../features/accSettings/accSettingsSlice";
 import { RootState } from "../../app/store";
 import { useState } from "react";
 import './Accesibilidad.scss';
+import SelectAutoComplete from "../SelectAutoComplete";
 
 const mappingLabels: GenericObject = {
   proximity_small_park: "Parque",
@@ -35,11 +36,7 @@ const AccessibilityToolbar = ({
 }: AccessibilityToolbarProps) => {
 
     const dispatch = useDispatch();
-    const [isOpen, setIsOpen] = useState(true);
 
-    const toggleAccordion = () => {
-        setIsOpen(!isOpen);
-    };
 
     let proximityOptions: GenericObject = useSelector((state: RootState) => state.accSettings.accSettings );
 
@@ -73,60 +70,14 @@ const AccessibilityToolbar = ({
   };
 
   return (
-    <>
-      <div className="accordion-header2" onClick={toggleAccordion}>
-          <Box flex="1" textAlign="left">
-              Servicios de proximidad
-          </Box>
-      </div>
-      <Box
-        style={{
-
-        }}
-      >
-
-      { isOpen && (
-        <Accordion className="visor-container2" allowMultiple >
-          <AccordionItem>
-          <Box className="stat-row" >
-            <Box className="stat-title-box">
-                <Text className="stat-title">Servicios y equipamientos</Text>
-            </Box>
-          </Box>
-              {Object.entries(proximityOptions).map(([key, initialValue]) => (
-                <Box key={key} display="flex" alignItems="center" mb={2} className="checkbox-container">
-                  <Checkbox
-                    isChecked={!!configuration.accessibility_info[key]}
-                    onChange={(e) =>
-                      handleProximityChange("checkbox", e.target.checked, key)
-                    }
-                    mr={2}
-                  />
-                  <NumberInput
-                    width="50px"
-                    size="xs"
-                    id={key}
-                    defaultValue={initialValue}
-                    min={0}
-                    onChange={(val) =>
-                      handleProximityChange("number", val || 1, key)
-                    }
-                    keepWithinRange={true}
-                    isDisabled={!configuration.accessibility_info[key]}
-                  >
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper fontSize="8px" />
-                      <NumberDecrementStepper fontSize="8px" />
-                    </NumberInputStepper>
-                  </NumberInput>
-                  <label>{mappingLabels[key]}</label>
-                </Box>
-              ))}
-          </AccordionItem>
-        </Accordion>
-      )}
-    </Box></>
+    <Box className="stat-row" >
+        <Box className="stat-title-box">
+            <Text className="stat-title">Servicios y equipamientos</Text>
+        </Box>
+        <Box className="stat-value" style={{ width: "100%", padding:"0 1rem"}}>
+            <SelectAutoComplete />
+        </Box>
+    </Box>
   );
 };
 

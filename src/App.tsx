@@ -17,10 +17,8 @@ import { useFetchGeo } from "./utils";
 //import Legend from "./Legend";
 
 function App() {
-  const [data, setData] = useState<any[]>([]);
   const [selectedLots, setSelectedLots] = useState<string[]>([]);
   const [aggregatedInfo, setAggregatedInfo] = useState<GenericObject>();
-  const [minutesData, setMinutesData] = useState<any[]>();
   const [configuration, setConfiguration] = useState<GenericObject>({
     condition: undefined,
     metric: "POBTOT",
@@ -74,66 +72,6 @@ function App() {
 
   // console.log(aggregatedInfo)
 
-  useEffect(() => {
-    // console.log(selectedLots)
-
-    const fetchData = async () => {
-      if (selectedLots.length > 0) {
-        const response = await axios.get(
-          `${API_URL}/predios/?${selectedLots
-            .map((x) => `predio=${x}`)
-            .join("&")}`
-        );
-        setAggregatedInfo(response.data);
-      } else {
-        setAggregatedInfo(undefined);
-      }
-    };
-    fetchData();
-  }, [selectedLots, coords]);
-
-  useEffect(()=> {
-    setMinutesData( [] );
-  }, [configuration.accessibility_info])
-
-  useEffect(() => {
-    async function fetchData() {
-      // console.log(configuration.metric); // wasteful_ratio, la metrica que se muestra
-
-      if( configuration.metric == "minutes" ){
-
-        if( minutesData && minutesData.length ){
-          setData( minutesData );
-          return;
-        }
-
-        const url = `${API_URL}/minutes`;
-        const body = {
-          accessibility_info: configuration.accessibility_info
-        }
-
-        axios.post(url, body)
-          .then( (response) => {
-            setMinutesData( response.data );
-            setData(response.data)
-          } )
-
-      } else {
-        const response = await axios.post(`${API_URL}/query`, {
-          metric: configuration.metric,
-          condition: configuration.condition,
-          accessibility_info: configuration.accessibility_info,
-        });
-        setData(response.data);
-      }
-    }
-    fetchData();
-  }, [
-    configuration.metric,
-    configuration.condition,
-    configuration.accessibility_info,
-  ]);
-
   return (
     <div style={{ width: "100dvw", height: "100dvh" }}>
       {/* <Chat
@@ -182,31 +120,6 @@ function App() {
         setSupermercados={setSupermercados}
       /> */}
 
-      {selectedLots.length > 0 && (
-        <Box
-          style={{
-            position: "absolute",
-            width: "25%",
-            height: "100dvh",
-            left: 0,
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
-            zIndex: 1000,
-            overflowY: "scroll",
-            overflowX: "hidden",
-          }}
-        >
-          <LotSidebar
-            aggregatedInfo={aggregatedInfo}
-            selectedLots={selectedLots}
-            setSelectedLots={setSelectedLots}
-            parques={parques}
-            salud={salud}
-            educacion={educacion}
-            servicios={servicios}
-            supermercados={supermercados}
-          />
-        </Box>
-      )}
     </div>
   );
 }

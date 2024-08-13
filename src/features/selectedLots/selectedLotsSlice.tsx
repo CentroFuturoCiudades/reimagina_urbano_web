@@ -9,7 +9,7 @@ const initialState: SelectedLotsStat = {
 };
 
 const selectedLotsSlice = createSlice({
-    name: 'viewMode',
+    name: 'selectedLots',
     initialState,
     reducers: {
         setSelectedLots: (state, action: PayloadAction< string[] >) => {

@@ -19,27 +19,112 @@
         color: white;
         transition: none;
 
-        
+
     }
 
     .tab-visor {
-        background-color: rgba(137, 151, 77, 0.8); /* color del Visor */
-
+        background-color: var(--visor-primary-opacity)
     }
 
     .tab-accesibilidad {
-        background-color: rgba(133, 156, 190, 0.8); /* color de Accesibilidad */
-        
+        background-color: #996699cc;
+
     }
 
     .tab-potencial {
-        background-color: rgba(206, 173, 102, 0.8); /* color de Potencial */
-        
+        background-color: #cc9933cc;
+
     }
 
     .chakra-tabs__tabpanel {
         padding: 1rem;
         height: calc(100% - 3rem); /* ajusta la altura según el tamaño de las pestañas */
         overflow-y: auto;
+    }
+}
+
+.visor{
+    &__icon {
+        &--active {
+            color:  #6b7f14 !important;
+        }
+    }
+}
+
+.tab__main {
+    background-color: rgba(255, 255, 255, 0.6);
+    margin-top: -1rem;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    width: 21.23rem;
+    margin-left: -1rem;
+    padding-bottom: 1rem;
+
+
+    .accordion{
+        &-header{
+            color: white;
+            cursor: pointer;
+
+            padding: 0 1rem;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+
+    .accordion-body{
+        max-height: 75vh;
+        overflow: scroll;
+    }
+
+    .stat-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 0.5rem;
+
+        .stat-title-box {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-title {
+            font-size: 0.8rem; /* Ajustar el tamaño de las letras */
+            text-align: left;
+            display: flex;
+        }
+
+        .stat-value > p {
+            display: flex;
+            align-items: center;
+        }
+    }
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 0.3rem;
+        border-radius: 5px;
+    }
+
+    .checkbox-container label {
+        margin-left: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .chakra-checkbox {
+        margin-right: 0.5rem;
+    }
+
+    .chakra-numberinput {
+        margin-right: 0.5rem;
     }
 }
