@@ -4,7 +4,9 @@ import { VIEW_MODES } from "../constants";
 
 const LotsLayer = async ({ coordinates, getFillColor, viewMode }: any) => {
 
-    if ( ( !coordinates || coordinates.length === 0) && viewMode != VIEW_MODES.FULL ) {
+    if ( ( !coordinates || coordinates.length === 0)
+        //&& viewMode != VIEW_MODES.FULL
+    ) {
         return null;
     }
 
