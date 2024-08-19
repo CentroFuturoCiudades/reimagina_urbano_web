@@ -2,16 +2,16 @@ import React, { useEffect, useMemo, useState } from "react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { API_URL, VIEW_COLORS_RGBA, VIEW_MODES } from "../../constants";
+import { API_URL, BLOB_URL, VIEW_COLORS_RGBA, VIEW_MODES } from "../../constants";
 import { RGBAColor } from "deck.gl";
 import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
 import { GenericObject } from "../../types";
-import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer } from "../../layers";
+import { AmenitiesLayer, LotsLayer, useLensLayer } from "../../layers";
 import * as d3 from "d3";
-import { fetchPolygonData } from "../../utils";
+import { fetchPolygonData, useFetchGeo } from "../../utils";
 import PointsLayer from "../../layers/PointsLayer";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 
@@ -57,18 +57,27 @@ const useDrawPoligonLayer = () => {
 
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
+    const project = window.location.pathname.split("/")[1];
 
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const metric = useSelector((state: RootState) => state.queryMetric.queryMetric);
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
 
+
+    const { data: dataLots }: any = useFetchGeo(`${BLOB_URL}/${project}/lots.fgb`);
+
     const [coords, setCoords] = useState({
         latitud: 24.753450686162093,
         longitud: -107.39367959923534,
     });
+
+    const [ fillColor, setFillColor ] = useState< (d:any)=>RGBAColor >(
+        (d: any)=> [255, 255, 0]
+     );
+
     const [queryData, setQueryDataState] = useState<any>({});
-    const [queryDataFloors, setQueryDataFloorsState] = useState<any>({});
     const [coordinates, setCoordinates] = useState<any>([]);
+    const [lotsLayer, setLotsLayer] = useState<any>( {} );
     const [dataLayers, setDataLayers] = useState<any[]>([]);
 
     const { lensData, layers: lensLayers } = useLensLayer({ coords });
@@ -114,20 +123,14 @@ const Layers = () => {
                 });
                 if (response && response.data) {
                     const queryDataByProductId: GenericObject = {};
-                    const queryDataFloorsData: GenericObject = {};
 
                     const ids: string[]  = response.data.map((x: any) => x.ID) ;
                     dispatch( setSelectedLots( ids ));
-                    
+
                     response.data.forEach((data: any) => {
                         queryDataByProductId[data["ID"]] = data["value"];
-                        queryDataFloorsData[data["ID"]] = {
-                            "num_floors": data["num_floors"],
-                            "max_height": data["max_height"]
-                        };
                     });
 
-                    setQueryDataFloorsState(queryDataFloorsData)
                     setQueryDataState(queryDataByProductId);
                     dispatch( setQueryData( queryDataByProductId ) )
                 }
@@ -156,26 +159,29 @@ const Layers = () => {
             .domain(domain)
             .range(colors);
 
-        const getFillColor = (d: any): RGBAColor => {
+        const getFillColor = ()=> (d: any): RGBAColor => {
+
             const value = queryData[d.properties.ID];
 
-            if( value ) {
-                const colorString = quantiles(value);
-                const color = d3.color(colorString)?.rgb();
-                return color ? [color.r, color.g, color.b] : [255, 255, 255];
-                }
+            if( !value ) return [255, 255, 255]
 
-            return [220, 220, 200];
+            const colorString = quantiles(value);
+            const color = d3.color(colorString)?.rgb();
+            return color ? [color.r, color.g, color.b] : [255, 255, 255];
         };
+
+        setFillColor(  getFillColor )
+
+        console.log( getFillColor )
 
         const getData = async () => {
 
-            const layer = await LotsLayer({ coordinates, getFillColor, viewMode });
-            if (layer) {
-                setDataLayers( (dataLayers)=> {
-                    return [...dataLayers, layer]
-                });
-            }
+            // const layer = await LotsLayer({ coordinates, getFillColor, viewMode });
+            // if (layer) {
+            //     setDataLayers( (dataLayers)=> {
+            //         return [...dataLayers, layer]
+            //     });
+            // }
 
             // const points = await PointsLayer({ coordinates, getFillColor: [255, 0, 0, 255] });
             // if (points) {
@@ -191,19 +197,33 @@ const Layers = () => {
                 });
             }
 
-            const buildings = await BuildingsLayer({ coordinates, queryDataFloors });
-            if( buildings && buildings.length ){
-                setDataLayers( (dataLayers)=> {
-                    return [...dataLayers, ...buildings]
-                });
-            }
-
         };
 
         getData();
     }, [queryData, amenitiesArray]);
 
-    const layers: any[] = [...dataLayers, ...lensLayers, ...drawPoligonLayers];
+    useEffect( ()=> {
+
+        console.log( fillColor )
+
+        const layer = new GeoJsonLayer({
+            id: "data-lots" + Math.random(),
+            filled: true,
+            getFillColor: fillColor,
+            wireframe: false,
+            getLineWidth: 0,
+            data: dataLots
+        })
+
+        setLotsLayer( layer )
+
+    }, [ fillColor ] );
+
+
+    const layers: any[] = [
+        lotsLayer,
+        ...Object.values(dataLayers), ...lensLayers, ...drawPoligonLayers
+    ];
 
     return { layers };
 };

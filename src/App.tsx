@@ -61,15 +61,6 @@ function App() {
     window.location.href = "/primavera";
   }
 
-  useEffect(() => {
-    async function updateProject() {
-      await axios.get(`${API_URL}/project/${project}`);
-      const coords = await axios.get(`${API_URL}/coords`);
-      setCoords(coords.data);
-    }
-    updateProject();
-  }, [project]);
-
   // console.log(aggregatedInfo)
 
   return (

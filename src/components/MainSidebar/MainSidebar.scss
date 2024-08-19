@@ -101,6 +101,12 @@
             display: flex;
         }
 
+        .stat-value {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
         .stat-value > p {
             display: flex;
             align-items: center;
