@@ -9,7 +9,7 @@ import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
 import { GenericObject } from "../../types";
-import { AmenitiesLayer, LotsLayer, useLensLayer } from "../../layers";
+import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer } from "../../layers";
 import * as d3 from "d3";
 import { fetchPolygonData } from "../../utils";
 import PointsLayer from "../../layers/PointsLayer";
@@ -67,6 +67,7 @@ const Layers = () => {
         longitud: -107.39367959923534,
     });
     const [queryData, setQueryDataState] = useState<any>({});
+    const [queryDataFloors, setQueryDataFloorsState] = useState<any>({});
     const [coordinates, setCoordinates] = useState<any>([]);
     const [dataLayers, setDataLayers] = useState<any[]>([]);
 
@@ -113,14 +114,20 @@ const Layers = () => {
                 });
                 if (response && response.data) {
                     const queryDataByProductId: GenericObject = {};
+                    const queryDataFloorsData: GenericObject = {};
 
                     const ids: string[]  = response.data.map((x: any) => x.ID) ;
                     dispatch( setSelectedLots( ids ));
-
+                    
                     response.data.forEach((data: any) => {
                         queryDataByProductId[data["ID"]] = data["value"];
+                        queryDataFloorsData[data["ID"]] = {
+                            "num_floors": data["num_floors"],
+                            "max_height": data["max_height"]
+                        };
                     });
 
+                    setQueryDataFloorsState(queryDataFloorsData)
                     setQueryDataState(queryDataByProductId);
                     dispatch( setQueryData( queryDataByProductId ) )
                 }
@@ -177,6 +184,13 @@ const Layers = () => {
             if( amenities && amenities.length ){
                 setDataLayers( (dataLayers)=> {
                     return [...dataLayers, ...amenities]
+                });
+            }
+
+            const buildings = await BuildingsLayer({ coordinates, queryDataFloors });
+            if( buildings && buildings.length ){
+                setDataLayers( (dataLayers)=> {
+                    return [...dataLayers, ...buildings]
                 });
             }
 
