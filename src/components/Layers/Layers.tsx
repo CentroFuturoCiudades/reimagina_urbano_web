@@ -152,7 +152,7 @@ const Layers = () => {
         const getFillColor = (d: any): RGBAColor => {
             const value = queryData[d.properties.ID];
 
-            if( value ) {
+            if( value >= 0 ) {
                 const colorString = quantiles(value);
                 const color = d3.color(colorString)?.rgb();
                 return color ? [color.r, color.g, color.b] : [255, 255, 255];
