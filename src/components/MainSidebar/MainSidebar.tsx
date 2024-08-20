@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
 import "./MainSidebar.scss";
 import { API_URL, VIEW_MODES } from "../../constants";
@@ -6,7 +6,6 @@ import axios from "axios";
 import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { setBaseColor } from "../../features/baseColor/baseColorSlice";
 import Toolbar from "../Toolbar";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import { Accesibilidad } from "../../content";
@@ -14,45 +13,58 @@ import { Accesibilidad } from "../../content";
 const MainSidebar = () => {
     const [metrics, setMetrics] = useState<any>({});
 
-    const selectedLots = useSelector((state: RootState) => state.selectedLots.selectedLots );
-    const viewMode = useSelector((state: RootState) => state.viewMode.viewMode );
+    const selectedLots = useSelector(
+        (state: RootState) => state.selectedLots.selectedLots
+    );
+    const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
 
     const dispatch: AppDispatch = useDispatch();
 
-    useEffect( ()=> {
-        let url = `${API_URL}/predios/`;
+    useEffect(() => {
+        const fetchData = async () => {
+            let url = `${API_URL}/predios/`;
 
-        if( selectedLots && selectedLots.length && viewMode != VIEW_MODES.FULL ){
+            // TODO: Use util function to fetch data
+            if (
+                selectedLots &&
+                selectedLots.length &&
+                viewMode !== VIEW_MODES.FULL
+            ) {
+                url += "?";
 
-            url += "?";
-
-            url += selectedLots
-                .filter(x => x != undefined )
-                .map((x) => {
-                    return `predio=${x}`
-                })
-                .join("&");
-
-        }
-
-        axios.get( url, {
-            headers: {
-                'Cache-Control': 'public, max-age=3600',
+                url += selectedLots
+                    .filter((x) => x !== undefined)
+                    .map((x) => {
+                        return `predio=${x}`;
+                    })
+                    .join("&");
             }
-        } )
-            .then( (response) => {
-                if( response && response.data ){
-                    setMetrics( response.data )
-                }
-            } )
-    }, [ selectedLots ])
+
+            const response = await axios.get(url, {
+                headers: {
+                    "Cache-Control": "public, max-age=3600",
+                },
+            });
+            if (response && response.data) {
+                setMetrics(response.data);
+            }
+        };
+        fetchData();
+    }, [selectedLots]);
 
     return (
-        <Tabs className="mainSidebar" variant="soft-rounded" colorScheme="green">
+        <Tabs
+            className="mainSidebar"
+            variant="soft-rounded"
+            colorScheme="green"
+        >
             <TabList>
                 <Tab
                     className="tab-visor"
-                    _selected={{ bg: "var(--visor-primary-opacity)", color: "white" }}
+                    _selected={{
+                        bg: "var(--visor-primary-opacity)",
+                        color: "white",
+                    }}
                     onClick={() => {
                         dispatch(setQueryMetric("POBTOT"));
                     }}
@@ -61,8 +73,10 @@ const MainSidebar = () => {
                 </Tab>
                 <Tab
                     className="tab-accesibilidad"
-                    _selected={{ bg: "var(--accesibilidad-primary-opacity)", color: "white" }}
-
+                    _selected={{
+                        bg: "var(--accesibilidad-primary-opacity)",
+                        color: "white",
+                    }}
                     onClick={() => {
                         dispatch(setQueryMetric("minutes"));
                     }}
@@ -71,11 +85,11 @@ const MainSidebar = () => {
                 </Tab>
                 <Tab
                     className="tab-potencial"
-                    _selected={{ bg: "rgba(206, 173, 102, 0.8)", color: "white" }}
-
-                    onClick={() => {
-
+                    _selected={{
+                        bg: "rgba(206, 173, 102, 0.8)",
+                        color: "white",
                     }}
+                    onClick={() => {}}
                 >
                     Potencial
                 </Tab>

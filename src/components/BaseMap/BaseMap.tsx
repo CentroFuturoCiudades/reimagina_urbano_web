@@ -1,118 +1,109 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { DeckGL } from '@deck.gl/react';
-import { GeoJsonLayer } from '@deck.gl/layers';
-import { Map } from 'react-map-gl';
-import { lightenColor, useFetch, useFetchGeo } from '../../utils';
-import { API_URL, BLOB_URL, INITIAL_STATE, VIEW_MODES } from '../../constants';
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../app/store';
-import * as d3 from "d3";
-import { GenericObject } from '../../types';
-import { Layer, PickInfo, RGBAColor } from 'deck.gl';
-import * as turf from "@turf/turf";
-import { debounce } from 'lodash';
-import { load } from '@loaders.gl/core';
-import { FlatGeobufLoader } from '@loaders.gl/flatgeobuf';
-import { setSelectedLots } from '../../features/selectedLots/selectedLotsSlice';
-import { EditableGeoJsonLayer } from '@nebula.gl/layers';
-import { DrawPolygonMode, ViewMode, TranslateMode } from "@nebula.gl/edit-modes";
-import { setDrag } from '../../features/lensSettings/lensSettingsSlice';
-import { Layers, Legend } from '../index';
-import { setViewState } from '../../features/viewState/viewStateSlice';
+import React, { useCallback, useEffect, useState } from "react";
+import { DeckGL } from "@deck.gl/react";
+import { GeoJsonLayer } from "@deck.gl/layers";
+import { Map } from "react-map-gl";
+import { useFetch } from "../../utils";
+import { API_URL, BLOB_URL, INITIAL_STATE } from "../../constants";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../app/store";
+import { debounce } from "lodash";
+import { Layers, Legend } from "../index";
+import { setViewState } from "../../features/viewState/viewStateSlice";
 
 interface BaseMapProps {
-  isSatellite?: boolean;
+    isSatellite?: boolean;
 }
 
-const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
-
+const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     const project = window.location.pathname.split("/")[1];
 
-    const [ coords, setCoords ] = useState();
-    const [localViewState, setLocalViewState] = useState( INITIAL_STATE );
+    const [coords, setCoords] = useState();
+    const [localViewState, setLocalViewState] = useState(INITIAL_STATE);
 
-    const { data: poligono } = useFetch(`${BLOB_URL}/${project}/bounds.geojson`);
-    const { data: colonias } = useFetch(`${BLOB_URL}/${project}/colonias.geojson`);
+    // TODO: Use fetch from backend.
+    const { data: poligono } = useFetch(
+        `${BLOB_URL}/${project}/bounds.geojson`
+    );
+    const { data: colonias } = useFetch(
+        `${BLOB_URL}/${project}/colonias.geojson`
+    );
 
     const { layers } = Layers();
 
     //Redux
     const dispatch: AppDispatch = useDispatch();
 
-    const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag );
-    const viewState = useSelector((state: RootState) => state.viewState );
+    const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
+    const viewState = useSelector((state: RootState) => state.viewState);
 
     useEffect(() => {
         async function updateProject() {
-          await axios.get(`${API_URL}/project/${project}`);
-          const coords = await axios.get(`${API_URL}/coords`);
-          setCoords(coords.data);
+            await axios.get(`${API_URL}/project/${project}`);
+            const coords = await axios.get(`${API_URL}/coords`);
+            setCoords(coords.data);
         }
         updateProject();
     }, [project]);
 
-    useEffect (() => {
+    useEffect(() => {
         setLocalViewState({
             ...localViewState,
-            zoom: viewState.zoom
-        })
+            zoom: viewState.zoom,
+        });
 
-        if( viewState.zoom > 16)
-        {
-            checkZoomLevel()
+        if (viewState.zoom > 16) {
+            checkZoomLevel();
         }
-    },[viewState])
+    }, [viewState]);
 
-    useEffect(()=> {
-        if( coords ){
+    useEffect(() => {
+        if (coords) {
             setLocalViewState({
                 ...localViewState,
                 latitude: coords["latitud"],
-                longitude: coords["longitud"]
-            })
+                longitude: coords["longitud"],
+            });
         }
+    }, [coords]);
 
-    }, [coords])
-
-    useEffect( ()=> {
-        dispatch( setViewState( {
-            zoom: localViewState.zoom
-        }))
+    useEffect(() => {
+        dispatch(
+            setViewState({
+                zoom: localViewState.zoom,
+            })
+        );
     }, [localViewState.zoom]);
 
     const checkZoomLevel = () => {
-        console.log('x zoom reached')
+        console.log("x zoom reached");
     };
 
     const handleViewStateChange = useCallback(
-
         debounce(({ viewState }) => {
-            setLocalViewState( viewState )
+            setLocalViewState(viewState);
         }, 5),
         []
     );
 
     //LAYER THAT MARKS THE LIMIT OF THE POLIGON
-    const poligonLayer =
-        new GeoJsonLayer({
-            id: 'poligono-layer',
-            data: poligono,
-            filled: true,
-            getFillColor: [0, 0, 0, 0],
-            getLineColor: [255, 0, 0, 255],
-            getLineWidth: 10,
-        });
+    const poligonLayer = new GeoJsonLayer({
+        id: "poligono-layer",
+        data: poligono,
+        filled: true,
+        getFillColor: [0, 0, 0, 0],
+        getLineColor: [255, 0, 0, 255],
+        getLineWidth: 10,
+    });
 
-    const coloniasLayer =
-        new GeoJsonLayer({
-            id: 'colonias-layer',
-            data: colonias,
-            filled: true,
-            getFillColor: [0, 0, 0, 0],
-            getLineColor: [ 0, 0, 10, 255],
-            getLineWidth: 8,
-        });
+    const coloniasLayer = new GeoJsonLayer({
+        id: "colonias-layer",
+        data: colonias,
+        filled: true,
+        getFillColor: [0, 0, 0, 0],
+        getLineColor: [0, 0, 10, 255],
+        getLineWidth: 8,
+    });
 
     if (!coords) {
         return <div>Loading</div>;
@@ -125,11 +116,11 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                 initialViewState={{
                     ...INITIAL_STATE,
                     latitude: coords["latitud"],
-                    longitude: coords["longitud"]
+                    longitude: coords["longitud"],
                 }}
                 controller={{ dragPan: !isDrag }}
-                layers={ [ poligonLayer, , ...layers, coloniasLayer ] }
-                viewState={ {...localViewState} }
+                layers={[poligonLayer, ...layers, coloniasLayer]}
+                viewState={{ ...localViewState }}
                 onViewStateChange={handleViewStateChange}
             >
                 <Map
@@ -142,7 +133,7 @@ const BaseMap: React.FC<BaseMapProps> = ( { isSatellite } : BaseMapProps) => {
                     attributionControl={false}
                 />
             </DeckGL>
-            <Legend></Legend>
+            <Legend />
         </>
     );
 };

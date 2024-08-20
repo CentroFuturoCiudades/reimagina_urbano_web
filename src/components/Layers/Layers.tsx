@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { GeoJsonLayer } from "@deck.gl/layers";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import { API_URL, VIEW_COLORS_RGBA, VIEW_MODES } from "../../constants";
@@ -11,8 +10,6 @@ import axios from "axios";
 import { GenericObject } from "../../types";
 import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer } from "../../layers";
 import * as d3 from "d3";
-import { fetchPolygonData } from "../../utils";
-import PointsLayer from "../../layers/PointsLayer";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 
 const useDrawPoligonLayer = () => {
@@ -40,7 +37,10 @@ const useDrawPoligonLayer = () => {
     const drawLayer = new EditableGeoJsonLayer({
         id: "editable-layer",
         data: polygon,
-        mode: polygon.features.length === 0 ? new DrawPolygonMode() : new ViewMode(),
+        mode:
+            polygon.features.length === 0
+                ? new DrawPolygonMode()
+                : new ViewMode(),
         selectedFeatureIndexes: [0],
         onEdit: handleEdit,
         pickable: true,
@@ -53,13 +53,13 @@ const useDrawPoligonLayer = () => {
     return { drawPoligonData: polygon, layers: [drawLayer] };
 };
 
-
-
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
 
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const metric = useSelector((state: RootState) => state.queryMetric.queryMetric);
+    const metric = useSelector(
+        (state: RootState) => state.queryMetric.queryMetric
+    );
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
 
     const [coords, setCoords] = useState({
@@ -72,14 +72,19 @@ const Layers = () => {
     const [dataLayers, setDataLayers] = useState<any[]>([]);
 
     const { lensData, layers: lensLayers } = useLensLayer({ coords });
-    const { drawPoligonData, layers: drawPoligonLayers } = useDrawPoligonLayer();
+    const { drawPoligonData, layers: drawPoligonLayers } =
+        useDrawPoligonLayer();
 
     //String values allow the serialization of those properties. Avoids infinite re-rendering
     const lensDataString = useMemo(() => JSON.stringify(lensData), [lensData]);
-    const drawPoligonDataString = useMemo(() => JSON.stringify(drawPoligonData), [drawPoligonData]);
+    const drawPoligonDataString = useMemo(
+        () => JSON.stringify(drawPoligonData),
+        [drawPoligonData]
+    );
 
-    const amenitiesArray: GenericObject = useSelector((state: RootState) => state.accessibilityList.accessibilityList );
-
+    const amenitiesArray: GenericObject = useSelector(
+        (state: RootState) => state.accessibilityList.accessibilityList
+    );
 
     useEffect(() => {
         setDataLayers([]);
@@ -100,17 +105,19 @@ const Layers = () => {
         }
 
         async function fetchData() {
-            if ( (!metric || !coordinates) && viewMode != VIEW_MODES.FULL ) return;
+            if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL)
+                return;
             try {
+                // TODO: Use redux to get accessibility list data.
                 const response = await axios.post(`${API_URL}/query`, {
                     metric: metric,
                     accessibility_info: [
                         {
                             name: "Farmacia",
-                            radius: 1600
-                        }
+                            radius: 1600,
+                        },
                     ],
-                    coordinates
+                    coordinates,
                 });
                 if (response && response.data) {
                     const queryDataByProductId: GenericObject = {};
@@ -118,7 +125,7 @@ const Layers = () => {
 
                     const ids: string[]  = response.data.map((x: any) => x.ID) ;
                     dispatch( setSelectedLots( ids ));
-                    
+
                     response.data.forEach((data: any) => {
                         queryDataByProductId[data["ID"]] = data["value"];
                         queryDataFloorsData[data["ID"]] = {
@@ -129,17 +136,16 @@ const Layers = () => {
 
                     setQueryDataFloorsState(queryDataFloorsData)
                     setQueryDataState(queryDataByProductId);
-                    dispatch( setQueryData( queryDataByProductId ) )
+                    dispatch(setQueryData(queryDataByProductId));
                 }
-            } catch (e){
-                console.log( e );
+            } catch (e) {
+                console.log(e);
             }
         }
         fetchData();
     }, [metric, coordinates, isDrag, viewMode]);
 
     useEffect(() => {
-
         const domain = [
             Math.min(...(Object.values(queryData) as any)),
             Math.max(...(Object.values(queryData) as any)),
@@ -159,21 +165,24 @@ const Layers = () => {
         const getFillColor = (d: any): RGBAColor => {
             const value = queryData[d.properties.ID];
 
-            if( value ) {
+            if( value >= 0 ) {
                 const colorString = quantiles(value);
                 const color = d3.color(colorString)?.rgb();
                 return color ? [color.r, color.g, color.b] : [255, 255, 255];
-                }
+            }
 
             return [220, 220, 200];
         };
 
         const getData = async () => {
-
-            const layer = await LotsLayer({ coordinates, getFillColor, viewMode });
+            const layer = await LotsLayer({
+                coordinates,
+                getFillColor,
+                viewMode,
+            });
             if (layer) {
-                setDataLayers( (dataLayers)=> {
-                    return [...dataLayers, layer]
+                setDataLayers((dataLayers) => {
+                    return [...dataLayers, layer];
                 });
             }
 
@@ -184,19 +193,23 @@ const Layers = () => {
             //     });
             // }
 
-            const amenities = await AmenitiesLayer({ coordinates, amenitiesArray });
-            if( amenities && amenities.length ){
-                setDataLayers( (dataLayers)=> {
-                    return [...dataLayers, ...amenities]
+            const amenities = await AmenitiesLayer({
+                coordinates,
+                amenitiesArray,
+            });
+            if (amenities && amenities.length) {
+                setDataLayers((dataLayers) => {
+                    return [...dataLayers, ...amenities];
                 });
             }
-
+          
             const buildings = await BuildingsLayer({ coordinates, queryDataFloors });
             if( buildings && buildings.length ){
                 setDataLayers( (dataLayers)=> {
                     return [...dataLayers, ...buildings]
                 });
             }
+
 
         };
 
@@ -209,7 +222,3 @@ const Layers = () => {
 };
 
 export default Layers;
-
-
-
-

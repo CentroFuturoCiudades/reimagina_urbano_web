@@ -6,6 +6,7 @@ import { load } from '@loaders.gl/core';
 import { geojson } from 'flatgeobuf';
 import { API_URL } from "./constants";
 
+// TODO: Refactor to typescript
 export function lightenColor(color, factor) {
   var lightened = color.map(function (c) {
     return Math.min(255, Math.round(c + 255 * factor));
