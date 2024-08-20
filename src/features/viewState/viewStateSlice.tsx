@@ -1,10 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { INITIAL_STATE } from "../../constants";
 
 export interface ViewStateState {
-
     zoom: number;
-
 }
 
 const initialState: ViewStateState = {
@@ -13,13 +10,7 @@ const initialState: ViewStateState = {
 
 const viewStateSlice = createSlice ({
     name: 'viewState',
-    //initialState: INITIAL_STATE,
     initialState,
-    /*reducers: {
-        setViewState: (state, action: PayloadAction<number>) => {
-            state.zoom = action.payload;
-        }
-    }*/
     reducers: {
         setViewState: (state, action: PayloadAction<ViewStateState>) => {
             return({...state, ...action.payload})
