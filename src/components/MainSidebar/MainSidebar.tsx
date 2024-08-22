@@ -22,29 +22,13 @@ const MainSidebar = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            let url = `${API_URL}/predios/`;
-
-            // TODO: Use util function to fetch data
-            if (
+            const lots =
                 selectedLots &&
                 selectedLots.length &&
                 viewMode !== VIEW_MODES.FULL
-            ) {
-                url += "?";
-
-                url += selectedLots
-                    .filter((x) => x !== undefined)
-                    .map((x) => {
-                        return `predio=${x}`;
-                    })
-                    .join("&");
-            }
-
-            const response = await axios.get(url, {
-                headers: {
-                    "Cache-Control": "public, max-age=3600",
-                },
-            });
+                    ? selectedLots.filter((x) => x !== undefined)
+                    : undefined;
+            const response = await axios.post(`${API_URL}/predios`, { lots });
             if (response && response.data) {
                 setMetrics(response.data);
             }

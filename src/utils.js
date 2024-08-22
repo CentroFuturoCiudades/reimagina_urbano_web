@@ -217,7 +217,7 @@ export const fetchPolygonData = async ({
     coordinates,
     layer,
 }) => {
-    const url = `${API_URL}/poligon`;
+    const url = `${API_URL}/polygon`;
     try {
         const response = await fetch(url, {
             method: "POST",

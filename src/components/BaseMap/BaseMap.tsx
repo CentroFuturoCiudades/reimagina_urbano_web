@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { DeckGL } from "@deck.gl/react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { Map } from "react-map-gl";
-import { useFetch } from "../../utils";
-import { API_URL, BLOB_URL, INITIAL_STATE } from "../../constants";
+import { useFetchGeo } from "../../utils";
+import { API_URL, INITIAL_STATE } from "../../constants";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
@@ -21,12 +21,11 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     const [coords, setCoords] = useState();
     const [localViewState, setLocalViewState] = useState(INITIAL_STATE);
 
-    // TODO: Use fetch from backend.
-    const { data: poligono } = useFetch(
-        `${BLOB_URL}/${project}/bounds.geojson`
+    const { data: poligono } = useFetchGeo(
+        `${API_URL}/polygon/bounds`
     );
-    const { data: colonias } = useFetch(
-        `${BLOB_URL}/${project}/colonias.geojson`
+    const { data: colonias } = useFetchGeo(
+        `${API_URL}/polygon/colonias`
     );
 
     const { layers } = Layers();
@@ -44,7 +43,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
             setCoords(coords.data);
         }
         updateProject();
-    }, [project]);
+    }, []);
 
     useEffect(() => {
         setLocalViewState({
