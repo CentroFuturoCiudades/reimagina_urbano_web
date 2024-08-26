@@ -23,11 +23,17 @@ export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
 
 export const COLUMN_MAPPING: GenericObject = {
   ID: "Clave de Lote",
+  GRAPROES: "Grado Promedio de Escolaridad",
+  PYRAMID: "Pirámide Poblacional",
   POBTOT: "Población Total",
   TVIVHAB: "Total de Viviendas Habitadas",
-  VIVPAR_DES: "Viviendas Particulares Deshabitadas",
+  VIVPAR_HAB: "Viviendas Habitadas",
+  VIVPAR_DES: "Viviendas Deshabitadas",
   VIVTOT: "Viviendas Totales",
   VPH_AUTOM: "Viviendas con Automóvil",
+  VPH_TINACO: "Viviendas con Tinaco",
+  VPH_PC: "Viviendas con Computadora",
+  wellness_index: "Índice de Bienestar",
   building_area: "Área de Edificación",
   building_ratio: "Porcentaje de Edificación",
   equipment_area: "Área de Equipamiento",

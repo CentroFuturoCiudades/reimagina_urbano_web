@@ -11,6 +11,7 @@ import { GenericObject } from "../../types";
 import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer } from "../../layers";
 import * as d3 from "d3";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
+import PointsLayer from "../../layers/PointsLayer";
 
 const useDrawPoligonLayer = () => {
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
@@ -202,13 +203,13 @@ const Layers = () => {
                     return [...dataLayers, ...amenities];
                 });
             }
-          
-            const buildings = await BuildingsLayer({ coordinates, queryDataFloors });
-            if( buildings && buildings.length ){
-                setDataLayers( (dataLayers)=> {
-                    return [...dataLayers, ...buildings]
-                });
-            }
+
+            // const buildings = await BuildingsLayer({ coordinates, queryDataFloors });
+            // if( buildings && buildings.length ){
+            //     setDataLayers( (dataLayers)=> {
+            //         return [...dataLayers, ...buildings]
+            //     });
+            // }
 
 
         };

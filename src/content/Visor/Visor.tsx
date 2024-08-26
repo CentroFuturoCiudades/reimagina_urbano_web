@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import {
     Icon,
     VStack,
@@ -25,7 +25,8 @@ import "./Visor.scss";
 import { RootState } from "../../app/store";
 import { FaChevronDown } from "react-icons/fa6";
 import PopulationPyramid from "../../components/PopulationPyramid";
-import { VIEW_COLORS_RGBA } from "../../constants";
+import { COLUMN_MAPPING, VIEW_COLORS_RGBA } from "../../constants";
+import { GenericObject } from "../../types";
 
 const getPyramidData = (metrics: any) => {
     return metrics
@@ -83,6 +84,26 @@ const getPyramidData = (metrics: any) => {
 };
 
 const Visor = ({ metrics }: { metrics: any }) => {
+
+    const globalData: GenericObject = {
+        POBTOT: 1003530,
+        GRAPROES: 11.06,
+        VIVPAR_HAB: 270235,
+        VIVPAR_DES: 46489.0,
+        "P_0A2_F": 22745.0,
+        "P_0A2_M": 23760.0,
+        "P_3A5_F": 24415.0, "P_3A5_M": 25097.0,
+        "P_6A11_F": 49274.0, "P_6A11_M": 51630.0,
+        "P_12A14_F": 25139.0, "P_12A14_M": 25983.0,
+        "P_15A17_F": 25163.0, "P_15A17_M": 25683.0,
+        "P_18A24_F": 62928.0, "P_18A24_M": 61763.0,
+        "P_25A59_F": 327737.0 , "P_25A59_M": 314356.0,
+        "P_60YMAS_F": 60860.0, "P_60YMAS_M": 50853.0,
+        VPH_TINACO: 128589,
+        VPH_PC: 131189,
+        VPH_AUTOM: 166497
+    }
+
     const dispatch = useDispatch();
     // TODO: Use Chakra UI Accordion component
     const [isOpen, setIsOpen] = useState(true);
@@ -127,6 +148,152 @@ const Visor = ({ metrics }: { metrics: any }) => {
         ? Math.round(metrics["PAFIL_IPRIV"]).toLocaleString("es-MX")
         : "0";
 
+
+    const demographicMetrics = [
+        {
+            name: "POBTOT",
+            type: "number",
+            sufix: "hab",
+        },
+        {
+            name: "PYRAMID",
+            type: "pyramid",
+        },
+        {
+            name: "GRAPROES",
+            type: "number",
+        },
+        {
+            name: "VIVPAR_HAB",
+            type: "number",
+        },
+        {
+            name: "VIVPAR_DES",
+            type: "number",
+        },
+
+    ]
+
+    const economicMetrics = [
+        {
+            name: "wellness_index",
+            type: "number",
+        },
+        {
+            name: "VPH_AUTOM",
+            type: "percentGraph",
+            base: "VIVPAR_HAB",
+        },
+        {
+            name: "VPH_TINACO",
+            type: "percentGraph",
+            base: "VIVPAR_HAB",
+        },
+        {
+            name: "VPH_PC",
+            type: "percentGraph",
+            base: "VIVPAR_HAB",
+        }
+    ]
+
+    const percentGraph = ( value: number, base: number ) => {
+
+        let percent = value / base * 100;
+
+        return (
+            <CircularProgress
+                size="100px"
+                value={
+                    percent
+                }
+                color={ VIEW_COLORS_RGBA.VISOR.primary}
+            >
+                <CircularProgressLabel>
+                    { percent .toFixed(0) }
+                    %
+                </CircularProgressLabel>
+            </CircularProgress>
+        )
+    }
+
+    const renderMetrics = ( metricsToShow: GenericObject ) => {
+
+        const elements: ReactElement[] = []
+
+        if( metrics && Object.keys( metrics ) ){
+            metricsToShow.forEach( (metric: any)=> {
+
+                var value: ReactElement = <></>;
+                var globalValue: ReactElement = <></>;
+
+                switch( metric.type ){
+                    case "number":
+                        value =
+                            <Text>
+                                {metrics?.[ metric.name ]?.toLocaleString("es-MX", {
+                                    maximumFractionDigits: 0,
+                                })}
+                                { metric.sufix || "0" }
+                            </Text>
+
+                        globalValue =
+                            <Text>
+                                { globalData?.[ metric.name ]?.toLocaleString("es-MX", {
+                                    maximumFractionDigits: 0,
+                                })}
+                                { metric.sufix || "0" }
+                            </Text>
+                        break;
+                    case "percentage":
+                        value =
+                            <Text>
+                                { metrics?.[ metric.name ] + "%" }
+                            </Text>
+                        break;
+                    case "pyramid":
+                        value =
+                            <PopulationPyramid data={pyramidData} />
+
+                        globalValue=
+                            <PopulationPyramid data={ getPyramidData( globalData ) } />
+                    break;
+                    case "percentGraph":
+                        value = percentGraph( metrics[ metric.name ], metrics[ metric.base ] )
+                        globalValue = percentGraph( globalData[ metric.name ], globalData[ metric.base ] )
+                    break;
+
+                }
+
+                elements.push(
+                    <Box
+                        className="stat-row"
+                        onClick={() => {
+                            configureMetric( metric.name );
+                        }}
+                    >
+                        <Box className="stat-title-box">
+                            <Box className="stat-title-box-cell" >
+                                <Text className="stat-title"> { COLUMN_MAPPING[ metric.name ] } </Text>
+                            </Box>
+                            <Box className="stat-title-box-cell dark" />
+                        </Box>
+                        <Box className="stat-value">
+                            <Box>
+                                { value }
+                            </Box>
+                            <Box className="dark">
+                                { globalValue }
+                            </Box>
+                        </Box>
+                    </Box>
+                )
+            })
+        }
+
+        return elements;
+    }
+
+
     return (
         <div className="visor tab__main">
             <div className="accordion-header" onClick={toggleAccordion}>
@@ -138,209 +305,20 @@ const Visor = ({ metrics }: { metrics: any }) => {
                 )}
             </div>
             {isOpen && (
-                <VStack spacing={4} className="accordion-body">
-                    <Box
-                        className="stat-row"
-                        onClick={() => {
-                            configureMetric("POBTOT");
-                        }}
-                    >
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">Población</Text>
-                            {queryMetric === "POBTOT" ? (
-                                <Icon
-                                    className="visor__icon--active"
-                                    as={FaEye}
-                                />
-                            ) : (
-                                <Icon className="visor__icon" as={FaEyeSlash} />
-                            )}
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={FaPerson} />
-                            <Text>
-                                {metrics?.["POBTOT"]?.toLocaleString("es-MX", {
-                                    maximumFractionDigits: 0,
-                                })}
-                            </Text>
+                <VStack spacing={0} className="accordion-body">
+                    <Box className="stat-row" style={{ margin: 0}}>
+                        <Box className="stat-title-box" style={{ margin: 0}}>
+                            <Text className="stat-title" width={"50%"}>Zona Sur</Text>
+                            <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
                         </Box>
                     </Box>
-
-                    <Box className="stat-row">
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                Pirámide Poblacional
-                            </Text>
-                        </Box>
-                        <Box className="stat-value">
-                            <PopulationPyramid data={pyramidData} />
-                        </Box>
-                    </Box>
-
-                    <Box
-                        className="stat-row"
-                        onClick={() => {
-                            configureMetric("VIVTOT");
-                        }}
-                    >
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                Número de Viviendas
-                            </Text>
-                            {queryMetric === "VIVTOT" ? (
-                                <Icon as={FaEye} />
-                            ) : (
-                                <Icon as={FaEyeSlash} />
-                            )}
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={BiSolidHome} />
-                            <Text>
-                                {metrics?.["VIVTOT"]?.toLocaleString("es-MX", {
-                                    maximumFractionDigits: 0,
-                                })}
-                            </Text>
-                        </Box>
-                    </Box>
-                    <Box
-                        className="stat-row"
-                        onClick={() => {
-                            configureMetric("VIVPAR_DES");
-                        }}
-                    >
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                Viviendas Deshabitadas
-                            </Text>
-                            {queryMetric === "VIVPAR_DES" ? (
-                                <Icon as={FaEye} />
-                            ) : (
-                                <Icon as={FaEyeSlash} />
-                            )}
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={TbHomeCancel} />
-                            <Text>
-                                {metrics?.["VIVPAR_DES"]?.toLocaleString(
-                                    "es-MX",
-                                    { maximumFractionDigits: 0 }
-                                )}
-                            </Text>
-                        </Box>
-                    </Box>
-                    <Box
-                        className="stat-row"
-                        onClick={() => {
-                            configureMetric("num_establishments");
-                        }}
-                    >
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                Número de Establecimientos
-                            </Text>
-                            {queryMetric === "num_establishments" ? (
-                                <Icon as={FaEye} />
-                            ) : (
-                                <Icon as={FaEyeSlash} />
-                            )}
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={FaBuilding} />
-                            <Text>
-                                {metrics?.[
-                                    "num_establishments"
-                                ]?.toLocaleString("es-MX", {
-                                    maximumFractionDigits: 0,
-                                })}
-                            </Text>
-                        </Box>
-                    </Box>
-                    <Box
-                        className="stat-row"
-                        onClick={() => {
-                            configureMetric("num_workers");
-                        }}
-                    >
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                Número de Trabajadores
-                            </Text>
-                            {queryMetric === "num_workers" ? (
-                                <Icon as={FaEye} />
-                            ) : (
-                                <Icon as={FaEyeSlash} />
-                            )}
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={MdOutlineWork} />
-                            <Text>
-                                {metrics?.["num_workers"]?.toLocaleString(
-                                    "es-MX",
-                                    { maximumFractionDigits: 0 }
-                                )}
-                            </Text>
-                        </Box>
-                    </Box>
-                    <Box className="stat-row">
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">Densidad</Text>
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={MdOutlineWork} />
-                            <Text>{densidad.toFixed(2)}</Text>
-                        </Box>
-                    </Box>
-
-                    <Box className="stat-row">
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                Grado Promedio Escolaridad
-                            </Text>
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={MdSchool} />
-                            <Text>{graproes}</Text>
-                        </Box>
-                    </Box>
-                    <Box className="stat-row">
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                Acceso a Seguro Médico Privado
-                            </Text>
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={FaStethoscope} />
-                            <Text>{pafil_ipriv}</Text>
-                        </Box>
-                    </Box>
-                    <Box className="stat-row">
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                Puntuaje de Bienestar
-                            </Text>
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={FaPersonBreastfeeding} />
-                            <Text>{puntajeHogarDigno}%</Text>
-                        </Box>
-                    </Box>
-                    <Box className="stat-row">
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                Promedio de Población por Cuarto
-                            </Text>
-                        </Box>
-                        <Box className="stat-value">
-                            <Icon as={FaHome} />
-                            <Text>{pobPorCuarto} Personas</Text>
-                        </Box>
-                    </Box>
+                    { renderMetrics( demographicMetrics ) }
                 </VStack>
             )}
 
             {/* TAB PERFILE SOCIO ECONOMICO */}
             <div className="accordion-header" onClick={toggleAccordion2}>
-                Perfil sociodemográfico{" "}
+                Perfil socioeconómico{" "}
                 {isOpen2 ? (
                     <Icon as={FaChevronDown}></Icon>
                 ) : (
@@ -348,62 +326,14 @@ const Visor = ({ metrics }: { metrics: any }) => {
                 )}
             </div>
             {isOpen2 && (
-                <VStack spacing={4} className="accordion-body">
-                    <Box className="stat-row">
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                % de viviendas con Tinaco
-                            </Text>
-                        </Box>
-                        <Box className="stat-value">
-                            <CircularProgress
-                                size="100px"
-                                value={
-                                    (metrics["VPH_TINACO"] /
-                                        metrics["VIVPAR_HAB"]) *
-                                    100
-                                }
-                                color={VIEW_COLORS_RGBA.VISOR.primary}
-                            >
-                                <CircularProgressLabel>
-                                    {(
-                                        (metrics["VPH_TINACO"] /
-                                            metrics["VIVPAR_HAB"]) *
-                                        100
-                                    ).toFixed(0)}
-                                    %
-                                </CircularProgressLabel>
-                            </CircularProgress>
+                <VStack spacing={0} className="accordion-body">
+                    <Box className="stat-row" style={{ margin: 0}}>
+                        <Box className="stat-title-box" style={{ margin: 0}}>
+                            <Text className="stat-title" width={"50%"}>Zona Sur</Text>
+                            <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
                         </Box>
                     </Box>
-
-                    <Box className="stat-row">
-                        <Box className="stat-title-box">
-                            <Text className="stat-title">
-                                % de viviendas con Computadora
-                            </Text>
-                        </Box>
-                        <Box className="stat-value">
-                            <CircularProgress
-                                size="100px"
-                                value={
-                                    (metrics["VPH_PC"] /
-                                        metrics["VIVPAR_HAB"]) *
-                                    100
-                                }
-                                color={VIEW_COLORS_RGBA.VISOR.secondary}
-                            >
-                                <CircularProgressLabel>
-                                    {(
-                                        (metrics["VPH_PC"] /
-                                            metrics["VIVPAR_HAB"]) *
-                                        100
-                                    ).toFixed(0)}
-                                    %
-                                </CircularProgressLabel>
-                            </CircularProgress>
-                        </Box>
-                    </Box>
+                    { renderMetrics(economicMetrics) }
                 </VStack>
             )}
         </div>
