@@ -10,6 +10,7 @@ import { AppDispatch, RootState } from "../../app/store";
 import { debounce } from "lodash";
 import { Layers, Legend } from "../index";
 import { setViewState } from "../../features/viewState/viewStateSlice";
+import "./BaseMap.scss";
 
 interface BaseMapProps {
     isSatellite?: boolean;
@@ -105,7 +106,12 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     });
 
     if (!coords) {
-        return <div>Loading</div>;
+        return (
+            <div className="loading-container">
+                <div className="spinner"></div>
+                <div className="loading-text">Loading...</div>
+            </div>
+        );
     }
 
     return (
