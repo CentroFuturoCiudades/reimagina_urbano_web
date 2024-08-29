@@ -1,8 +1,8 @@
-import { load } from "@loaders.gl/core";
-import { FlatGeobufLoader } from "@loaders.gl/flatgeobuf";
-import { GenericObject } from '../types';
+import React from 'react';
+import { IconLayer } from 'deck.gl';
+import { FaClinicMedical, FaSchool, FaPills, FaTree, FaHospital, FaHome, FaUniversity, FaFilm, FaLandmark } from 'react-icons/fa';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { fetchPolygonData } from "../utils";
-import { IconLayer } from "deck.gl";
 
 interface AccessibilityPointsProps {
     coordinates: any[];
@@ -33,56 +33,63 @@ const AccessibilityPoints = async ({ coordinates, layer }: AccessibilityPointsPr
         "Cine" |
         "Museos";
 
-    const getAmenityColor = (amenity: AmenityType) => {
+    // Function to convert a React icon to a base64-encoded SVG
+    const iconToBase64 = (icon: JSX.Element, color: string = 'black'): string => {
+        const iconMarkup = renderToStaticMarkup(React.cloneElement(icon, { color }));
+        return `data:image/svg+xml;base64,${btoa(iconMarkup)}`;
+    };
+
+    // Function to map amenities to specific icons
+    const getAmenityIcon = (amenity: AmenityType) => {
         switch (amenity) {
             case "Laboratorios clínicos":
-                return "darkred";
+                return iconToBase64(<FaClinicMedical />, "darkred");
             case "Educación Preescolar":
-                return "blue";
+                return iconToBase64(<FaSchool />, "blue");
             case "Educación Secundaria":
-                return "orange";
+                return iconToBase64(<FaSchool />, "orange");
             case "Educación Primaria":
-                return "teal";
+                return iconToBase64(<FaHome />, "teal");
             case "Otros consultorios":
-                return "yellow";
+                return iconToBase64(<FaClinicMedical />, "yellow");
             case "Otros Servicios recreativos":
-                return "purple";
+                return iconToBase64(<FaTree />, "purple");
             case "Guarderia":
-                return "green";
+                return iconToBase64(<FaSchool />, "green");
             case "Farmacia":
-                return "red";
+                return iconToBase64(<FaPills />, "red");
             case "Consultorios médicos":
-                return "lightgreen";
+                return iconToBase64(<FaClinicMedical />, "lightgreen");
             case "Parques recreativos":
-                return "lightblue";
+                return iconToBase64(<FaTree />, "lightblue");
             case "Educación Media Superior":
-                return "pink";
+                return iconToBase64(<FaUniversity />, "pink");
             case "Hospital general":
-                return "crimson";
+                return iconToBase64(<FaHospital />, "crimson");
             case "Asistencia social":
-                return "olive";
+                return iconToBase64(<FaHome />, "olive");
             case "Cine":
-                return "gold";
+                return iconToBase64(<FaFilm />, "gold");
             case "Museos":
-                return "indigo";
+                return iconToBase64(<FaLandmark />, "indigo");
             default:
-                return "gray"; 
+                return iconToBase64(<FaClinicMedical />, "gray");
         }
     };
 
     const data = accessibilityPointsData.features.map((feature: any) => {
         const amenity = feature.properties.amenity as AmenityType;
-        const color = getAmenityColor(amenity);
+        const icon = getAmenityIcon(amenity);
 
         return {
             position: feature.geometry.coordinates,
             icon: {
-                url: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="50" fill="${color}"/></svg>`,
+                url: icon,
                 width: 50,
                 height: 50,
                 anchorY: 50,
             },
-            size: 10,
+            size: 30,
         };
     });
 
