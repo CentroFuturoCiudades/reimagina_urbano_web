@@ -33,14 +33,12 @@ const AccessibilityPoints = async ({ coordinates, layer }: AccessibilityPointsPr
         "Cine" |
         "Museos";
 
-    // Function to convert a React icon to a base64-encoded SVG
     const iconToBase64 = (icon: JSX.Element, color: string = 'black'): string => {
         const iconMarkup = renderToStaticMarkup(React.cloneElement(icon, { color }));
         return `data:image/svg+xml;base64,${btoa(iconMarkup)}`;
     };
 
-    // Function to map amenities to specific icons
-    const getAmenityIcon = (amenity: AmenityType) => {
+    const getIcon = (amenity: AmenityType) => {
         switch (amenity) {
             case "Laboratorios clínicos":
                 return iconToBase64(<FaClinicMedical />, "darkred");
@@ -79,7 +77,7 @@ const AccessibilityPoints = async ({ coordinates, layer }: AccessibilityPointsPr
 
     const data = accessibilityPointsData.features.map((feature: any) => {
         const amenity = feature.properties.amenity as AmenityType;
-        const icon = getAmenityIcon(amenity);
+        const icon = getIcon(amenity);
 
         return {
             position: feature.geometry.coordinates,
