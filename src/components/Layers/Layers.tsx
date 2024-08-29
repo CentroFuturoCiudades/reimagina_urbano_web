@@ -8,7 +8,7 @@ import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
 import { GenericObject } from "../../types";
-import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer } from "../../layers";
+import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer, AccessibilityPointsLayer } from "../../layers";
 import * as d3 from "d3";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 import PointsLayer from "../../layers/PointsLayer";
@@ -201,6 +201,16 @@ const Layers = () => {
             if (amenities && amenities.length) {
                 setDataLayers((dataLayers) => {
                     return [...dataLayers, ...amenities];
+                });
+            }
+
+            const accessibilityPointsLayer = await AccessibilityPointsLayer({
+                coordinates,
+                layer: 'accessibility_points',
+            });
+            if (accessibilityPointsLayer) {
+                setDataLayers((dataLayers) => {
+                    return [...dataLayers, accessibilityPointsLayer];
                 });
             }
 
