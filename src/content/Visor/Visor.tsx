@@ -1,29 +1,21 @@
 import { ReactElement, useEffect, useState } from "react";
 import {
-    Icon,
-    VStack,
+    Accordion,
+    AccordionItem,
+    AccordionButton,
+    AccordionPanel,
+    AccordionIcon,
     Box,
     Text,
     CircularProgress,
     CircularProgressLabel,
+    VStack,
 } from "@chakra-ui/react";
 import React from "react";
-import { BiSolidHome } from "react-icons/bi";
-import {
-    FaEye,
-    FaEyeSlash,
-    FaPerson,
-    FaChevronUp,
-    FaPersonBreastfeeding,
-} from "react-icons/fa6";
-import { FaBuilding, FaStethoscope, FaHome } from "react-icons/fa";
-import { MdOutlineWork, MdSchool } from "react-icons/md";
-import { TbHomeCancel } from "react-icons/tb";
 import { useDispatch, useSelector } from "react-redux";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import "./Visor.scss";
 import { RootState } from "../../app/store";
-import { FaChevronDown } from "react-icons/fa6";
 import PopulationPyramid from "../../components/PopulationPyramid";
 import { COLUMN_MAPPING, VIEW_COLORS_RGBA } from "../../constants";
 import { GenericObject } from "../../types";
@@ -105,23 +97,6 @@ const Visor = ({ metrics }: { metrics: any }) => {
     }
 
     const dispatch = useDispatch();
-    // TODO: Use Chakra UI Accordion component
-    const [isOpen, setIsOpen] = useState(true);
-    const [isOpen2, setIsOpen2] = useState(false);
-
-    const queryMetric = useSelector(
-        (state: RootState) => state.queryMetric.queryMetric
-    );
-
-    const toggleAccordion = () => {
-        setIsOpen(!isOpen);
-        setIsOpen2(false);
-    };
-
-    const toggleAccordion2 = () => {
-        setIsOpen(false);
-        setIsOpen2(!isOpen2);
-    };
 
     const configureMetric = (metric: string) => {
         dispatch(setQueryMetric(metric));
@@ -296,46 +271,47 @@ const Visor = ({ metrics }: { metrics: any }) => {
 
     return (
         <div className="visor tab__main">
-            <div className="accordion-header" onClick={toggleAccordion}>
-                Perfil sociodemográfico{" "}
-                {isOpen ? (
-                    <Icon as={FaChevronDown}></Icon>
-                ) : (
-                    <Icon as={FaChevronUp}></Icon>
-                )}
-            </div>
-            {isOpen && (
-                <VStack spacing={0} className="accordion-body">
-                    <Box className="stat-row" style={{ margin: 0}}>
-                        <Box className="stat-title-box" style={{ margin: 0}}>
-                            <Text className="stat-title" width={"50%"}>Zona Sur</Text>
-                            <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
+            <Accordion allowToggle>
+                <AccordionItem>
+                    <AccordionButton className="accordion-header">
+                        <Box flex="1" textAlign="left">
+                            Perfil sociodemográfico
                         </Box>
-                    </Box>
-                    { renderMetrics( demographicMetrics ) }
-                </VStack>
-            )}
+                        <AccordionIcon />
+                    </AccordionButton>
+                    <AccordionPanel p={0}>
+                        <VStack spacing={0} className="accordion-body">
+                            <Box className="stat-row" style={{ margin: 0}}>
+                                <Box className="stat-title-box" style={{ margin: 0}}>
+                                    <Text className="stat-title" width={"50%"}>Zona Sur</Text>
+                                    <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
+                                </Box>
+                            </Box>
+                            { renderMetrics( demographicMetrics ) }
+                        </VStack>
+                    </AccordionPanel>
+                </AccordionItem>
 
-            {/* TAB PERFILE SOCIO ECONOMICO */}
-            <div className="accordion-header" onClick={toggleAccordion2}>
-                Perfil socioeconómico{" "}
-                {isOpen2 ? (
-                    <Icon as={FaChevronDown}></Icon>
-                ) : (
-                    <Icon as={FaChevronUp}></Icon>
-                )}
-            </div>
-            {isOpen2 && (
-                <VStack spacing={0} className="accordion-body">
-                    <Box className="stat-row" style={{ margin: 0}}>
-                        <Box className="stat-title-box" style={{ margin: 0}}>
-                            <Text className="stat-title" width={"50%"}>Zona Sur</Text>
-                            <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
+                <AccordionItem>
+                    <AccordionButton className="accordion-header">
+                        <Box flex="1" textAlign="left">
+                            Perfil socioeconómico
                         </Box>
-                    </Box>
-                    { renderMetrics(economicMetrics) }
-                </VStack>
-            )}
+                        <AccordionIcon />
+                    </AccordionButton>
+                    <AccordionPanel p={0}>
+                        <VStack spacing={0} className="accordion-body">
+                            <Box className="stat-row" style={{ margin: 0}}>
+                                <Box className="stat-title-box" style={{ margin: 0}}>
+                                    <Text className="stat-title" width={"50%"}>Zona Sur</Text>
+                                    <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
+                                </Box>
+                            </Box>
+                            { renderMetrics(economicMetrics) }
+                        </VStack>
+                    </AccordionPanel>
+                </AccordionItem>
+            </Accordion>
         </div>
     );
 };
