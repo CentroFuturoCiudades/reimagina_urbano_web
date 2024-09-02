@@ -2,13 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import { API_URL, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
-import { RGBAColor } from "deck.gl";
+import { RGBAColor, TextLayer } from "deck.gl";
 import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
 import { GenericObject } from "../../types";
-import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer } from "../../layers";
+import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer, AccessibilityPointsLayer } from "../../layers";
 import * as d3 from "d3";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 import PointsLayer from "../../layers/PointsLayer";
@@ -150,6 +150,21 @@ const Layers = () => {
         return () => {controller.abort();};
     }, [metric, coordinates, isDrag, viewMode, amenitiesArray]);
 
+    const [hoverInfo, setHoverInfo] = useState<any>(null);
+
+    const iconHover = (x: number, y: number, object: any )=> {
+        if (object) {
+            console.log(object)
+            setHoverInfo({
+                object,
+                x,
+                y,
+            });
+        } else {
+            setHoverInfo(null);
+        }
+    }
+
     useEffect(() => {
         const controller = new AbortController();
         const domain = [
@@ -204,19 +219,39 @@ const Layers = () => {
             //     });
             // }
 
-            // const amenities = await AmenitiesLayer({
-            //     coordinates,
-            //     amenitiesArray,
-            // });
-            // if (amenities && amenities.length) {
-            //     setDataLayers((dataLayers) => {
-            //         return [...dataLayers, ...amenities];
+            const amenities = await AmenitiesLayer({
+                coordinates,
+                amenitiesArray,
+            });
+            if (amenities && amenities.length) {
+                setDataLayers((dataLayers) => {
+                    return [...dataLayers, ...amenities];
+                });
+            }
+
+            const accessibilityPointsLayer = await AccessibilityPointsLayer({
+                coordinates,
+                layer: 'accessibility_points',
+                onHover: iconHover
+            });
+            if (accessibilityPointsLayer) {
+                setDataLayers((dataLayers) => {
+                    return [...dataLayers, accessibilityPointsLayer];
+                });
+            }
+
+            // const buildings = await BuildingsLayer({ coordinates, queryDataFloors });
+            // if( buildings && buildings.length ){
+            //     setDataLayers( (dataLayers)=> {
+            //         return [...dataLayers, ...buildings]
+
             //     });
             // }
         };
 
         getData();
     }, [queryData, amenitiesArray]);
+
 
     useEffect(() => {
         const getData = async () => {
@@ -241,7 +276,22 @@ const Layers = () => {
     }, [isBuildingZoom]);
 
 
-    const layers: any[] = [...dataLayers, ...lensLayers, ...drawPoligonLayers];
+    const layers: any[] = [ ...dataLayers , ...lensLayers, ...drawPoligonLayers, hoverInfo && new TextLayer({
+        id: 'text-layer',
+        data: [hoverInfo],
+        getPosition:( d: any ) => d.object.position,  // Adjust depending on your data
+        getText: ( d: any) => d.object.amenity,  // Customize based on your data properties
+        getPixelOffset: [0, -20],
+        getSize: 16,
+        getColor: [255, 255, 255 ],
+        background: true,
+        backgroundColor: [0, 0, 0, 150], // Semi-transparent black background
+        backgroundPadding: [6, 4], // Horizontal and vertical padding
+        getTextAnchor: 'middle',
+        getAlignmentBaseline: 'center',
+        fontFamily: '"Arial", sans-serif',
+        characterSet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789éó', // Include special characters
+    }),];
 
     return { layers };
 };
