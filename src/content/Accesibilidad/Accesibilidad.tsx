@@ -28,7 +28,7 @@ import {
 const Accesibilidad = ({ metrics }: any) => {
     return (
         <div className="accesibilidad tab__main">
-            <Accordion allowToggle>
+            <Accordion defaultIndex={[0]} allowToggle>
                 <AccordionItem>
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
@@ -57,6 +57,7 @@ const Accesibilidad = ({ metrics }: any) => {
                                     </Text>
                                 </Box>
                                 <Box
+                                    className="stat-value full"
                                     style={{ width: "100%", padding: "0 1rem" }}
                                 >
                                     <SelectAutoComplete />
@@ -69,8 +70,10 @@ const Accesibilidad = ({ metrics }: any) => {
                                         Total de equipamientos dentro del área
                                     </Text>
                                 </Box>
-                                <Box className="stat-value">
-                                    <Text> 100 </Text>
+                                <Box className="stat-value full">
+                                    <Box>
+                                        <Text> 100 </Text>
+                                    </Box>
                                 </Box>
                             </Box>
 
@@ -80,9 +83,9 @@ const Accesibilidad = ({ metrics }: any) => {
                                         Tipos de equipamientos
                                     </Text>
                                 </Box>
-                                <Box className="stat-value">
+                                <Box className="stat-value full">
                                     <ResponsiveContainer
-                                        width={"100%"}
+                                        width={"90%"}
                                         height={200}
                                     >
                                         <BarChart
@@ -139,8 +142,10 @@ const Accesibilidad = ({ metrics }: any) => {
                                         Radio de cobertura
                                     </Text>
                                 </Box>
-                                <Box className="stat-value">
-                                    <Text> 0.4 KM</Text>
+                                <Box className="stat-value full">
+                                    <Box>
+                                        <Text> 0.4 KM</Text>
+                                    </Box>
                                 </Box>
                             </Box>
 
@@ -148,12 +153,14 @@ const Accesibilidad = ({ metrics }: any) => {
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">Pendiente</Text>
                                 </Box>
-                                <Box className="stat-value">
-                                    <Text>
-                                        {" "}
-                                        <Icon as={TbAngle}></Icon>{" "}
-                                        {Math.trunc(metrics.mean_slope)}°
-                                    </Text>
+                                <Box className="stat-value full">
+                                    <Box>
+                                        <Text>
+                                            {" "}
+                                            <Icon as={TbAngle}></Icon>{" "}
+                                            {Math.trunc(metrics.mean_slope)}°
+                                        </Text>
+                                    </Box>
                                 </Box>
                             </Box>
                         </VStack>

@@ -72,6 +72,12 @@ export enum VIEW_MODES {
     LENS
 }
 
+export enum POLYGON_MODES {
+    VIEW,
+    EDIT,
+    DELETE
+}
+
 export const VIEW_COLORS_RGBA = {
     VISOR : {
         primary: "rgb(107, 127, 20)",

@@ -144,7 +144,8 @@ const Visor = ({ metrics }: { metrics: any }) => {
         },
         {
             name: "VIVPAR_DES",
-            type: "number",
+            type: "percent",
+            base: "VIVPAR_HAB"
         },
 
     ]
@@ -205,10 +206,10 @@ const Visor = ({ metrics }: { metrics: any }) => {
                     case "number":
                         value =
                             <Text>
-                                {metrics?.[ metric.name ]?.toLocaleString("es-MX", {
+                                { metrics?.[ metric.name ]?.toLocaleString("es-MX", {
                                     maximumFractionDigits: 0,
-                                })}
-                                { metric.sufix || "0" }
+                                }) || "" }
+                                { metric.sufix || "" }
                             </Text>
 
                         globalValue =
@@ -216,13 +217,17 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 { globalData?.[ metric.name ]?.toLocaleString("es-MX", {
                                     maximumFractionDigits: 0,
                                 })}
-                                { metric.sufix || "0" }
+                                { metric.sufix || "" }
                             </Text>
                         break;
-                    case "percentage":
+                    case "percent":
                         value =
                             <Text>
-                                { metrics?.[ metric.name ] + "%" }
+                                { (metrics?.[ metric.name ]/ metrics?.[ metric.base ] *100).toFixed(1) + "%" }
+                            </Text>
+                        globalValue =
+                            <Text>
+                                { (globalData?.[ metric.name ]/ globalData?.[ metric.base ] *100).toFixed(1) + "%" }
                             </Text>
                         break;
                     case "pyramid":
@@ -271,7 +276,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
 
     return (
         <div className="visor tab__main">
-            <Accordion allowToggle>
+            <Accordion allowToggle defaultIndex={[0]}>
                 <AccordionItem>
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
@@ -281,7 +286,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                     </AccordionButton>
                     <AccordionPanel p={0}>
                         <VStack spacing={0} className="accordion-body">
-                            <Box className="stat-row" style={{ margin: 0}}>
+                            <Box className="stat-row header" style={{ margin: 0}}>
                                 <Box className="stat-title-box" style={{ margin: 0}}>
                                     <Text className="stat-title" width={"50%"}>Zona Sur</Text>
                                     <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
@@ -301,7 +306,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                     </AccordionButton>
                     <AccordionPanel p={0}>
                         <VStack spacing={0} className="accordion-body">
-                            <Box className="stat-row" style={{ margin: 0}}>
+                            <Box className="stat-row header" style={{ margin: 0}}>
                                 <Box className="stat-title-box" style={{ margin: 0}}>
                                     <Text className="stat-title" width={"50%"}>Zona Sur</Text>
                                     <Text className="stat-title dark" width={"50%"}>Culiacán</Text>

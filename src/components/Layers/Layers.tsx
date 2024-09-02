@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { API_URL, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
+import { API_URL, POLYGON_MODES, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
 import { RGBAColor, TextLayer } from "deck.gl";
-import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
+import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
@@ -12,9 +12,13 @@ import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer, AccessibilityP
 import * as d3 from "d3";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 import PointsLayer from "../../layers/PointsLayer";
+import { setPoligonMode } from "../../features/viewMode/viewModeSlice";
 
 const useDrawPoligonLayer = () => {
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const poligonMode = useSelector((state: RootState) => state.viewMode.poligonMode);
+
+    const dispatch: AppDispatch = useDispatch();
 
     const [polygon, setPolygon] = useState<any>({
         type: "FeatureCollection",
@@ -35,18 +39,35 @@ const useDrawPoligonLayer = () => {
         return { drawPoligonData: polygon, layers: [] };
     }
 
+    var mode: DrawPolygonMode | ModifyMode;
+
+    switch( poligonMode ){
+        case POLYGON_MODES.EDIT:
+            mode = new ModifyMode()
+        break;
+
+        case POLYGON_MODES.DELETE:
+            setPolygon( {
+                type: "FeatureCollection",
+                features: [],
+            });
+            dispatch( setPoligonMode( POLYGON_MODES.VIEW ))
+
+        break;
+    }
+
     const drawLayer = new EditableGeoJsonLayer({
         id: "editable-layer",
         data: polygon,
         mode:
             polygon.features.length === 0
                 ? new DrawPolygonMode()
-                : new ViewMode(),
+                : new DrawPolygonMode(),
         selectedFeatureIndexes: [0],
         onEdit: handleEdit,
         pickable: true,
         getTentativeFillColor: [255, 255, 255, 50],
-        getFillColor: [0, 0, 0, 50],
+        getFillColor: [0, 0, 0, 0],
         getTentativeLineColor: [0, 0, 255, 200],
         getLineColor: [0, 0, 255, 200],
     });

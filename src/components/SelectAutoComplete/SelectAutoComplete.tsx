@@ -22,6 +22,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { GenericObject } from '../../types';
 
+import "./SelectAutoComplete.scss"
+
 const options = [
   { value: 'asistencial_social', label: 'Asistencia social' },
   { value: 'laboratorios_clinicos', label: 'Laboratorios clínicos' },
@@ -88,7 +90,7 @@ const SelectAutoComplete = () => {
   };
 
   return (
-    <Box>
+    <Box className='selectAutoComplete' position="relative">
       <Input
         variant="filled"
         placeholder="Selecciona un equipamiento de interés"
@@ -99,9 +101,10 @@ const SelectAutoComplete = () => {
         size="sm"
         mt="2"
       />
-      {isFocused && (
+      { isFocused && (
         <Box
           position="absolute"
+          top="1rem"
           left="0"
           right="0"
           borderWidth="1px"
@@ -127,7 +130,7 @@ const SelectAutoComplete = () => {
           </List>
         </Box>
       )}
-      <Box mt={2}>
+      <Box mt={2} width="100%">
         {accessibilityList.length > 0 &&
           accessibilityList.map((option) => (
             <Tag

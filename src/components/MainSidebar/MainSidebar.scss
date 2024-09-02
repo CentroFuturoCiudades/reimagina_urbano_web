@@ -86,7 +86,21 @@
         align-items: center;
         width: 100%;
 
+        &.header {
+            border-bottom: 1px solid gray;
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 10;
+
+            p {
+                font-weight: bold;
+                font-size: 14px;
+            }
+        }
+
         .stat-title-box {
+            height: 36px;
             width: 100%;
             background-color: rgba(255, 255, 255, 0.7);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -113,6 +127,8 @@
             display: flex;
             padding: 0 0.5rem;
             line-height: 1.2;
+            height: 100%;
+            align-items: center;
 
             &.dark {
                 background: rgba(100, 100, 100, 0.7);
@@ -125,6 +141,12 @@
             display: flex;
             font-size: 18px;
             font-weight: bold;
+
+            &.full {
+                > div {
+                    width: 100%;
+                }
+            }
 
             > div {
                 display: flex;

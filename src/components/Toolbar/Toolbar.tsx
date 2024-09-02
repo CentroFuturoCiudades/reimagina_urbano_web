@@ -2,9 +2,9 @@ import React from "react";
 import "./Toolbar.scss";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { setViewMode } from "../../features/viewMode/viewModeSlice";
+import { setPoligonMode, setViewMode } from "../../features/viewMode/viewModeSlice";
 import { setViewState } from "../../features/viewState/viewStateSlice";
-import { VIEW_MODES } from "../../constants";
+import { POLYGON_MODES, VIEW_MODES } from "../../constants";
 
 const Toolbar = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -32,13 +32,9 @@ const Toolbar = () => {
     return (
         <div className="toolbar">
             {/* 1st row title */}
+            <div>
             <div
                 className="toolbar__title"
-                style={{
-                    backgroundColor: "rgba(50, 50, 50, 0.8)",
-                    color: "white",
-                    textAlign: "center",
-                }}
             >
                 TOOLBAR
             </div>
@@ -133,6 +129,30 @@ const Toolbar = () => {
                     </div>
                 </div>
             </div>
+            </div>
+            {
+                viewMode == VIEW_MODES.POLIGON &&
+                <div>
+                    <div className="toolbar__title">ACCIONES: { VIEW_MODES[viewMode] } </div>
+                    {
+                        viewMode == VIEW_MODES.POLIGON  &&
+                        <div className="toolbar__section">
+                            <div className="toolbar__vista">
+                                <div onClick={ ()=> {  }}>
+                                    Editar
+                                    <img src="https://cdn-icons-png.flaticon.com/512/1159/1159633.png"></img>
+                                </div>
+                                <div
+                                    onClick={ ()=>{  dispatch(  setPoligonMode( POLYGON_MODES.DELETE ) ) }}
+                                 >
+                                    Borrar
+                                    <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png "></img>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
         </div>
     );
 };

@@ -1,0 +1,9 @@
+.selectAutoComplete {
+    font-size: 12px;
+    position: relative;
+    flex-direction: column;
+
+    &__item {
+        width: 100%;
+    }
+}
