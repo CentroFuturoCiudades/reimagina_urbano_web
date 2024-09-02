@@ -70,7 +70,7 @@ const Legend = () => {
                     <span>
                         {quantiles
                             .invertExtent(color)
-                            .map((d) => formatValue(d.toFixed(2)))
+                            .map((d) => formatValue(d.toFixed(0)))
                             .join(" - ")}
                     </span>
                 </div>
