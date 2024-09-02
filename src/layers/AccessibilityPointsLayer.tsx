@@ -7,14 +7,17 @@ import { fetchPolygonData } from "../utils";
 interface AccessibilityPointsProps {
     coordinates: any[];
     layer: string;
+    onHover: (x: number, y: number, object: any )=>void;
 }
 
-const AccessibilityPoints = async ({ coordinates, layer }: AccessibilityPointsProps) => {
+const AccessibilityPoints = async ({ coordinates, layer, onHover }: AccessibilityPointsProps) => {
     if (!coordinates || coordinates.length === 0) {
         return null;
     }
 
     const accessibilityPointsData = await fetchPolygonData({ coordinates, layer });
+
+    console.log( "DATA", accessibilityPointsData )
 
     type AmenityType =
         "Laboratorios clínicos" |
@@ -87,9 +90,11 @@ const AccessibilityPoints = async ({ coordinates, layer }: AccessibilityPointsPr
                 height: 50,
                 anchorY: 50,
             },
-            size: 30,
+            size: 20,
+            amenity: feature.properties.amenity
         };
     });
+
 
     return [
         new IconLayer({
@@ -99,8 +104,11 @@ const AccessibilityPoints = async ({ coordinates, layer }: AccessibilityPointsPr
             getIcon: (d: any) => d.icon,
             getPosition: (d: any) => d.position,
             getSize: (d: any) => d.size,
-            getColor: [255, 255, 255], 
-        })
+            getColor: [255, 255, 255],
+            onHover: ( { x, y, object }  )=> {
+                onHover(x,y,object)
+             }
+        }),
     ];
 };
 

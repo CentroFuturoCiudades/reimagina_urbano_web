@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import { API_URL, VIEW_COLORS_RGBA, VIEW_MODES } from "../../constants";
-import { RGBAColor } from "deck.gl";
+import { RGBAColor, TextLayer } from "deck.gl";
 import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
@@ -146,6 +146,21 @@ const Layers = () => {
         fetchData();
     }, [metric, coordinates, isDrag, viewMode]);
 
+    const [hoverInfo, setHoverInfo] = useState<any>(null);
+
+    const iconHover = (x: number, y: number, object: any )=> {
+        if (object) {
+            console.log(object)
+            setHoverInfo({
+                object,
+                x,
+                y,
+            });
+        } else {
+            setHoverInfo(null);
+        }
+    }
+
     useEffect(() => {
         const domain = [
             Math.min(...(Object.values(queryData) as any)),
@@ -207,6 +222,7 @@ const Layers = () => {
             const accessibilityPointsLayer = await AccessibilityPointsLayer({
                 coordinates,
                 layer: 'accessibility_points',
+                onHover: iconHover
             });
             if (accessibilityPointsLayer) {
                 setDataLayers((dataLayers) => {
@@ -227,7 +243,22 @@ const Layers = () => {
         getData();
     }, [queryData, amenitiesArray]);
 
-    const layers: any[] = [...dataLayers, ...lensLayers, ...drawPoligonLayers];
+    const layers: any[] = [ ...dataLayers , ...lensLayers, ...drawPoligonLayers, hoverInfo && new TextLayer({
+        id: 'text-layer',
+        data: [hoverInfo],
+        getPosition:( d: any ) => d.object.position,  // Adjust depending on your data
+        getText: ( d: any) => d.object.amenity,  // Customize based on your data properties
+        getPixelOffset: [0, -20],
+        getSize: 16,
+        getColor: [255, 255, 255 ],
+        background: true,
+        backgroundColor: [0, 0, 0, 150], // Semi-transparent black background
+        backgroundPadding: [6, 4], // Horizontal and vertical padding
+        getTextAnchor: 'middle',
+        getAlignmentBaseline: 'center',
+        fontFamily: '"Arial", sans-serif',
+        characterSet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789éó', // Include special characters
+    }),];
 
     return { layers };
 };
