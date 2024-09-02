@@ -216,7 +216,7 @@ export const renderCustomizedLabel = ({
 export const fetchPolygonData = async ({
     coordinates,
     layer,
-}) => {
+}, signal = undefined) => {
     const url = `${API_URL}/polygon`;
     try {
         const response = await fetch(url, {
@@ -228,6 +228,7 @@ export const fetchPolygonData = async ({
             headers: {
                 "Content-Type": "application/json",
             },
+            signal,
         });
         const arrayBuffer = await response.arrayBuffer();
         const data = await load(arrayBuffer, FlatGeobufLoader);

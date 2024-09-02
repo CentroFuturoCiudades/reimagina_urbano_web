@@ -93,6 +93,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            height: 36px;
 
             .stat-title-box-cell{
                 width: 50%;
@@ -102,7 +103,6 @@
 
                 &.dark {
                     background: rgba( 220, 220, 220, 0.7);
-                    height: 36px;
                 }
             }
         }
@@ -134,7 +134,7 @@
                 width: 50%;
 
                 &.dark {
-                    background-color:  rgba( 200, 200, 200, 0.7);
+                    background-color:  rgba( 200, 200, 200, 0.4);
                 }
             }
 

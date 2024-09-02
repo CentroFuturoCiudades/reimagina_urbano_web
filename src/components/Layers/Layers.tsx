@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { API_URL, VIEW_COLORS_RGBA, VIEW_MODES } from "../../constants";
+import { API_URL, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
 import { RGBAColor, TextLayer } from "deck.gl";
 import { DrawPolygonMode, ViewMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
@@ -58,6 +58,8 @@ const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
 
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const zoom = useSelector((state: RootState) => state.viewState.zoom);
+    const isBuildingZoom = zoom >= ZOOM_SHOW_DETAILS;
     const metric = useSelector(
         (state: RootState) => state.queryMetric.queryMetric
     );
@@ -104,6 +106,7 @@ const Layers = () => {
         if (isDrag) {
             return;
         }
+        const controller = new AbortController();
 
         async function fetchData() {
             if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL)
@@ -112,30 +115,30 @@ const Layers = () => {
                 // TODO: Use redux to get accessibility list data.
                 const response = await axios.post(`${API_URL}/query`, {
                     metric: metric,
-                    accessibility_info: [
-                        {
-                            name: "Farmacia",
-                            radius: 1600,
-                        },
-                    ],
+                    accessibility_info: amenitiesArray.map((x: any) => ({
+                        name: x.label,
+                        radius: 1600 * 2,
+                        importance: 1,
+                    })),
                     coordinates,
-                });
+                    layer: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
+                }, {signal: controller.signal});
                 if (response && response.data) {
                     const queryDataByProductId: GenericObject = {};
                     const queryDataFloorsData: GenericObject = {};
 
-                    const ids: string[]  = response.data.map((x: any) => x.ID) ;
-                    dispatch( setSelectedLots( ids ));
+                    const ids: string[] = response.data.map((x: any) => x.ID);
+                    dispatch(setSelectedLots(ids));
 
                     response.data.forEach((data: any) => {
                         queryDataByProductId[data["ID"]] = data["value"];
                         queryDataFloorsData[data["ID"]] = {
-                            "num_floors": data["num_floors"],
-                            "max_height": data["max_height"]
+                            num_floors: data["num_floors"],
+                            max_height: data["max_height"],
                         };
                     });
 
-                    setQueryDataFloorsState(queryDataFloorsData)
+                    setQueryDataFloorsState(queryDataFloorsData);
                     setQueryDataState(queryDataByProductId);
                     dispatch(setQueryData(queryDataByProductId));
                 }
@@ -144,7 +147,8 @@ const Layers = () => {
             }
         }
         fetchData();
-    }, [metric, coordinates, isDrag, viewMode]);
+        return () => {controller.abort();};
+    }, [metric, coordinates, isDrag, viewMode, amenitiesArray]);
 
     const [hoverInfo, setHoverInfo] = useState<any>(null);
 
@@ -162,8 +166,13 @@ const Layers = () => {
     }
 
     useEffect(() => {
+        const controller = new AbortController();
         const domain = [
-            Math.min(...(Object.values(queryData) as any)),
+            Math.min(
+                ...(Object.values(queryData) as any).filter(
+                    (x: number) => x > 0
+                )
+            ),
             Math.max(...(Object.values(queryData) as any)),
         ];
         const colors = d3.quantize(
@@ -181,13 +190,13 @@ const Layers = () => {
         const getFillColor = (d: any): RGBAColor => {
             const value = queryData[d.properties.ID];
 
-            if( value >= 0 ) {
+            if (value > 0) {
                 const colorString = quantiles(value);
                 const color = d3.color(colorString)?.rgb();
                 return color ? [color.r, color.g, color.b] : [255, 255, 255];
             }
 
-            return [220, 220, 200];
+            return [200, 200, 200];
         };
 
         const getData = async () => {
@@ -195,6 +204,7 @@ const Layers = () => {
                 coordinates,
                 getFillColor,
                 viewMode,
+                signal: controller.signal,
             });
             if (layer) {
                 setDataLayers((dataLayers) => {
@@ -234,14 +244,37 @@ const Layers = () => {
             // if( buildings && buildings.length ){
             //     setDataLayers( (dataLayers)=> {
             //         return [...dataLayers, ...buildings]
+
             //     });
             // }
-
-
         };
 
         getData();
     }, [queryData, amenitiesArray]);
+
+
+    useEffect(() => {
+        const getData = async () => {
+            if (isBuildingZoom) {
+                const buildingsLayer = dataLayers.find((layer) => layer.id === "buildings-floors-layer");
+                if (buildingsLayer) {
+                    return;
+                }
+                const buildings = await BuildingsLayer({ coordinates, queryDataFloors, signal: undefined });
+                if( buildings && buildings.length){
+                    setDataLayers( (dataLayers)=> {
+                        return [...dataLayers, ...buildings]
+                    });
+                }
+            } else {
+                setDataLayers( (dataLayers)=> {
+                    return dataLayers.filter((layer) => layer.id !== "buildings-floors-layer" && layer.id !== "buildings-max-height-layer");
+                });
+            }
+        };
+        getData();
+    }, [isBuildingZoom]);
+
 
     const layers: any[] = [ ...dataLayers , ...lensLayers, ...drawPoligonLayers, hoverInfo && new TextLayer({
         id: 'text-layer',

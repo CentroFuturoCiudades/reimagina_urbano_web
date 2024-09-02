@@ -84,3 +84,5 @@ export const VIEW_COLORS_RGBA = {
         dark: "darkblue"
     }
 }
+
+export const ZOOM_SHOW_DETAILS = 17;

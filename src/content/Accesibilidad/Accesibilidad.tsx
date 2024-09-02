@@ -12,6 +12,8 @@ import {
     Icon,
 } from "@chakra-ui/react";
 import { TbAngle } from "react-icons/tb";
+import { FaWalking } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import "./Accesibilidad.scss";
 import {
     Bar,
@@ -38,12 +40,23 @@ const Accesibilidad = ({ metrics }: any) => {
                         <VStack spacing={"0"} className="accordion-body">
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
+                                    <Text className="stat-title">Puntuaje de Accesibilidad</Text>
+                                </Box>
+                                <Box className="stat-value" my="2">
+                                    <Text>
+                                        {" "}
+                                        <Icon as={FaWalking}></Icon>{" "}
+                                        {Math.trunc(metrics.accessibility_score * 100)}%
+                                    </Text>
+                                </Box>
+                            </Box>
+                            <Box className="stat-row">
+                                <Box className="stat-title-box">
                                     <Text className="stat-title">
                                         Servicios y equipamientos
                                     </Text>
                                 </Box>
                                 <Box
-                                    className="stat-value"
                                     style={{ width: "100%", padding: "0 1rem" }}
                                 >
                                     <SelectAutoComplete />
