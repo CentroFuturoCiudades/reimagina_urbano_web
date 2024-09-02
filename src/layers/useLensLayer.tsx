@@ -4,13 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import * as turf from "@turf/turf";
 import { GeoJsonLayer, PickInfo } from "deck.gl";
 import { debounce } from "lodash";
-import { VIEW_MODES } from "../constants";
+import { VIEW_MODES, ZOOM_SHOW_DETAILS } from "../constants";
 import { setDrag } from "../features/lensSettings/lensSettingsSlice";
 
 const useLensLayer = ({ coords }: any) => {
 
     const dispatch: AppDispatch = useDispatch();
     const viewMode = useSelector( (state: RootState) => state.viewMode.viewMode );
+    const zoom = useSelector((state: RootState) => state.viewState.zoom);
 
     const [circleRadius, setBrushingRadius] = useState(400); //radio esta en metros
     const [circleCoords, setCircleCoords] = useState([
@@ -53,7 +54,7 @@ const useLensLayer = ({ coords }: any) => {
         getFillColor: [ 255, 255, 255, 0],
         getLineColor: [0, 120, 0, 255],
         getLineWidth: 5,
-        pickable: true,
+        pickable: zoom < ZOOM_SHOW_DETAILS,
         onDragStart: () => {
             setIsDrag(true);
             dispatch( setDrag( true ) );

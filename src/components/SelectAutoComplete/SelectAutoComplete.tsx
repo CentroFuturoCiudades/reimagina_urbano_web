@@ -12,6 +12,8 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Button,
+  Tag,
+  TagCloseButton,
 } from '@chakra-ui/react';
 import { IoClose } from 'react-icons/io5';
 import { setAccessibilityList } from '../../features/accessibilityList/accessibilityListSlice';
@@ -21,11 +23,25 @@ import { RootState } from "../../app/store";
 import { GenericObject } from '../../types';
 
 const options = [
-  { value: 'landuse_park', label: 'Parque' },
-  { value: 'landuse_equipment', label: 'Equipamiento' },
-  { value: 'establishments', label: 'Establecimientos' },
+  { value: 'asistencial_social', label: 'Asistencia social' },
+  { value: 'laboratorios_clinicos', label: 'Laboratorios clínicos' },
+  { value: 'otros_consultorios', label: 'Otros consultorios' },
+  { value: 'consultorios_medicos', label: 'Consultorios médicos' },
+  { value: 'hospital_general', label: 'Hospital general' },
+  { value: 'hospitales_psiquiatricos', label: 'Hospitales psiquiátricos' },
+  { value: 'hospitales_otras_especialidades', label: 'Hospitales otras especialidades' },
+  { value: 'farmacia', label: 'Farmacia' },
+  { value: 'clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico' },
+  { value: 'cine', label: 'Cine' },
+  { value: 'otros_servicios_recreativos', label: 'Otros servicios recreativos' },
+  { value: 'parques_recreativos', label: 'Parques recreativos' },
+  { value: 'museos', label: 'Museos' },
+  { value: 'biblioteca', label: 'Biblioteca' },
+  { value: 'guarderia', label: 'Guardería' },
+  { value: 'educacion_preescolar', label: 'Educación preescolar' },
+  { value: 'educacion_primaria', label: 'Educación primaria' },
+  { value: 'educacion_secundaria', label: 'Educación secundaria' },
 ];
-
 
 const SelectAutoComplete = () => {
   const [filteredOptions, setFilteredOptions] = useState<GenericObject[]>(options);
@@ -72,15 +88,16 @@ const SelectAutoComplete = () => {
   };
 
   return (
-    <Box position="relative">
+    <Box>
       <Input
-        variant="outline"
-        placeholder="Selecciona una opción"
+        variant="filled"
+        placeholder="Selecciona un equipamiento de interés"
         value={search}
         onChange={handleSearchChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
         size="sm"
+        mt="2"
       />
       {isFocused && (
         <Box
@@ -113,20 +130,29 @@ const SelectAutoComplete = () => {
       <Box mt={2}>
         {accessibilityList.length > 0 &&
           accessibilityList.map((option) => (
-            <Flex key={option.value} align="center" mt={2}>
-              <Button size="xs" bg="white" borderWidth="1px" marginRight="1dvw" onClick={() => handleRemoveOption(option)}>
-                <IoClose color="red" />
-              </Button>
-              <NumberInput width="50px" size="xs" defaultValue={0} min={0}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper fontSize="8px" />
-                  <NumberDecrementStepper fontSize="8px" />
-                </NumberInputStepper>
-              </NumberInput>
-              <Text marginStart={3}>{option.label}</Text>
-            </Flex>
+            <Tag
+              size="sm"
+              key={option.value}
+              variant="solid"
+              colorScheme="purple"
+              cursor="pointer"
+              mr={2}
+              onClick={() => handleRemoveOption(option)}
+            >
+              {option.label}
+              <TagCloseButton />
+            </Tag>
           ))}
+          {accessibilityList.length === 0 && (
+            <Tag
+              size="sm"
+              variant="solid"
+              colorScheme="red"
+              cursor="pointer"
+            >
+              Todos los equipamientos
+            </Tag>
+          )}
       </Box>
     </Box>
   );

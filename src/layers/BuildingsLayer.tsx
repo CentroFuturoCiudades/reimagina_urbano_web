@@ -20,14 +20,15 @@ type BuildingFeature = {
 interface BuildingsLayerProps {
     coordinates: any[];
     queryDataFloors: GenericObject;
+    signal: any;
 }
 
-const BuildingsLayer = async ({ coordinates, queryDataFloors }: BuildingsLayerProps) => {
+const BuildingsLayer = async ({ coordinates, queryDataFloors, signal }: BuildingsLayerProps) => {
     if (!coordinates || coordinates.length === 0) {
         return null;
     }
 
-    const buildingsData = await fetchPolygonData({ coordinates, layer: "landuse_building" });
+    const buildingsData = await fetchPolygonData({ coordinates, layer: "landuse_building" }, signal);
     console.log(queryDataFloors);
 
     function getMaxHeight(buildingId: string): number {
