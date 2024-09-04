@@ -29,15 +29,12 @@ const BuildingsLayer = async ({ coordinates, queryDataFloors, signal }: Building
     }
 
     const buildingsData = await fetchPolygonData({ coordinates, layer: "landuse_building" }, signal);
-    console.log(queryDataFloors);
 
     function getMaxHeight(buildingId: string): number {
-        console.log(queryDataFloors[buildingId]);
         return queryDataFloors[buildingId]?.max_height*3 || 0;
     }
 
     function getFloors(buildingId: string): number {
-        console.log(queryDataFloors[buildingId]);
         return queryDataFloors[buildingId]?.num_floors*3 || 0;
     }
 
@@ -46,11 +43,10 @@ const BuildingsLayer = async ({ coordinates, queryDataFloors, signal }: Building
             id: "buildings-floors-layer",
             data: buildingsData,
             filled: true,
-            getFillColor: [255, 0, 0, 200],
+            getFillColor: [200, 200, 140, 200],
             getLineWidth: 0,
             pickable: true,
             extruded: true,
-            // getElevation: 3,
             getElevation: (d: unknown) => {
                 const feature = d as BuildingFeature;
                 return getFloors(feature.properties.ID);
@@ -60,10 +56,11 @@ const BuildingsLayer = async ({ coordinates, queryDataFloors, signal }: Building
             id: "buildings-max-height-layer",
             data: buildingsData,
             filled: true,
-            getFillColor: [0, 255, 0, 100],
+            getFillColor: [255, 255, 255, 50],
             getLineWidth: 0,
             pickable: true,
             extruded: true,
+            wireframe: true,
             getElevation: (d: unknown) => {
                 const feature = d as BuildingFeature;
                 return getMaxHeight(feature.properties.ID);

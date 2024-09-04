@@ -29,7 +29,7 @@ const Accesibilidad = ({ metrics }: any) => {
     return (
         <div className="accesibilidad tab__main">
             <Accordion defaultIndex={[0]} allowToggle>
-                <AccordionItem>
+                <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
                             Servicios de proximidad
@@ -42,12 +42,14 @@ const Accesibilidad = ({ metrics }: any) => {
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">Puntuaje de Accesibilidad</Text>
                                 </Box>
-                                <Box className="stat-value" my="2">
-                                    <Text>
-                                        {" "}
-                                        <Icon as={FaWalking}></Icon>{" "}
-                                        {Math.trunc(metrics.accessibility_score * 100)}%
-                                    </Text>
+                                <Box className="stat-value full">
+                                    <Box>
+                                        <Text>
+                                            {" "}
+                                            <Icon as={FaWalking}></Icon>{" "}
+                                            {Math.trunc(metrics.accessibility_score * 100)}%
+                                        </Text>
+                                    </Box>
                                 </Box>
                             </Box>
                             <Box className="stat-row">
@@ -127,7 +129,7 @@ const Accesibilidad = ({ metrics }: any) => {
                     </AccordionPanel>
                 </AccordionItem>
 
-                <AccordionItem>
+                <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
                             Radio de cobertura

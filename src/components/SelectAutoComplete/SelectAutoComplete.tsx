@@ -1,21 +1,12 @@
-import React, { useState, ChangeEvent, FocusEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import {
   Box,
   Input,
   List,
   ListItem,
   Text,
-  Flex,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Button,
-  Tag,
-  TagCloseButton,
+  Checkbox,
 } from '@chakra-ui/react';
-import { IoClose } from 'react-icons/io5';
 import { setAccessibilityList } from '../../features/accessibilityList/accessibilityListSlice';
 import { AppDispatch } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,87 +15,130 @@ import { GenericObject } from '../../types';
 
 import "./SelectAutoComplete.scss"
 
-const options = [
-  { value: 'asistencial_social', label: 'Asistencia social' },
-  { value: 'laboratorios_clinicos', label: 'Laboratorios clínicos' },
-  { value: 'otros_consultorios', label: 'Otros consultorios' },
-  { value: 'consultorios_medicos', label: 'Consultorios médicos' },
-  { value: 'hospital_general', label: 'Hospital general' },
-  { value: 'hospitales_psiquiatricos', label: 'Hospitales psiquiátricos' },
-  { value: 'hospitales_otras_especialidades', label: 'Hospitales otras especialidades' },
-  { value: 'farmacia', label: 'Farmacia' },
-  { value: 'clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico' },
-  { value: 'cine', label: 'Cine' },
-  { value: 'otros_servicios_recreativos', label: 'Otros servicios recreativos' },
-  { value: 'parques_recreativos', label: 'Parques recreativos' },
-  { value: 'museos', label: 'Museos' },
-  { value: 'biblioteca', label: 'Biblioteca' },
-  { value: 'guarderia', label: 'Guardería' },
-  { value: 'educacion_preescolar', label: 'Educación preescolar' },
-  { value: 'educacion_primaria', label: 'Educación primaria' },
-  { value: 'educacion_secundaria', label: 'Educación secundaria' },
+export const amenitiesOptions = [
+  { value: 'asistencial_social', label: 'Asistencia social', type: 'health' },
+  { value: 'laboratorios_clinicos', label: 'Laboratorios clínicos', type: 'health' },
+  { value: 'otros_consultorios', label: 'Otros consultorios', type: 'health' },
+  { value: 'consultorios_medicos', label: 'Consultorios médicos', type: 'health' },
+  { value: 'hospital_general', label: 'Hospital general', type: 'health' },
+  { value: 'hospitales_psiquiatricos', label: 'Hospitales psiquiátricos', type: 'health' },
+  { value: 'hospitales_otras_especialidades', label: 'Hospitales otras especialidades', type: 'health' },
+  { value: 'farmacia', label: 'Farmacia', type: 'health' },
+  { value: 'clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico', type: 'health' },
+  { value: 'cine', label: 'Cine', type: 'recreation' },
+  { value: 'otros_servicios_recreativos', label: 'Otros Servicios recreativos', type: 'recreation' },
+  { value: 'parques_recreativos', label: 'Parques recreativos', type: 'recreation' },
+  { value: 'museos', label: 'Museos', type: 'recreation' },
+  { value: 'biblioteca', label: 'Biblioteca', type: 'recreation' },
+  { value: 'guarderia', label: 'Guarderia', type: 'education' },
+  { value: 'educacion_preescolar', label: 'Educación Preescolar', type: 'education' },
+  { value: 'educacion_primaria', label: 'Educación Primaria', type: 'education' },
+  { value: 'educacion_secundaria', label: 'Educación Secundaria', type: 'education' },
+  { value: 'educacion_media_superior', label: 'Educación Media Superior', type: 'education' },
 ];
 
+export const mappingCategories: any = {
+  health: 'Salud',
+  recreation: 'Recreación',
+  education: 'Educación',
+};
+
 const SelectAutoComplete = () => {
-  const [filteredOptions, setFilteredOptions] = useState<GenericObject[]>(options);
+  const [filteredOptions, setFilteredOptions] = useState<GenericObject[]>(amenitiesOptions);
   const [search, setSearch] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const accessibilityList = useSelector((state: RootState) => state.accessibilityList.accessibilityList);
   const dispatch: AppDispatch = useDispatch();
 
+  const groupedAmenitiesOptions: Record<string, GenericObject[]> = filteredOptions.reduce((acc, option) => {
+    acc[option.type] = acc[option.type] || [];
+    acc[option.type].push(option);
+    return acc;
+  }, {} as Record<string, GenericObject[]>);
+
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
-    setFilteredOptions(
-      options.filter(
-        (option) =>
-          option.label.toLowerCase().includes(search.toLowerCase()) &&
-          !accessibilityList.some((selected) => selected.value === option.value)
-      )
-    );
-  }, [search, accessibilityList]);
+    const initialChecked = accessibilityList.reduce((acc, option) => {
+      acc[option.value] = true;
+      return acc;
+    }, {} as Record<string, boolean>);
+    setCheckedItems(initialChecked);
+  }, [accessibilityList]);
 
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    console.log(category);
+    const updatedCheckedItems = { ...checkedItems };
+    groupedAmenitiesOptions[category].forEach((amenity) => {
+      updatedCheckedItems[amenity.value] = checked;
+    });
+    setCheckedItems(updatedCheckedItems);
+
+    if (checked) {
+      const newSelections = groupedAmenitiesOptions[category].filter(
+        (amenity) => !accessibilityList.some((item) => item.value === amenity.value)
+      );
+      dispatch(setAccessibilityList([...accessibilityList, ...newSelections]));
+    } else {
+      const updatedSelections = accessibilityList.filter(
+        (selected) => !groupedAmenitiesOptions[category].some((amenity) => amenity.value === selected.value)
+      );
+      dispatch(setAccessibilityList(updatedSelections));
+    }
   };
 
-  const handleOptionClick = (option: GenericObject) => {
-    const updatedSelectedOptions = [...accessibilityList, option];
-    dispatch(setAccessibilityList(updatedSelectedOptions));
-    setSearch('');
-    setIsFocused(false);
+  const handleSubcategoryChange = (amenity: GenericObject, checked: boolean) => {
+    const updatedCheckedItems = {
+      ...checkedItems,
+      [amenity.value]: checked,
+    };
+    setCheckedItems(updatedCheckedItems);
+
+    if (checked) {
+      dispatch(setAccessibilityList([...accessibilityList, amenity]));
+    } else {
+      const updatedSelectedOptions = accessibilityList.filter((item) => item.value !== amenity.value);
+      dispatch(setAccessibilityList(updatedSelectedOptions));
+    }
   };
 
-  const handleRemoveOption = (option: GenericObject) => {
-    const updatedSelectedOptions = accessibilityList.filter(
-      (selected) => selected.value !== option.value
-    );
-    dispatch(setAccessibilityList(updatedSelectedOptions));
-  };
+  const getSelectedSummary = (): string => {
+    const summary: string[] = [];
 
-  const handleFocus = (e: FocusEvent<HTMLInputElement>) => {
-    setIsFocused(true);
-  };
+    Object.entries(groupedAmenitiesOptions).forEach(([category, amenities]) => {
+      const allSelected = amenities.every((amenity) => checkedItems[amenity.value]);
+      const someSelected = amenities.some((amenity) => checkedItems[amenity.value]);
 
-  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
-    setTimeout(() => setIsFocused(false), 100);
+      if (allSelected) {
+        summary.push(category.charAt(0).toUpperCase() + category.slice(1));
+      } else if (someSelected) {
+        amenities.forEach((amenity) => {
+          if (checkedItems[amenity.value]) {
+            summary.push(amenity.label);
+          }
+        });
+      }
+    });
+
+    return summary.join(', ');
   };
 
   return (
-    <Box className='selectAutoComplete' position="relative">
+    <Box className="selectAutoComplete" position="relative">
       <Input
         variant="filled"
         placeholder="Selecciona un equipamiento de interés"
         value={search}
-        onChange={handleSearchChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setTimeout(() => setIsFocused(false), 100)}
         size="sm"
         mt="2"
       />
-      { isFocused && (
+      {isFocused && (
         <Box
           position="absolute"
-          top="1rem"
+          top="3rem"
           left="0"
           right="0"
           borderWidth="1px"
@@ -115,47 +149,48 @@ const SelectAutoComplete = () => {
           zIndex="1"
         >
           <List size="sm" spacing={1}>
-            {filteredOptions.map((option) => (
-              <ListItem
-                key={option.value}
-                px="4"
-                py="1"
-                cursor="pointer"
-                _hover={{ backgroundColor: 'gray.100' }}
-                onMouseDown={() => handleOptionClick(option)}
-              >
-                <Text>{option.label}</Text>
-              </ListItem>
-            ))}
+            {Object.entries(groupedAmenitiesOptions).map(([category, amenities]) => {
+              const allChecked = amenities.every((amenity) => checkedItems[amenity.value]);
+              const isIndeterminate = amenities.some((amenity) => checkedItems[amenity.value]) && !allChecked;
+
+              return (
+                <React.Fragment key={category}>
+                  <ListItem px="2" py="2" fontWeight="bold" bg="gray.100" borderBottom="1px solid" borderColor="gray.200">
+                    <Checkbox
+                      isChecked={allChecked}
+                      isIndeterminate={isIndeterminate}
+                      colorScheme="purple"
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => handleCategoryChange(category, e.target.checked)}
+                    >
+                      {mappingCategories[category]}
+                    </Checkbox>
+                  </ListItem>
+
+                  {amenities.map((amenity: GenericObject) => (
+                    <Box>
+                      <Checkbox
+                        px="4"
+                        size='sm'
+                        colorScheme="purple"
+                        isChecked={checkedItems[amenity.value] || false}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          handleSubcategoryChange(amenity, e.target.checked)
+                          e.stopPropagation()
+                          e.preventDefault()
+                        }}
+                      >
+                        {amenity.label}
+                      </Checkbox>
+                      </Box>
+                  ))}
+                </React.Fragment>
+              );
+            })}
           </List>
         </Box>
       )}
       <Box mt={2} width="100%">
-        {accessibilityList.length > 0 &&
-          accessibilityList.map((option) => (
-            <Tag
-              size="sm"
-              key={option.value}
-              variant="solid"
-              colorScheme="purple"
-              cursor="pointer"
-              mr={2}
-              onClick={() => handleRemoveOption(option)}
-            >
-              {option.label}
-              <TagCloseButton />
-            </Tag>
-          ))}
-          {accessibilityList.length === 0 && (
-            <Tag
-              size="sm"
-              variant="solid"
-              colorScheme="red"
-              cursor="pointer"
-            >
-              Todos los equipamientos
-            </Tag>
-          )}
+        <Text fontSize="sm" fontWeight="400"><b>Seleccionados: </b>{getSelectedSummary() || 'Todos'}</Text>
       </Box>
     </Box>
   );

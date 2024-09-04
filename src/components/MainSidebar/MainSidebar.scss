@@ -67,8 +67,6 @@
             color: white;
             cursor: pointer;
 
-            padding: 0 1rem;
-
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -77,7 +75,9 @@
 
     .accordion-body{
         max-height: 75vh;
-        overflow: scroll;
+        padding: 0px;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .stat-row {

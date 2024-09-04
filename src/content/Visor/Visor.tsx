@@ -20,6 +20,38 @@ import PopulationPyramid from "../../components/PopulationPyramid";
 import { COLUMN_MAPPING, VIEW_COLORS_RGBA } from "../../constants";
 import { GenericObject } from "../../types";
 
+
+const ComparativeMetric = ({name, metric, children}: {name: string, metric: string | undefined, children: React.ReactNode[]}) => {
+    const dispatch = useDispatch();
+    const currentMetric = useSelector((state: RootState) => state.queryMetric.queryMetric);
+    const isCurrent = currentMetric === metric;
+    return (
+        <Box
+            className="stat-row"
+            style={{
+                cursor: metric ? 'pointer' : 'default',
+            }}
+            onClick={() => {
+                if (metric)
+                    dispatch(setQueryMetric(metric));
+            }}
+        >
+            <Box className="stat-title-box" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>
+                <Text className="stat-title" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>{name}</Text>
+            </Box>
+            <Box className="stat-value" style={{ backgroundColor: isCurrent ? '#e2e6d1' : 'transparent' }}>
+                <Box>
+                    {children[0]}
+                </Box>
+                {children.length > 1 &&
+                    <Box className="dark">
+                    {children[1]}
+                </Box>}
+            </Box>
+        </Box>
+    )
+}
+
 const getPyramidData = (metrics: any) => {
     return metrics
         ? [
@@ -75,8 +107,25 @@ const getPyramidData = (metrics: any) => {
         : [];
 };
 
-const Visor = ({ metrics }: { metrics: any }) => {
+const GraphPercent = ({ value, base }: { value: number, base: number }) => {
+    let percent = value / base * 100;
+    return (
+        <CircularProgress
+            size="100px"
+            value={
+                percent
+            }
+            color={ VIEW_COLORS_RGBA.VISOR.primary}
+        >
+            <CircularProgressLabel>
+                { percent.toFixed(0) }
+                %
+            </CircularProgressLabel>
+        </CircularProgress>
+    )
+}
 
+const Visor = ({ metrics }: { metrics: any }) => {
     const globalData: GenericObject = {
         POBTOT: 1003530,
         GRAPROES: 11.06,
@@ -95,189 +144,17 @@ const Visor = ({ metrics }: { metrics: any }) => {
         VPH_PC: 131189,
         VPH_AUTOM: 166497
     }
-
-    const dispatch = useDispatch();
-
-    const configureMetric = (metric: string) => {
-        dispatch(setQueryMetric(metric));
-    };
-
-    const totalPopulation = metrics?.POBTOT;
-    const totalViviendas = metrics?.VIVTOT;
-    const viviendasDeshabitadas = metrics?.VIVPAR_DES;
-    const densidad =
-        totalViviendas - viviendasDeshabitadas !== 0
-            ? totalPopulation / (totalViviendas - viviendasDeshabitadas)
-            : 0;
-
     const [pyramidData, setPyramidData] = useState<any[]>([]);
 
     useEffect(() => {
         setPyramidData(getPyramidData(metrics));
     }, [metrics]);
 
-    const puntajeHogarDigno = metrics["puntuaje_hogar_digno"]?.toFixed(2);
-    const pobPorCuarto = metrics["pob_por_cuarto"]?.toFixed(1);
-    const graproes = metrics["GRAPROES"] ? Math.round(metrics["GRAPROES"]) : 0;
-    const pafil_ipriv = metrics["PAFIL_IPRIV"]
-        ? Math.round(metrics["PAFIL_IPRIV"]).toLocaleString("es-MX")
-        : "0";
-
-
-    const demographicMetrics = [
-        {
-            name: "POBTOT",
-            type: "number",
-            sufix: "hab",
-        },
-        {
-            name: "PYRAMID",
-            type: "pyramid",
-        },
-        {
-            name: "GRAPROES",
-            type: "number",
-        },
-        {
-            name: "VIVPAR_HAB",
-            type: "number",
-        },
-        {
-            name: "VIVPAR_DES",
-            type: "percent",
-            base: "VIVPAR_HAB"
-        },
-
-    ]
-
-    const economicMetrics = [
-        {
-            name: "wellness_index",
-            type: "number",
-        },
-        {
-            name: "VPH_AUTOM",
-            type: "percentGraph",
-            base: "VIVPAR_HAB",
-        },
-        {
-            name: "VPH_TINACO",
-            type: "percentGraph",
-            base: "VIVPAR_HAB",
-        },
-        {
-            name: "VPH_PC",
-            type: "percentGraph",
-            base: "VIVPAR_HAB",
-        }
-    ]
-
-    const percentGraph = ( value: number, base: number ) => {
-
-        let percent = value / base * 100;
-
-        return (
-            <CircularProgress
-                size="100px"
-                value={
-                    percent
-                }
-                color={ VIEW_COLORS_RGBA.VISOR.primary}
-            >
-                <CircularProgressLabel>
-                    { percent .toFixed(0) }
-                    %
-                </CircularProgressLabel>
-            </CircularProgress>
-        )
-    }
-
-    const renderMetrics = ( metricsToShow: GenericObject ) => {
-
-        const elements: ReactElement[] = []
-
-        if( metrics && Object.keys( metrics ) ){
-            metricsToShow.forEach( (metric: any)=> {
-
-                var value: ReactElement = <></>;
-                var globalValue: ReactElement = <></>;
-
-                switch( metric.type ){
-                    case "number":
-                        value =
-                            <Text>
-                                { metrics?.[ metric.name ]?.toLocaleString("es-MX", {
-                                    maximumFractionDigits: 0,
-                                }) || "" }
-                                { metric.sufix || "" }
-                            </Text>
-
-                        globalValue =
-                            <Text>
-                                { globalData?.[ metric.name ]?.toLocaleString("es-MX", {
-                                    maximumFractionDigits: 0,
-                                })}
-                                { metric.sufix || "" }
-                            </Text>
-                        break;
-                    case "percent":
-                        value =
-                            <Text>
-                                { (metrics?.[ metric.name ]/ metrics?.[ metric.base ] *100).toFixed(1) + "%" }
-                            </Text>
-                        globalValue =
-                            <Text>
-                                { (globalData?.[ metric.name ]/ globalData?.[ metric.base ] *100).toFixed(1) + "%" }
-                            </Text>
-                        break;
-                    case "pyramid":
-                        value =
-                            <PopulationPyramid data={pyramidData} />
-
-                        globalValue=
-                            <PopulationPyramid data={ getPyramidData( globalData ) } />
-                    break;
-                    case "percentGraph":
-                        value = percentGraph( metrics[ metric.name ], metrics[ metric.base ] )
-                        globalValue = percentGraph( globalData[ metric.name ], globalData[ metric.base ] )
-                    break;
-
-                }
-
-                elements.push(
-                    <Box
-                        className="stat-row"
-                        onClick={() => {
-                            configureMetric( metric.name );
-                        }}
-                    >
-                        <Box className="stat-title-box">
-                            <Box className="stat-title-box-cell" >
-                                <Text className="stat-title"> { COLUMN_MAPPING[ metric.name ] } </Text>
-                            </Box>
-                            <Box className="stat-title-box-cell dark" />
-                        </Box>
-                        <Box className="stat-value">
-                            <Box>
-                                { value }
-                            </Box>
-                            <Box className="dark">
-                                { globalValue }
-                            </Box>
-                        </Box>
-                    </Box>
-                )
-            })
-        }
-
-        return elements;
-    }
-
 
     return (
         <div className="visor tab__main">
             <Accordion allowToggle defaultIndex={[0]}>
-                <AccordionItem>
+                <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
                             Perfil sociodemográfico
@@ -292,12 +169,49 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                     <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
                                 </Box>
                             </Box>
-                            { renderMetrics( demographicMetrics ) }
+                            <ComparativeMetric name="Población total" metric="POBTOT">
+                                <Text>
+                                    { metrics?.POBTOT?.toLocaleString("es-MX", {
+                                        maximumFractionDigits: 0,
+                                    }) || "" }
+                                    hab
+                                </Text>
+                                <Text>
+                                    { globalData?.POBTOT?.toLocaleString("es-MX", {
+                                        maximumFractionDigits: 0,
+                                    })}
+                                    hab
+                                </Text>
+                            </ComparativeMetric>
+                            <ComparativeMetric name="Pirámide poblacional" metric={undefined}>
+                                <PopulationPyramid data={pyramidData} />
+                                <PopulationPyramid data={ getPyramidData( globalData ) } />
+                            </ComparativeMetric>
+                            <ComparativeMetric name="Grado promedio de escolaridad" metric="GRAPROES">
+                                <Text>
+                                    { metrics?.GRAPROES?.toFixed(2) || "" }
+                                </Text>
+                                <Text>
+                                    { globalData?.GRAPROES?.toFixed(2) || "" }
+                                </Text>
+                            </ComparativeMetric>
+                            <ComparativeMetric name="Viviendas particulares habitadas" metric="VIVPAR_HAB">
+                                <Text>
+                                    { metrics?.VIVPAR_HAB?.toLocaleString("es-MX", {
+                                        maximumFractionDigits: 0,
+                                    }) || "" }
+                                </Text>
+                                <Text>
+                                    { globalData?.VIVPAR_HAB?.toLocaleString("es-MX", {
+                                        maximumFractionDigits: 0,
+                                    }) || "" }
+                                </Text>
+                            </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>
                 </AccordionItem>
 
-                <AccordionItem>
+                <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
                             Perfil socioeconómico
@@ -305,14 +219,29 @@ const Visor = ({ metrics }: { metrics: any }) => {
                         <AccordionIcon />
                     </AccordionButton>
                     <AccordionPanel p={0}>
-                        <VStack spacing={0} className="accordion-body">
+                        <VStack spacing={0} className="accordion-body" p={0}>
                             <Box className="stat-row header" style={{ margin: 0}}>
                                 <Box className="stat-title-box" style={{ margin: 0}}>
                                     <Text className="stat-title" width={"50%"}>Zona Sur</Text>
                                     <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
                                 </Box>
                             </Box>
-                            { renderMetrics(economicMetrics) }
+                            <ComparativeMetric name="Índice de bienestar" metric="wellness_index">
+                                <GraphPercent value={ metrics?.wellness_index || 0 } base={ 100 } />
+                                <GraphPercent value={ globalData?.wellness_index || 0 } base={ 100 } />
+                            </ComparativeMetric>
+                            <ComparativeMetric name="Viviendas con automóvil" metric="VPH_AUTOM">
+                                <GraphPercent value={ metrics?.VPH_AUTOM || 0 } base={ metrics?.VIVPAR_HAB || 0 } />
+                                <GraphPercent value={ globalData?.VPH_AUTOM || 0 } base={ globalData?.VIVPAR_HAB || 0 } />
+                            </ComparativeMetric>
+                            <ComparativeMetric name="Viviendas con PC" metric="VPH_PC">
+                                <GraphPercent value={ metrics?.VPH_PC || 0 } base={ metrics?.VIVPAR_HAB || 0 } />
+                                <GraphPercent value={ globalData?.VPH_PC || 0 } base={ globalData?.VIVPAR_HAB || 0 } />
+                            </ComparativeMetric>
+                            <ComparativeMetric name="Viviendas con tinaco" metric="VPH_TINACO">
+                                <GraphPercent value={ metrics?.VPH_TINACO || 0 } base={ metrics?.VIVPAR_HAB || 0 } />
+                                <GraphPercent value={ globalData?.VPH_TINACO || 0 } base={ globalData?.VIVPAR_HAB || 0 } />
+                            </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>
                 </AccordionItem>

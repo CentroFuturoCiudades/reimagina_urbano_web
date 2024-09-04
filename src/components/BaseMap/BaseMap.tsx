@@ -50,10 +50,6 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
             ...localViewState,
             zoom: viewState.zoom,
         });
-
-        if (viewState.zoom > 16) {
-            checkZoomLevel();
-        }
     }, [viewState]);
 
     useEffect(() => {
@@ -73,10 +69,6 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
             })
         );
     }, [localViewState.zoom]);
-
-    const checkZoomLevel = () => {
-        console.log("x zoom reached");
-    };
 
     const handleViewStateChange = useCallback(
         debounce(({ viewState }) => {
@@ -101,7 +93,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
         filled: true,
         getFillColor: [0, 0, 0, 0],
         getLineColor: [0, 0, 10, 255],
-        getLineWidth: 8,
+        getLineWidth: 5,
     });
 
     if (!coords) {

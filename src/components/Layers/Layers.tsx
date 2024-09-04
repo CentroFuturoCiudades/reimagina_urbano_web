@@ -240,15 +240,15 @@ const Layers = () => {
             //     });
             // }
 
-            const amenities = await AmenitiesLayer({
-                coordinates,
-                amenitiesArray,
-            });
-            if (amenities && amenities.length) {
-                setDataLayers((dataLayers) => {
-                    return [...dataLayers, ...amenities];
-                });
-            }
+            // const amenities = await AmenitiesLayer({
+            //     coordinates,
+            //     amenitiesArray,
+            // });
+            // if (amenities && amenities.length) {
+            //     setDataLayers((dataLayers) => {
+            //         return [...dataLayers, ...amenities];
+            //     });
+            // }
 
             const accessibilityPointsLayer = await AccessibilityPointsLayer({
                 coordinates,
@@ -260,14 +260,6 @@ const Layers = () => {
                     return [...dataLayers, accessibilityPointsLayer];
                 });
             }
-
-            // const buildings = await BuildingsLayer({ coordinates, queryDataFloors });
-            // if( buildings && buildings.length ){
-            //     setDataLayers( (dataLayers)=> {
-            //         return [...dataLayers, ...buildings]
-
-            //     });
-            // }
         };
 
         getData();
@@ -300,17 +292,18 @@ const Layers = () => {
     const layers: any[] = [ ...dataLayers , ...lensLayers, ...drawPoligonLayers, hoverInfo && new TextLayer({
         id: 'text-layer',
         data: [hoverInfo],
-        getPosition:( d: any ) => d.object.position,  // Adjust depending on your data
-        getText: ( d: any) => d.object.amenity,  // Customize based on your data properties
-        getPixelOffset: [0, -20],
+        getPosition:( d: any ) => d.object.geometry.coordinates,  // Adjust depending on your data
+        getText: ( d: any) => d.object.properties.amenity,  // Customize based on your data properties
+        getPixelOffset: [0, -50],
         getSize: 16,
-        getColor: [255, 255, 255 ],
+        getColor: [255, 255, 255],
         background: true,
         backgroundColor: [0, 0, 0, 150], // Semi-transparent black background
         backgroundPadding: [6, 4], // Horizontal and vertical padding
         getTextAnchor: 'middle',
-        getAlignmentBaseline: 'center',
+        getAlignmentBaseline: 'bottom',
         fontFamily: '"Arial", sans-serif',
+        zIndex: 1000,
         characterSet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789éó', // Include special characters
     }),];
 

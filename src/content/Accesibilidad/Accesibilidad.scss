@@ -1,5 +1,8 @@
 .accesibilidad.tab__main{
-    border: 2px solid var(--accesibilidad-primary-opacity);
+    border: solid var(--accesibilidad-primary-opacity);
+    border-width: 0px 2px 2px 2px;
+    overflow: hidden;
+    padding: 0px;
 
     .accordion-header{
         background-color: var(--accesibilidad-primary-opacity);
