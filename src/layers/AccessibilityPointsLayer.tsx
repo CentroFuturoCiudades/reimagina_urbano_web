@@ -2,18 +2,29 @@ import React from 'react';
 import { IconLayer } from 'deck.gl';
 import { fetchPolygonData } from "../utils";
 import { amenitiesOptions } from '../components/SelectAutoComplete/SelectAutoComplete';
+import { GenericObject } from '../types';
+import { TABS } from '../constants';
 
 interface AccessibilityPointsProps {
+    activeTab: TABS,
+    dispatcher: ( data: GenericObject[] ) => void;
     coordinates: any[];
     layer: string;
     onHover: (x: number, y: number, object: any )=>void;
 }
 
-const AccessibilityPoints = async ({ coordinates, layer, onHover }: AccessibilityPointsProps) => {
-    if (!coordinates || coordinates.length === 0) {
+const AccessibilityPoints = async ({ activeTab, dispatcher , coordinates, layer, onHover }: AccessibilityPointsProps) => {
+
+    if( activeTab != TABS.ACCESIBILIDAD ){
         return null;
     }
     const accessibilityPointsData = await fetchPolygonData({ coordinates, layer });
+
+    const parsedData = accessibilityPointsData.features.map( (item: any) => {
+        return item.properties;
+    } )
+
+    dispatcher( parsedData );
 
     return [
         new IconLayer({

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { SelectAutoComplete } from "../../components";
 import {
     Accordion,
@@ -24,8 +24,53 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
+import { GenericObject } from "../../types";
+import { ACCESSIBILITY_POINTS_COLORS } from "../../constants";
+import { amenitiesOptions, mappingCategories } from "../../components/SelectAutoComplete/SelectAutoComplete";
 
 const Accesibilidad = ({ metrics }: any) => {
+
+    const accessibilityPoints = useSelector( (state: RootState) => state.accessibilityList.accessibilityPoints );
+
+
+    let graphBars: ReactElement[] = []
+    let accessibilityData: any = { name: "" };
+    let accessibilityPointsCount = 0;
+    accessibilityPoints.forEach( ( item: any )=> {
+
+        let category = "";
+
+        amenitiesOptions.forEach( amenityOption => {
+            if( item.amenity ==  amenityOption.label ){
+                category = amenityOption.type
+            }
+        } )
+
+        if( !accessibilityData[ category ] ){
+            accessibilityData[ category ] = 0;
+
+
+            let color = ACCESSIBILITY_POINTS_COLORS[ category ];
+
+            graphBars.push(
+                <Bar
+                    dataKey={ category }
+                    name={ mappingCategories[ category ] }
+                    fill={ color || "gray" }
+                >
+                </Bar>
+            )
+        }
+
+        accessibilityData[ category ] ++;
+
+        accessibilityPointsCount++;
+    })
+
+    console.log( "TEST", accessibilityData )
+
     return (
         <div className="accesibilidad tab__main">
             <Accordion defaultIndex={[0]} allowToggle>
@@ -74,7 +119,7 @@ const Accesibilidad = ({ metrics }: any) => {
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
-                                        <Text> 100 </Text>
+                                        <Text> { accessibilityPointsCount } </Text>
                                     </Box>
                                 </Box>
                             </Box>
@@ -88,17 +133,11 @@ const Accesibilidad = ({ metrics }: any) => {
                                 <Box className="stat-value full">
                                     <ResponsiveContainer
                                         width={"90%"}
-                                        height={200}
+                                        height={ 200 }
                                     >
                                         <BarChart
                                             layout="vertical"
-                                            data={[
-                                                {
-                                                    name: "",
-                                                    parkCount: 2,
-                                                    educationCount: 3,
-                                                },
-                                            ]}
+                                            data={[ accessibilityData ]}
                                             barSize={16}
                                             barGap={0}
                                         >
@@ -111,16 +150,8 @@ const Accesibilidad = ({ metrics }: any) => {
                                             <XAxis type="number" />
                                             <Legend />
 
-                                            <Bar
-                                                dataKey={"parkCount"}
-                                                name={"Parques"}
-                                                fill="var(--accesibilidad-parque)"
-                                            ></Bar>
-                                            <Bar
-                                                dataKey={"educationCount"}
-                                                name={"Educación"}
-                                                fill="var(--accesibilidad-educacion)"
-                                            />
+                                            { graphBars }
+
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </Box>

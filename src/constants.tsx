@@ -78,6 +78,12 @@ export enum POLYGON_MODES {
     DELETE
 }
 
+export enum TABS {
+    VISOR,
+    ACCESIBILIDAD,
+    POTENCIAL
+}
+
 export const VIEW_COLORS_RGBA = {
     VISOR : {
         primary: "rgb(107, 127, 20)",
@@ -89,6 +95,12 @@ export const VIEW_COLORS_RGBA = {
         light: `lightblue`,
         dark: "darkblue"
     }
+}
+
+export const ACCESSIBILITY_POINTS_COLORS: GenericObject = {
+    "education" : "#cc9999",
+    "health": "#cfc7e3",
+    "recreatioon":  "#76cebr"
 }
 
 export const ZOOM_SHOW_DETAILS = 17;

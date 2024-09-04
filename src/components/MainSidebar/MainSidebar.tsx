@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
 import "./MainSidebar.scss";
-import { API_URL, VIEW_MODES } from "../../constants";
+import { API_URL, TABS, VIEW_MODES } from "../../constants";
 import axios from "axios";
 import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Toolbar from "../Toolbar";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import { Accesibilidad } from "../../content";
+import { setActiveTab } from "../../features/viewMode/viewModeSlice";
 
 const MainSidebar = () => {
     const [metrics, setMetrics] = useState<any>({});
@@ -50,6 +51,7 @@ const MainSidebar = () => {
                         color: "white",
                     }}
                     onClick={() => {
+                        dispatch( setActiveTab( TABS.VISOR ) )
                         dispatch(setQueryMetric("POBTOT"));
                     }}
                 >
@@ -62,6 +64,7 @@ const MainSidebar = () => {
                         color: "white",
                     }}
                     onClick={() => {
+                        dispatch( setActiveTab( TABS.ACCESIBILIDAD ) )
                         dispatch(setQueryMetric("minutes"));
                     }}
                 >
@@ -73,7 +76,9 @@ const MainSidebar = () => {
                         bg: "rgba(206, 173, 102, 0.8)",
                         color: "white",
                     }}
-                    onClick={() => {}}
+                    onClick={() => {
+                        dispatch( setActiveTab( TABS.POTENCIAL ) )
+                    }}
                 >
                     Potencial
                 </Tab>

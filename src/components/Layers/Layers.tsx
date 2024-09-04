@@ -13,6 +13,7 @@ import * as d3 from "d3";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 import PointsLayer from "../../layers/PointsLayer";
 import { setPoligonMode } from "../../features/viewMode/viewModeSlice";
+import { setAccesibilityPoints } from "../../features/accessibilityList/accessibilityListSlice";
 
 const useDrawPoligonLayer = () => {
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
@@ -79,6 +80,8 @@ const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
 
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const activeTab = useSelector((state: RootState) => state.viewMode.activeTab);
+
     const zoom = useSelector((state: RootState) => state.viewState.zoom);
     const isBuildingZoom = zoom >= ZOOM_SHOW_DETAILS;
     const metric = useSelector(
@@ -250,11 +253,18 @@ const Layers = () => {
             //     });
             // }
 
+            const setAccesibilityData = ( data: GenericObject[] ) => {
+                dispatch( setAccesibilityPoints( data ) )
+            }
+
             const accessibilityPointsLayer = await AccessibilityPointsLayer({
+                activeTab: activeTab,
+                dispatcher: setAccesibilityData,
                 coordinates,
                 layer: 'accessibility_points',
                 onHover: iconHover
             });
+
             if (accessibilityPointsLayer) {
                 setDataLayers((dataLayers) => {
                     return [...dataLayers, accessibilityPointsLayer];

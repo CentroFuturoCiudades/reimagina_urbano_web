@@ -4,10 +4,12 @@ import { GenericObject } from '../../types';
 
 interface AccessibilityListState {
     accessibilityList: GenericObject[];
+    accessibilityPoints: GenericObject[];
 }
 
 const initialState: AccessibilityListState = {
-    accessibilityList: [] // Default
+    accessibilityList: [], // Default
+    accessibilityPoints: []
 };
 
 const accessibilityListSlice = createSlice({
@@ -15,11 +17,14 @@ const accessibilityListSlice = createSlice({
     initialState,
     reducers: {
         setAccessibilityList: (state, action: PayloadAction< GenericObject[] >) => {
-        state.accessibilityList = action.payload;
+            state.accessibilityList = action.payload;
+        },
+        setAccesibilityPoints: (state, action: PayloadAction< GenericObject[] >) => {
+            state.accessibilityPoints = action.payload;
         }
     }
 });
 
-export const { setAccessibilityList } = accessibilityListSlice.actions;
+export const { setAccessibilityList, setAccesibilityPoints } = accessibilityListSlice.actions;
 
 export default accessibilityListSlice.reducer;
