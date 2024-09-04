@@ -99,8 +99,8 @@ export const VIEW_COLORS_RGBA = {
 
 export const ACCESSIBILITY_POINTS_COLORS: GenericObject = {
     "education" : "#cc9999",
-    "health": "#cfc7e3",
-    "recreatioon":  "#76cebr"
+    "health": "#7c6eb1",
+    "recreation":  "#cfc7e3"
 }
 
 export const ZOOM_SHOW_DETAILS = 17;
