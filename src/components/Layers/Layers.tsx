@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { API_URL, POLYGON_MODES, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
+import { API_URL, getQuantiles, METRICS_MAPPING, POLYGON_MODES, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
 import { RGBAColor, TextLayer } from "deck.gl";
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
@@ -138,7 +138,7 @@ const Layers = () => {
             try {
                 // TODO: Use redux to get accessibility list data.
                 const response = await axios.post(`${API_URL}/query`, {
-                    metric: metric,
+                    metric: METRICS_MAPPING[metric]?.query || metric,
                     accessibility_info: amenitiesArray.map((x: any) => ({
                         name: x.label,
                         radius: 1600 * 2,
@@ -191,25 +191,7 @@ const Layers = () => {
 
     useEffect(() => {
         const controller = new AbortController();
-        const domain = [
-            Math.min(
-                ...(Object.values(queryData) as any).filter(
-                    (x: number) => x > 0
-                )
-            ),
-            Math.max(...(Object.values(queryData) as any)),
-        ];
-        const colors = d3.quantize(
-            d3.interpolateRgb(
-                VIEW_COLORS_RGBA.ACCESIBILIDAD.light,
-                VIEW_COLORS_RGBA.ACCESIBILIDAD.dark
-            ),
-            8
-        );
-        const quantiles = d3
-            .scaleQuantize<string>()
-            .domain(domain)
-            .range(colors);
+        const [quantiles, _] = getQuantiles(queryData, metric);
 
         const getFillColor = (d: any): RGBAColor => {
             const value = queryData[d.properties.ID];

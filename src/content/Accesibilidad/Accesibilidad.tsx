@@ -26,9 +26,8 @@ import {
 } from "recharts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { GenericObject } from "../../types";
-import { ACCESSIBILITY_POINTS_COLORS } from "../../constants";
-import { amenitiesOptions, mappingCategories } from "../../components/SelectAutoComplete/SelectAutoComplete";
+import { ACCESSIBILITY_POINTS_COLORS, amenitiesOptions } from "../../constants";
+import { mappingCategories } from "../../components/SelectAutoComplete/SelectAutoComplete";
 
 const Accesibilidad = ({ metrics }: any) => {
 

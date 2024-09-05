@@ -14,28 +14,7 @@ import { RootState } from "../../app/store";
 import { GenericObject } from '../../types';
 
 import "./SelectAutoComplete.scss"
-
-export const amenitiesOptions = [
-  { value: 'asistencial_social', label: 'Asistencia social', type: 'health' },
-  { value: 'laboratorios_clinicos', label: 'Laboratorios clínicos', type: 'health' },
-  { value: 'otros_consultorios', label: 'Otros consultorios', type: 'health' },
-  { value: 'consultorios_medicos', label: 'Consultorios médicos', type: 'health' },
-  { value: 'hospital_general', label: 'Hospital general', type: 'health' },
-  { value: 'hospitales_psiquiatricos', label: 'Hospitales psiquiátricos', type: 'health' },
-  { value: 'hospitales_otras_especialidades', label: 'Hospitales otras especialidades', type: 'health' },
-  { value: 'farmacia', label: 'Farmacia', type: 'health' },
-  { value: 'clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico', type: 'health' },
-  { value: 'cine', label: 'Cine', type: 'recreation' },
-  { value: 'otros_servicios_recreativos', label: 'Otros Servicios recreativos', type: 'recreation' },
-  { value: 'parques_recreativos', label: 'Parques recreativos', type: 'recreation' },
-  { value: 'museos', label: 'Museos', type: 'recreation' },
-  { value: 'biblioteca', label: 'Biblioteca', type: 'recreation' },
-  { value: 'guarderia', label: 'Guarderia', type: 'education' },
-  { value: 'educacion_preescolar', label: 'Educación Preescolar', type: 'education' },
-  { value: 'educacion_primaria', label: 'Educación Primaria', type: 'education' },
-  { value: 'educacion_secundaria', label: 'Educación Secundaria', type: 'education' },
-  { value: 'educacion_media_superior', label: 'Educación Media Superior', type: 'education' },
-];
+import { amenitiesOptions } from '../../constants';
 
 export const mappingCategories: any = {
   health: 'Salud',
@@ -44,13 +23,12 @@ export const mappingCategories: any = {
 };
 
 const SelectAutoComplete = () => {
-  const [filteredOptions, setFilteredOptions] = useState<GenericObject[]>(amenitiesOptions);
   const [search, setSearch] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const accessibilityList = useSelector((state: RootState) => state.accessibilityList.accessibilityList);
   const dispatch: AppDispatch = useDispatch();
 
-  const groupedAmenitiesOptions: Record<string, GenericObject[]> = filteredOptions.reduce((acc, option) => {
+  const groupedAmenitiesOptions: Record<string, GenericObject[]> = amenitiesOptions.reduce((acc, option) => {
     acc[option.type] = acc[option.type] || [];
     acc[option.type].push(option);
     return acc;

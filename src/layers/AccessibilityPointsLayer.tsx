@@ -1,9 +1,8 @@
 import React from 'react';
 import { IconLayer } from 'deck.gl';
 import { fetchPolygonData } from "../utils";
-import { amenitiesOptions } from '../components/SelectAutoComplete/SelectAutoComplete';
 import { GenericObject } from '../types';
-import { TABS } from '../constants';
+import { amenitiesOptions, TABS } from '../constants';
 
 interface AccessibilityPointsProps {
     activeTab: TABS,

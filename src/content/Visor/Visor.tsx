@@ -17,14 +17,15 @@ import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import "./Visor.scss";
 import { RootState } from "../../app/store";
 import PopulationPyramid from "../../components/PopulationPyramid";
-import { COLUMN_MAPPING, VIEW_COLORS_RGBA } from "../../constants";
+import { mappingGradoEscolaridad, METRICS_MAPPING, VIEW_COLORS_RGBA } from "../../constants";
 import { GenericObject } from "../../types";
 
 
-const ComparativeMetric = ({name, metric, children}: {name: string, metric: string | undefined, children: React.ReactNode[]}) => {
+const ComparativeMetric = ({name, metric, children}: {name?: string, metric?: string, children: React.ReactNode[]}) => {
     const dispatch = useDispatch();
     const currentMetric = useSelector((state: RootState) => state.queryMetric.queryMetric);
     const isCurrent = currentMetric === metric;
+    const title = metric ? name || METRICS_MAPPING[metric]?.title || metric : name || "";
     return (
         <Box
             className="stat-row"
@@ -37,7 +38,7 @@ const ComparativeMetric = ({name, metric, children}: {name: string, metric: stri
             }}
         >
             <Box className="stat-title-box" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>
-                <Text className="stat-title" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>{name}</Text>
+                <Text className="stat-title" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>{title}</Text>
             </Box>
             <Box className="stat-value" style={{ backgroundColor: isCurrent ? '#e2e6d1' : 'transparent' }}>
                 <Box>
@@ -126,6 +127,7 @@ const GraphPercent = ({ value, base }: { value: number, base: number }) => {
 }
 
 const Visor = ({ metrics }: { metrics: any }) => {
+    const dispatch = useDispatch();
     const globalData: GenericObject = {
         POBTOT: 1003530,
         GRAPROES: 11.06,
@@ -150,10 +152,16 @@ const Visor = ({ metrics }: { metrics: any }) => {
         setPyramidData(getPyramidData(metrics));
     }, [metrics]);
 
-
     return (
         <div className="visor tab__main">
-            <Accordion allowToggle defaultIndex={[0]}>
+            <Accordion allowToggle defaultIndex={[0]} onChange={(index) => {
+                if (index === 0) {
+                    dispatch(setQueryMetric("poblacion"));
+                } else {
+                    dispatch(setQueryMetric("indice_bienestar"));
+                }
+            }
+            }>
                 <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
@@ -169,7 +177,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                     <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
                                 </Box>
                             </Box>
-                            <ComparativeMetric name="Población total" metric="POBTOT">
+                            <ComparativeMetric metric="poblacion">
                                 <Text>
                                     { metrics?.POBTOT?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
@@ -183,19 +191,19 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                     hab
                                 </Text>
                             </ComparativeMetric>
-                            <ComparativeMetric name="Pirámide poblacional" metric={undefined}>
+                            <ComparativeMetric name="Pirámide poblacional">
                                 <PopulationPyramid data={pyramidData} />
                                 <PopulationPyramid data={ getPyramidData( globalData ) } />
                             </ComparativeMetric>
-                            <ComparativeMetric name="Grado promedio de escolaridad" metric="GRAPROES">
-                                <Text>
-                                    { metrics?.GRAPROES?.toFixed(2) || "" }
+                            <ComparativeMetric metric="grado_escuela">
+                                <Text fontSize="sm">
+                                    { mappingGradoEscolaridad[metrics?.GRAPROES?.toFixed(0)] || "" } ({ metrics?.GRAPROES?.toFixed(0) })
                                 </Text>
-                                <Text>
-                                    { globalData?.GRAPROES?.toFixed(2) || "" }
+                                <Text fontSize="sm">
+                                    { mappingGradoEscolaridad[globalData?.GRAPROES?.toFixed(0)] || "" } ({ globalData?.GRAPROES?.toFixed(0) })
                                 </Text>
                             </ComparativeMetric>
-                            <ComparativeMetric name="Viviendas particulares habitadas" metric="VIVPAR_HAB">
+                            <ComparativeMetric metric="viviendas_habitadas">
                                 <Text>
                                     { metrics?.VIVPAR_HAB?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
@@ -226,19 +234,19 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                     <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
                                 </Box>
                             </Box>
-                            <ComparativeMetric name="Índice de bienestar" metric="wellness_index">
+                            <ComparativeMetric metric="indice_bienestar">
                                 <GraphPercent value={ metrics?.wellness_index || 0 } base={ 100 } />
                                 <GraphPercent value={ globalData?.wellness_index || 0 } base={ 100 } />
                             </ComparativeMetric>
-                            <ComparativeMetric name="Viviendas con automóvil" metric="VPH_AUTOM">
+                            <ComparativeMetric metric="viviendas_auto">
                                 <GraphPercent value={ metrics?.VPH_AUTOM || 0 } base={ metrics?.VIVPAR_HAB || 0 } />
                                 <GraphPercent value={ globalData?.VPH_AUTOM || 0 } base={ globalData?.VIVPAR_HAB || 0 } />
                             </ComparativeMetric>
-                            <ComparativeMetric name="Viviendas con PC" metric="VPH_PC">
+                            <ComparativeMetric metric="viviendas_pc">
                                 <GraphPercent value={ metrics?.VPH_PC || 0 } base={ metrics?.VIVPAR_HAB || 0 } />
                                 <GraphPercent value={ globalData?.VPH_PC || 0 } base={ globalData?.VIVPAR_HAB || 0 } />
                             </ComparativeMetric>
-                            <ComparativeMetric name="Viviendas con tinaco" metric="VPH_TINACO">
+                            <ComparativeMetric metric="viviendas_tinaco">
                                 <GraphPercent value={ metrics?.VPH_TINACO || 0 } base={ metrics?.VIVPAR_HAB || 0 } />
                                 <GraphPercent value={ globalData?.VPH_TINACO || 0 } base={ globalData?.VIVPAR_HAB || 0 } />
                             </ComparativeMetric>

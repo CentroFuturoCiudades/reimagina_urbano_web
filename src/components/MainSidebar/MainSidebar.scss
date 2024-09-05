@@ -52,7 +52,7 @@
 }
 
 .tab__main {
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.97);
     margin-top: -1rem;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
@@ -102,7 +102,7 @@
         .stat-title-box {
             height: 36px;
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.7);
+            background-color: rgba(255, 255, 255, 0.9);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
@@ -116,7 +116,7 @@
                 justify-content: space-between;
 
                 &.dark {
-                    background: rgba( 220, 220, 220, 0.7);
+                    background: rgba( 220, 220, 220, 0.9);
                 }
             }
         }
@@ -131,7 +131,7 @@
             align-items: center;
 
             &.dark {
-                background: rgba(100, 100, 100, 0.7);
+                background: rgba(100, 100, 100, 0.8);
                 color: white;
             }
         }

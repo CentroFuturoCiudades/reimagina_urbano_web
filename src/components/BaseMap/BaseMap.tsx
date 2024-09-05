@@ -40,6 +40,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     useEffect(() => {
         async function updateProject() {
             const coords = await axios.get(`${API_URL}/coords`);
+            console.log(coords);
             setCoords(coords.data);
         }
         updateProject();

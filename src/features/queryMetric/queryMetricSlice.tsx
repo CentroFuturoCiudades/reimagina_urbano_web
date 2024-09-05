@@ -5,7 +5,7 @@ interface QueryMetricState {
 }
 
 const initialState: QueryMetricState = {
-    queryMetric: "POBTOT"
+    queryMetric: "poblacion"
 };
 
 const queryMetricSlice = createSlice({

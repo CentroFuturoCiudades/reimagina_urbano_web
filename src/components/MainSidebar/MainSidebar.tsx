@@ -52,7 +52,7 @@ const MainSidebar = () => {
                     }}
                     onClick={() => {
                         dispatch( setActiveTab( TABS.VISOR ) )
-                        dispatch(setQueryMetric("POBTOT"));
+                        dispatch(setQueryMetric("poblacion"));
                     }}
                 >
                     Visor

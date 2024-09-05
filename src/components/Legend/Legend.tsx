@@ -1,10 +1,9 @@
 import React from "react";
-import * as d3 from "d3";
 
 import "./Legend.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { COLUMN_MAPPING, VIEW_COLORS_RGBA } from "../../constants";
+import { getQuantiles, METRICS_MAPPING } from "../../constants";
 
 const Legend = () => {
     const queryData = useSelector(
@@ -13,40 +12,18 @@ const Legend = () => {
     const metric = useSelector(
         (state: RootState) => state.queryMetric.queryMetric
     );
+    const [quantiles, colors] = getQuantiles(queryData, metric);
 
-    const domain = [
-        Math.min(...(Object.values(queryData) as any)),
-        Math.max(...(Object.values(queryData) as any)),
-    ];
-
-    const colors = d3.quantize(
-        d3.interpolateRgb(
-            VIEW_COLORS_RGBA.ACCESIBILIDAD.light,
-            VIEW_COLORS_RGBA.ACCESIBILIDAD.dark
-        ),
-        8
-    );
-
-    const quantiles = d3.scaleQuantize<string>().domain(domain).range(colors);
-
-    const title = COLUMN_MAPPING[metric] || metric;
+    const title = METRICS_MAPPING[metric]?.title || metric;
 
     const formatValue = (value: string) => {
+        const type = METRICS_MAPPING[metric]?.type;
         const formattedValue = Number(value).toLocaleString("en-US");
-        if (
-            title.toLowerCase().includes("porcentaje") ||
-            title.toLowerCase().includes("ratio")
-        ) {
+        if (type === "percentage") {
             return `${formattedValue}%`;
-        } else if (
-            title.toLowerCase().includes("minutos") ||
-            title.toLowerCase().includes("minutes")
-        ) {
+        } else if (type === "minutes") {
             return `${formattedValue} min`;
-        } else if (
-            title.toLowerCase().includes("área") ||
-            title.toLowerCase().includes("area")
-        ) {
+        } else if (type === "area") {
             return `${formattedValue} m²`;
         }
         return formattedValue;
@@ -70,7 +47,7 @@ const Legend = () => {
                     <span>
                         {quantiles
                             .invertExtent(color)
-                            .map((d) => formatValue(d.toFixed(0)))
+                            .map((d: any) => formatValue(d.toFixed(0)))
                             .join(" - ")}
                     </span>
                 </div>
