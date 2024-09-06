@@ -175,6 +175,7 @@ const Layers = () => {
                 }
             } catch (e: any) {
                 console.error( e )
+                dispatch( setIsLoading( false ) )
             }
         }
         fetchData();
