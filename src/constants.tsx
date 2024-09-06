@@ -136,3 +136,27 @@ export const ACCESSIBILITY_POINTS_COLORS: GenericObject = {
 }
 
 export const ZOOM_SHOW_DETAILS = 17;
+
+
+export const AMENITIES_MAP: GenericObject =
+{
+    "Asistencia social": { value: 'asistencia_social', type: 'health' },
+    "Laboratorios clínicos": { value: 'laboratorios_clinicos', type: 'health' },
+    "Otros consultorios": { value: 'otros_consultorios', type: 'health' },
+    "Consultorios médicos": { value: 'consultorios_medicos', type: 'health' },
+    "Hospital general": { value: 'hospital_general', type: 'health' },
+    "Hospitales psiquiátricos": { value: 'hospitales_psiquiatricos', type: 'health' },
+    "Hospitales otras especialidades": { value: 'hospitales_otras_especialidades', type: 'health' },
+    "Farmacia": { value: 'farmacia', type: 'health' },
+    "Clubs deportivos y de acondicionamiento físico": { value: 'clubs_deportivos_y_acondicionamiento_fisico', type: 'health' },
+    "Cine": { value: 'cine', type: 'recreation' },
+    "Otros Servicios recreativos": { value: 'otros_servicios_recreativos', type: 'recreation' },
+    "Parques recreativos": { value: 'parques_recreativos', type: 'recreation' },
+    "Museos": { value: 'museos', type: 'recreation' },
+    "Biblioteca": { value: 'biblioteca', type: 'recreation' },
+    "Guarderia": { value: 'guarderia', type: 'education' },
+    "Educación Preescolar": { value: 'educacion_preescolar', type: 'education' },
+    "Educación Primaria": { value: 'educacion_primaria', type: 'education' },
+    "Educación Secundaria": { value: 'educacion_secundaria', type: 'education' },
+    "Educación Media Superior": { value: 'educacion_media_superior', type: 'education' }
+  }

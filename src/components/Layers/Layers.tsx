@@ -12,7 +12,7 @@ import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer, AccessibilityP
 import * as d3 from "d3";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 import PointsLayer from "../../layers/PointsLayer";
-import { setPoligonMode } from "../../features/viewMode/viewModeSlice";
+import { setIsLoading, setPoligonMode } from "../../features/viewMode/viewModeSlice";
 import { setAccesibilityPoints } from "../../features/accessibilityList/accessibilityListSlice";
 
 const useDrawPoligonLayer = () => {
@@ -81,6 +81,7 @@ const Layers = () => {
 
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const activeTab = useSelector((state: RootState) => state.viewMode.activeTab);
+    const accessibilityList = useSelector(( state: RootState ) => state.accessibilityList.accessibilityList );
 
     const zoom = useSelector((state: RootState) => state.viewState.zoom);
     const isBuildingZoom = zoom >= ZOOM_SHOW_DETAILS;
@@ -93,10 +94,12 @@ const Layers = () => {
         latitud: 24.753450686162093,
         longitud: -107.39367959923534,
     });
+
     const [queryData, setQueryDataState] = useState<any>({});
     const [queryDataFloors, setQueryDataFloorsState] = useState<any>({});
     const [coordinates, setCoordinates] = useState<any>([]);
     const [dataLayers, setDataLayers] = useState<any[]>([]);
+    const [amenitiesLayer, setAmenitiesLayer ] = useState<any>(null);
 
     const { lensData, layers: lensLayers } = useLensLayer({ coords });
     const { drawPoligonData, layers: drawPoligonLayers } =
@@ -115,6 +118,7 @@ const Layers = () => {
 
     useEffect(() => {
         setDataLayers([]);
+        setAmenitiesLayer(null);
 
         let temp =
             viewMode === VIEW_MODES.LENS
@@ -133,8 +137,11 @@ const Layers = () => {
         const controller = new AbortController();
 
         async function fetchData() {
+
             if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL)
                 return;
+
+            dispatch( setIsLoading( true ) );
             try {
                 // TODO: Use redux to get accessibility list data.
                 const response = await axios.post(`${API_URL}/query`, {
@@ -166,8 +173,8 @@ const Layers = () => {
                     setQueryDataState(queryDataByProductId);
                     dispatch(setQueryData(queryDataByProductId));
                 }
-            } catch (e) {
-                console.log(e);
+            } catch (e: any) {
+                console.error( e )
             }
         }
         fetchData();
@@ -178,7 +185,6 @@ const Layers = () => {
 
     const iconHover = (x: number, y: number, object: any )=> {
         if (object) {
-            console.log(object)
             setHoverInfo({
                 object,
                 x,
@@ -235,23 +241,7 @@ const Layers = () => {
             //     });
             // }
 
-            const setAccesibilityData = ( data: GenericObject[] ) => {
-                dispatch( setAccesibilityPoints( data ) )
-            }
-
-            const accessibilityPointsLayer = await AccessibilityPointsLayer({
-                activeTab: activeTab,
-                dispatcher: setAccesibilityData,
-                coordinates,
-                layer: 'accessibility_points',
-                onHover: iconHover
-            });
-
-            if (accessibilityPointsLayer) {
-                setDataLayers((dataLayers) => {
-                    return [...dataLayers, accessibilityPointsLayer];
-                });
-            }
+            dispatch( setIsLoading( false ) );
         };
 
         getData();
@@ -280,8 +270,32 @@ const Layers = () => {
         getData();
     }, [isBuildingZoom]);
 
+    useEffect( ()=> {
 
-    const layers: any[] = [ ...dataLayers , ...lensLayers, ...drawPoligonLayers, hoverInfo && new TextLayer({
+        const getData = async ()=> {
+
+            const setAccesibilityData = ( data: GenericObject[] ) => {
+                dispatch( setAccesibilityPoints( data ) )
+            }
+
+            const accessibilityPointsLayer = await AccessibilityPointsLayer({
+                accessibilityList,
+                activeTab: activeTab,
+                dispatcher: setAccesibilityData,
+                coordinates,
+                layer: 'accessibility_points',
+                onHover: iconHover
+            });
+
+            if (accessibilityPointsLayer) {
+                setAmenitiesLayer( accessibilityPointsLayer );
+            }
+        }
+
+        getData();
+    }, [accessibilityList, queryData, amenitiesArray, activeTab ])
+
+    const layers: any[] = [ ...dataLayers , ...lensLayers, ...drawPoligonLayers, amenitiesLayer, hoverInfo && new TextLayer({
         id: 'text-layer',
         data: [hoverInfo],
         getPosition:( d: any ) => d.object.geometry.coordinates,  // Adjust depending on your data

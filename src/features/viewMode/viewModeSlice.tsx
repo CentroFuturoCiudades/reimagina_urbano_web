@@ -5,12 +5,14 @@ interface ViewModeState {
     viewMode: VIEW_MODES;
     poligonMode: POLYGON_MODES;
     activeTab: TABS;
+    isLoading: boolean;
 }
 
 const initialState: ViewModeState = {
     viewMode: VIEW_MODES.FULL,
     poligonMode: POLYGON_MODES.VIEW,
-    activeTab: TABS.VISOR
+    activeTab: TABS.VISOR,
+    isLoading: false
 };
 
 const viewModeSlice = createSlice({
@@ -26,9 +28,12 @@ const viewModeSlice = createSlice({
         setActiveTab: (state, action: PayloadAction< TABS >) => {
             state.activeTab = action.payload;
         },
+        setIsLoading: (state, action: PayloadAction< boolean >) => {
+            state.isLoading = action.payload;
+        },
     }
 });
 
-export const { setViewMode, setPoligonMode, setActiveTab } = viewModeSlice.actions;
+export const { setViewMode, setPoligonMode, setActiveTab, setIsLoading } = viewModeSlice.actions;
 
 export default viewModeSlice.reducer;

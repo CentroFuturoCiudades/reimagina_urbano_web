@@ -22,6 +22,8 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     const [coords, setCoords] = useState();
     const [localViewState, setLocalViewState] = useState(INITIAL_STATE);
 
+    const isLoading = useSelector((state: RootState) => state.viewMode.isLoading );
+
     const { data: poligono } = useFetchGeo(
         `${API_URL}/polygon/bounds`
     );
@@ -108,6 +110,12 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
 
     return (
         <>
+            { isLoading &&
+                <div className="loading-container">
+                    <div className="spinner"></div>
+                    <div className="loading-text">Loading...</div>
+                </div>
+            }
             {/* @ts-ignore */}
             <DeckGL
                 initialViewState={{
