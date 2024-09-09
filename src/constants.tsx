@@ -21,7 +21,7 @@ export const INITIAL_STATE = {
 };
 
 export const getQuantiles = (data: any, metric: string): [any, string[]] => {
-    console.log(Math.max(...(Object.values(data) as any)),)
+    if (!data) return [null, []];
     const domain = METRICS_MAPPING[metric]?.ranges || [
         Math.min(
             ...(Object.values(data) as any).filter(
@@ -37,7 +37,6 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
         ),
         METRICS_MAPPING[metric]?.ranges ? domain.length - 1 : 5
     );
-    console.log(domain, ["white", ...colors]);
     const quantiles = METRICS_MAPPING[metric]?.ranges ?
         d3.scaleThreshold<number, string>().domain(domain).range([VIEW_COLORS_RGBA.ACCESIBILIDAD.light, ...colors]) :
         d3.scaleQuantize<string>().domain(domain).range(colors);
@@ -53,7 +52,7 @@ export const METRICS_MAPPING: GenericObject = {
     "indice_bienestar": { query: "wellness_index", title: "Índice de Bienestar", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_tinaco": { query: "VPH_TINACO * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_pc": { query: "VPH_PC * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con PC", ranges: [0, 25, 50, 75, 100], type: "percentage" },
-    "viviendas_auto":{ query: "VPH_AUTOM * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Vehiculo privado", ranges: [0, 50, 70, 90, 100], type: "percentage" },
+    "viviendas_auto":{ query: "VPH_AUTOM * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [0, 50, 70, 90, 100], type: "percentage" },
     "minutes": { query: "minutes", title: "Minutos", ranges: [0, 5, 15, 30, 45, 60], type: "minutes" },
 }
 export const amenitiesOptions = [
@@ -68,7 +67,7 @@ export const amenitiesOptions = [
     { value: 'clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico', type: 'health' },
     { value: 'cine', label: 'Cine', type: 'recreation' },
     { value: 'otros_servicios_recreativos', label: 'Otros Servicios recreativos', type: 'recreation' },
-    { value: 'parques_recreativos', label: 'Parques recreativos', type: 'recreation' },
+    { value: 'parques_recreativos', label: 'Parques recreativos', type: 'park' },
     { value: 'museos', label: 'Museos', type: 'recreation' },
     { value: 'biblioteca', label: 'Biblioteca', type: 'recreation' },
     { value: 'guarderia', label: 'Guarderia', type: 'education' },
@@ -132,7 +131,8 @@ export const VIEW_COLORS_RGBA = {
 export const ACCESSIBILITY_POINTS_COLORS: GenericObject = {
     "education" : "#cc9999",
     "health": "#7c6eb1",
-    "recreation":  "#cfc7e3"
+    "recreation":  "#eab642",
+    "park": "#7ea48d",
 }
 
 export const ZOOM_SHOW_DETAILS = 17;

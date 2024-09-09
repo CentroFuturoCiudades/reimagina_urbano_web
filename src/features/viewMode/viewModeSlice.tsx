@@ -12,7 +12,7 @@ const initialState: ViewModeState = {
     viewMode: VIEW_MODES.FULL,
     poligonMode: POLYGON_MODES.VIEW,
     activeTab: TABS.VISOR,
-    isLoading: false
+    isLoading: false,
 };
 
 const viewModeSlice = createSlice({

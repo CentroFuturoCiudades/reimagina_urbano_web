@@ -1,6 +1,6 @@
-export { default as AmenitiesLayer } from "./AmenitiesLayer"
+export { default as useAmenitiesLayer } from "./AmenitiesLayer"
 export { default as PopulationPoints } from "./PointsLayer"
 export { default as useLensLayer } from "./useLensLayer";
-export { default as LotsLayer } from "./LotsLayer";
-export { default as BuildingsLayer } from "./BuildingsLayer";
-export { default as AccessibilityPointsLayer } from "./AccessibilityPointsLayer";
+export { default as useLotsLayer } from "./LotsLayer";
+export { default as useBuildingsLayer } from "./BuildingsLayer";
+export { default as useAccessibilityPointsLayer } from "./AccessibilityPointsLayer";

@@ -1,19 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { API_URL, getQuantiles, METRICS_MAPPING, POLYGON_MODES, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
+import { API_URL, getQuantiles, INITIAL_STATE, METRICS_MAPPING, POLYGON_MODES, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
 import { RGBAColor, TextLayer } from "deck.gl";
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
 import { GenericObject } from "../../types";
-import { AmenitiesLayer, LotsLayer, useLensLayer, BuildingsLayer, AccessibilityPointsLayer } from "../../layers";
-import * as d3 from "d3";
+import { useLotsLayer, useLensLayer, useBuildingsLayer, useAccessibilityPointsLayer, useAmenitiesLayer } from "../../layers";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
-import PointsLayer from "../../layers/PointsLayer";
 import { setIsLoading, setPoligonMode } from "../../features/viewMode/viewModeSlice";
-import { setAccesibilityPoints } from "../../features/accessibilityList/accessibilityListSlice";
+import { useAborterEffect } from "../../utils";
 
 const useDrawPoligonLayer = () => {
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
@@ -78,32 +76,27 @@ const useDrawPoligonLayer = () => {
 
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
-
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const activeTab = useSelector((state: RootState) => state.viewMode.activeTab);
-    const accessibilityList = useSelector(( state: RootState ) => state.accessibilityList.accessibilityList );
-
+    const accessibilityList: GenericObject = useSelector(
+        (state: RootState) => state.accessibilityList.accessibilityList
+    );
     const zoom = useSelector((state: RootState) => state.viewState.zoom);
-    const isBuildingZoom = zoom >= ZOOM_SHOW_DETAILS;
     const metric = useSelector(
         (state: RootState) => state.queryMetric.queryMetric
     );
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
 
-    const [coords, setCoords] = useState({
-        latitud: 24.753450686162093,
-        longitud: -107.39367959923534,
-    });
-
     const [queryData, setQueryDataState] = useState<any>({});
     const [queryDataFloors, setQueryDataFloorsState] = useState<any>({});
-    const [coordinates, setCoordinates] = useState<any>([]);
-    const [dataLayers, setDataLayers] = useState<any[]>([]);
-    const [amenitiesLayer, setAmenitiesLayer ] = useState<any>(null);
-
-    const { lensData, layers: lensLayers } = useLensLayer({ coords });
+    const [coordinates, setCoordinates] = useState<any>(undefined);
+    
+    const { lensData, layers: lensLayers } = useLensLayer({ coords: {latitude: INITIAL_STATE.latitude, longitude: INITIAL_STATE.longitude} });
     const { drawPoligonData, layers: drawPoligonLayers } =
-        useDrawPoligonLayer();
+    useDrawPoligonLayer();
+    const lotsLayers = useLotsLayer({ coordinates, viewMode, queryData, metric });
+    const buildingsLayers: any = useBuildingsLayer({ coordinates, queryDataFloors, zoom });
+    const accessibilityPointsLayer: any = useAccessibilityPointsLayer({ coordinates, metric });
+    const amenitiesLayers = useAmenitiesLayer({ coordinates, metric });
 
     //String values allow the serialization of those properties. Avoids infinite re-rendering
     const lensDataString = useMemo(() => JSON.stringify(lensData), [lensData]);
@@ -112,207 +105,58 @@ const Layers = () => {
         [drawPoligonData]
     );
 
-    const amenitiesArray: GenericObject = useSelector(
-        (state: RootState) => state.accessibilityList.accessibilityList
-    );
-
     useEffect(() => {
-        setDataLayers([]);
-        setAmenitiesLayer(null);
-
-        let temp =
-            viewMode === VIEW_MODES.LENS
-                ? lensData?.geometry.coordinates[0]
-                : drawPoligonData?.features
-                ? drawPoligonData.features[0]?.geometry.coordinates[0]
-                : null;
-
-        setCoordinates(temp);
-    }, [viewMode, lensDataString, drawPoligonDataString]);
-
-    useEffect(() => {
-        if (isDrag) {
-            return;
+        if (viewMode === VIEW_MODES.FULL) {
+            if (coordinates) {
+                setCoordinates(undefined);
+            }
+        } else if (viewMode === VIEW_MODES.LENS) {
+            if (!isDrag) {
+                setCoordinates(lensData?.geometry.coordinates[0]);
+            }
+        } else if (viewMode === VIEW_MODES.POLIGON) {
+            setCoordinates(drawPoligonData?.features[0]?.geometry.coordinates[0]);
         }
-        const controller = new AbortController();
+    }, [viewMode, isDrag, lensDataString, drawPoligonDataString]);
 
-        async function fetchData() {
+    useAborterEffect(async (signal: any, isMounted: boolean) => {
+        if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL) return;
+        console.log('--QUERY--')
+        dispatch(setIsLoading(true));
+        const response = await axios.post(`${API_URL}/query`, {
+            metric: METRICS_MAPPING[metric]?.query || metric,
+            accessibility_info: accessibilityList.map((x: any) => ({
+                name: x.label,
+                radius: 1600 * 2,
+                importance: 1,
+            })),
+            coordinates,
+            layer: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
+        }, { signal });
+        if (!response || !response.data) return;
+        dispatch( setIsLoading( false ) );
 
-            if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL)
-                return;
+        if (isMounted) {
+            const queryDataByProductId: GenericObject = {};
+            const queryDataFloorsData: GenericObject = {};
+            const ids: string[] = response.data.map((x: any) => x.ID);
+            dispatch(setSelectedLots(ids));
 
-            dispatch( setIsLoading( true ) );
-            try {
-                // TODO: Use redux to get accessibility list data.
-                const response = await axios.post(`${API_URL}/query`, {
-                    metric: METRICS_MAPPING[metric]?.query || metric,
-                    accessibility_info: amenitiesArray.map((x: any) => ({
-                        name: x.label,
-                        radius: 1600 * 2,
-                        importance: 1,
-                    })),
-                    coordinates,
-                    layer: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
-                }, {signal: controller.signal});
-                if (response && response.data) {
-                    const queryDataByProductId: GenericObject = {};
-                    const queryDataFloorsData: GenericObject = {};
-
-                    const ids: string[] = response.data.map((x: any) => x.ID);
-                    dispatch(setSelectedLots(ids));
-
-                    response.data.forEach((data: any) => {
-                        queryDataByProductId[data["ID"]] = data["value"];
-                        queryDataFloorsData[data["ID"]] = {
-                            num_floors: data["num_floors"],
-                            max_height: data["max_height"],
-                        };
-                    });
-
-                    setQueryDataFloorsState(queryDataFloorsData);
-                    setQueryDataState(queryDataByProductId);
-                    dispatch(setQueryData(queryDataByProductId));
-                }
-            } catch (e: any) {
-                console.error( e )
-                dispatch( setIsLoading( false ) )
-            }
-        }
-        fetchData();
-        return () => {controller.abort();};
-    }, [metric, coordinates, isDrag, viewMode, amenitiesArray]);
-
-    const [hoverInfo, setHoverInfo] = useState<any>(null);
-
-    const iconHover = (x: number, y: number, object: any )=> {
-        if (object) {
-            setHoverInfo({
-                object,
-                x,
-                y,
-            });
-        } else {
-            setHoverInfo(null);
-        }
-    }
-
-    useEffect(() => {
-        const controller = new AbortController();
-        const [quantiles, _] = getQuantiles(queryData, metric);
-
-        const getFillColor = (d: any): RGBAColor => {
-            const value = queryData[d.properties.ID];
-
-            if (value > 0) {
-                const colorString = quantiles(value);
-                const color = d3.color(colorString)?.rgb();
-                return color ? [color.r, color.g, color.b] : [255, 255, 255];
-            }
-
-            return [200, 200, 200];
-        };
-
-        const getData = async () => {
-            const layer = await LotsLayer({
-                coordinates,
-                getFillColor,
-                viewMode,
-                signal: controller.signal,
-            });
-            if (layer) {
-                setDataLayers((dataLayers) => {
-                    return [...dataLayers, layer];
-                });
-            }
-
-            // const points = await PointsLayer({ coordinates, getFillColor: [255, 0, 0, 255] });
-            // if (points) {
-            //     setDataLayers( (dataLayers)=> {
-            //         return [...dataLayers, points]
-            //     });
-            // }
-
-            // const amenities = await AmenitiesLayer({
-            //     coordinates,
-            //     amenitiesArray,
-            // });
-            // if (amenities && amenities.length) {
-            //     setDataLayers((dataLayers) => {
-            //         return [...dataLayers, ...amenities];
-            //     });
-            // }
-
-            dispatch( setIsLoading( false ) );
-        };
-
-        getData();
-    }, [queryData, amenitiesArray]);
-
-
-    useEffect(() => {
-        const getData = async () => {
-            if (isBuildingZoom) {
-                const buildingsLayer = dataLayers.find((layer) => layer.id === "buildings-floors-layer");
-                if (buildingsLayer) {
-                    return;
-                }
-                const buildings = await BuildingsLayer({ coordinates, queryDataFloors, signal: undefined });
-                if( buildings && buildings.length){
-                    setDataLayers( (dataLayers)=> {
-                        return [...dataLayers, ...buildings]
-                    });
-                }
-            } else {
-                setDataLayers( (dataLayers)=> {
-                    return dataLayers.filter((layer) => layer.id !== "buildings-floors-layer" && layer.id !== "buildings-max-height-layer");
-                });
-            }
-        };
-        getData();
-    }, [isBuildingZoom]);
-
-    useEffect( ()=> {
-
-        const getData = async ()=> {
-
-            const setAccesibilityData = ( data: GenericObject[] ) => {
-                dispatch( setAccesibilityPoints( data ) )
-            }
-
-            const accessibilityPointsLayer = await AccessibilityPointsLayer({
-                accessibilityList,
-                activeTab: activeTab,
-                dispatcher: setAccesibilityData,
-                coordinates,
-                layer: 'accessibility_points',
-                onHover: iconHover
+            response.data.forEach((data: any) => {
+                queryDataByProductId[data["ID"]] = data["value"];
+                queryDataFloorsData[data["ID"]] = {
+                    num_floors: data["num_floors"],
+                    max_height: data["max_height"],
+                };
             });
 
-            if (accessibilityPointsLayer) {
-                setAmenitiesLayer( accessibilityPointsLayer );
-            }
+            setQueryDataFloorsState(queryDataFloorsData);
+            setQueryDataState(queryDataByProductId);
+            dispatch(setQueryData(response.data));
         }
+    }, [metric, coordinates, accessibilityList]);
 
-        getData();
-    }, [accessibilityList, queryData, amenitiesArray, activeTab ])
-
-    const layers: any[] = [ ...dataLayers , ...lensLayers, ...drawPoligonLayers, amenitiesLayer, hoverInfo && new TextLayer({
-        id: 'text-layer',
-        data: [hoverInfo],
-        getPosition:( d: any ) => d.object.geometry.coordinates,  // Adjust depending on your data
-        getText: ( d: any) => d.object.properties.amenity,  // Customize based on your data properties
-        getPixelOffset: [0, -50],
-        getSize: 16,
-        getColor: [255, 255, 255],
-        background: true,
-        backgroundColor: [0, 0, 0, 150], // Semi-transparent black background
-        backgroundPadding: [6, 4], // Horizontal and vertical padding
-        getTextAnchor: 'middle',
-        getAlignmentBaseline: 'bottom',
-        fontFamily: '"Arial", sans-serif',
-        zIndex: 1000,
-        characterSet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789éó', // Include special characters
-    }),];
+    const layers: any[] = [ ...lotsLayers, ...buildingsLayers, ...amenitiesLayers, ...lensLayers, ...drawPoligonLayers, ...accessibilityPointsLayer];
 
     return { layers };
 };

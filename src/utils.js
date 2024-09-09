@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { FlatGeobufLoader } from '@loaders.gl/flatgeobuf';
 import { load } from '@loaders.gl/core';
 import { geojson } from 'flatgeobuf';
-import { API_URL } from "./constants";
+import { API_URL, METRICS_MAPPING } from "./constants";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setQueryData } from "./features/queryData/queryDataSlice";
 
 // TODO: Refactor to typescript
 export function lightenColor(color, factor) {
@@ -66,6 +69,25 @@ export function generateGradientColors(startColor, endColor, steps) {
   }
 
   return gradientColors;
+}
+
+export const useAborterEffect = (effect, dependencies) => {
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+    const signal = controller.signal;
+    (async () => {
+      try {
+        await effect(signal, isMounted);
+      } catch (error) {
+        console.log("Error fetching data", error);
+      }
+    })();
+    return () => {
+      isMounted = false;
+      controller.abort();
+    }
+  }, dependencies);
 }
 
 export const useFetch = (url, initialData = undefined, list_observers = [], aborter = undefined) => {
@@ -216,7 +238,8 @@ export const renderCustomizedLabel = ({
 export const fetchPolygonData = async ({
     coordinates,
     layer,
-}, signal = undefined) => {
+}, signal) => {
+    console.log('--POLYGON--', layer);
     const url = `${API_URL}/polygon`;
     try {
         const response = await fetch(url, {

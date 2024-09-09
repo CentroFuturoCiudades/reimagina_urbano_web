@@ -19,12 +19,12 @@ const accessibilityListSlice = createSlice({
         setAccessibilityList: (state, action: PayloadAction< GenericObject[] >) => {
             state.accessibilityList = action.payload;
         },
-        setAccesibilityPoints: (state, action: PayloadAction< GenericObject[] >) => {
+        setAccessibilityPoints: (state, action: PayloadAction< GenericObject[] >) => {
             state.accessibilityPoints = action.payload;
         }
     }
 });
 
-export const { setAccessibilityList, setAccesibilityPoints } = accessibilityListSlice.actions;
+export const { setAccessibilityList, setAccessibilityPoints } = accessibilityListSlice.actions;
 
 export default accessibilityListSlice.reducer;

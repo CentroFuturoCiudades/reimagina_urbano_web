@@ -68,8 +68,6 @@ const Accesibilidad = ({ metrics }: any) => {
         accessibilityPointsCount++;
     })
 
-    console.log( "TEST", accessibilityData )
-
     return (
         <div className="accesibilidad tab__main">
             <Accordion defaultIndex={[0]} allowToggle>
@@ -84,14 +82,14 @@ const Accesibilidad = ({ metrics }: any) => {
                         <VStack spacing={"0"} className="accordion-body">
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
-                                    <Text className="stat-title">Puntuaje de Accesibilidad</Text>
+                                    <Text className="stat-title">Puntuaje de Accesibilidad (0 a 100)</Text>
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
                                         <Text>
                                             {" "}
                                             <Icon as={FaWalking}></Icon>{" "}
-                                            {Math.trunc(metrics.accessibility_score * 100)}%
+                                            {Math.trunc(metrics.accessibility_score * 100)}
                                         </Text>
                                     </Box>
                                 </Box>

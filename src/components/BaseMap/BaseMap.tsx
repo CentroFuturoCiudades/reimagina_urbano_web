@@ -17,9 +17,6 @@ interface BaseMapProps {
 }
 
 const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
-    const project = window.location.pathname.split("/")[1];
-
-    const [coords, setCoords] = useState();
     const [localViewState, setLocalViewState] = useState(INITIAL_STATE);
 
     const isLoading = useSelector((state: RootState) => state.viewMode.isLoading );
@@ -40,30 +37,11 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     const viewState = useSelector((state: RootState) => state.viewState);
 
     useEffect(() => {
-        async function updateProject() {
-            const coords = await axios.get(`${API_URL}/coords`);
-            console.log(coords);
-            setCoords(coords.data);
-        }
-        updateProject();
-    }, []);
-
-    useEffect(() => {
         setLocalViewState({
             ...localViewState,
             zoom: viewState.zoom,
         });
     }, [viewState]);
-
-    useEffect(() => {
-        if (coords) {
-            setLocalViewState({
-                ...localViewState,
-                latitude: coords["latitud"],
-                longitude: coords["longitud"],
-            });
-        }
-    }, [coords]);
 
     useEffect(() => {
         dispatch(
@@ -99,15 +77,6 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
         getLineWidth: 5,
     });
 
-    if (!coords) {
-        return (
-            <div className="loading-container">
-                <div className="spinner"></div>
-                <div className="loading-text">Loading...</div>
-            </div>
-        );
-    }
-
     return (
         <>
             { isLoading &&
@@ -118,11 +87,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
             }
             {/* @ts-ignore */}
             <DeckGL
-                initialViewState={{
-                    ...INITIAL_STATE,
-                    latitude: coords["latitud"],
-                    longitude: coords["longitud"],
-                }}
+                initialViewState={INITIAL_STATE}
                 controller={{ dragPan: !isDrag }}
                 layers={[poligonLayer, ...layers, coloniasLayer]}
                 viewState={{ ...localViewState }}
