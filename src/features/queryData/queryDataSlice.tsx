@@ -2,18 +2,18 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { GenericObject } from '../../types';
 
 interface QueryDataState {
-    queryData: GenericObject;
+    queryData: any[];
 }
 
 const initialState: QueryDataState = {
-    queryData: {}
+    queryData: []
 };
 
 const queryDataSlice = createSlice({
     name: 'queryData',
     initialState,
     reducers: {
-        setQueryData: (state, action: PayloadAction< GenericObject >) => {
+        setQueryData: (state, action: PayloadAction<any[]>) => {
             state.queryData = action.payload;
         }
     }

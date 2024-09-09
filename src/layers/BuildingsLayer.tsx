@@ -1,8 +1,9 @@
 import { load } from "@loaders.gl/core";
 import { FlatGeobufLoader } from "@loaders.gl/flatgeobuf";
 import { GenericObject } from '../types';
-import { fetchPolygonData } from "../utils";
+import { fetchPolygonData, useAborterEffect } from "../utils";
 import { GeoJsonLayer } from "deck.gl";
+import { useEffect, useState } from "react";
 
 
 type BuildingFeature = {
@@ -20,15 +21,25 @@ type BuildingFeature = {
 interface BuildingsLayerProps {
     coordinates: any[];
     queryDataFloors: GenericObject;
-    signal: any;
+    zoom: number;
 }
 
-const BuildingsLayer = async ({ coordinates, queryDataFloors, signal }: BuildingsLayerProps) => {
-    if (!coordinates || coordinates.length === 0) {
-        return null;
-    }
-
-    const buildingsData = await fetchPolygonData({ coordinates, layer: "landuse_building" }, signal);
+const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom }: BuildingsLayerProps) => {
+    const [polygons, setPolygons] = useState<any>([]);
+    const isZoomedIn = zoom >= 17;
+    useAborterEffect(async (signal: any, isMounted: boolean) => {
+        if (!isZoomedIn || !coordinates || coordinates.length === 0) return;
+        const polygons = await fetchPolygonData(
+            {
+                coordinates,
+                layer: "landuse_building",
+            },
+            signal
+        );
+        isMounted && setPolygons(polygons);
+    }, [coordinates, queryDataFloors, isZoomedIn]);
+    
+    if (!isZoomedIn || !coordinates || coordinates.length === 0) return [];
 
     function getMaxHeight(buildingId: string): number {
         return queryDataFloors[buildingId]?.max_height*3 || 0;
@@ -41,7 +52,7 @@ const BuildingsLayer = async ({ coordinates, queryDataFloors, signal }: Building
     return [
         new GeoJsonLayer({
             id: "buildings-floors-layer",
-            data: buildingsData,
+            data: polygons,
             filled: true,
             getFillColor: [200, 200, 140, 200],
             getLineWidth: 0,
@@ -54,7 +65,7 @@ const BuildingsLayer = async ({ coordinates, queryDataFloors, signal }: Building
         }),
         new GeoJsonLayer({
             id: "buildings-max-height-layer",
-            data: buildingsData,
+            data: polygons,
             filled: true,
             getFillColor: [255, 255, 255, 50],
             getLineWidth: 0,
@@ -69,4 +80,4 @@ const BuildingsLayer = async ({ coordinates, queryDataFloors, signal }: Building
     ];
 };
 
-export default BuildingsLayer;
+export default useBuildingsLayer;

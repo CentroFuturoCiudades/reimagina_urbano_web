@@ -23,12 +23,14 @@ const MainSidebar = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            if (selectedLots.length === 0) return;
             const lots =
                 selectedLots &&
                 selectedLots.length &&
                 viewMode !== VIEW_MODES.FULL
                     ? selectedLots.filter((x) => x !== undefined)
                     : undefined;
+            console.log('--PREDIOS--');
             const response = await axios.post(`${API_URL}/predios`, { lots });
             if (response && response.data) {
                 setMetrics(response.data);

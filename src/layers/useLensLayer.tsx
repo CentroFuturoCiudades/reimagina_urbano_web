@@ -15,8 +15,8 @@ const useLensLayer = ({ coords }: any) => {
 
     const [circleRadius, setBrushingRadius] = useState(400); //radio esta en metros
     const [circleCoords, setCircleCoords] = useState([
-        coords.longitud,
-        coords.latitud,
+        coords.longitude,
+        coords.latitude,
     ]);
     const [isDrag, setIsDrag] = useState(false);
     const [data, setData] = useState<any>();
