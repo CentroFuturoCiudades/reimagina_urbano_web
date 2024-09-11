@@ -77,6 +77,7 @@ const useDrawPoligonLayer = () => {
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const isLoading = useSelector((state: RootState) => state.viewMode.isLoading );
     const accessibilityList: GenericObject = useSelector(
         (state: RootState) => state.accessibilityList.accessibilityList
     );
@@ -89,7 +90,7 @@ const Layers = () => {
     const [queryData, setQueryDataState] = useState<any>({});
     const [queryDataFloors, setQueryDataFloorsState] = useState<any>({});
     const [coordinates, setCoordinates] = useState<any>(undefined);
-    
+
     const { lensData, layers: lensLayers } = useLensLayer({ coords: {latitude: INITIAL_STATE.latitude, longitude: INITIAL_STATE.longitude} });
     const { drawPoligonData, layers: drawPoligonLayers } =
     useDrawPoligonLayer();
@@ -104,6 +105,10 @@ const Layers = () => {
         () => JSON.stringify(drawPoligonData),
         [drawPoligonData]
     );
+
+    useEffect(()=>{
+        setCoordinates( null );
+    }, [isDrag, viewMode]);
 
     useEffect(() => {
         if (viewMode === VIEW_MODES.FULL) {
@@ -156,7 +161,7 @@ const Layers = () => {
         }
     }, [metric, coordinates, accessibilityList]);
 
-    const layers: any[] = [ ...lotsLayers, ...buildingsLayers, ...amenitiesLayers, ...lensLayers, ...drawPoligonLayers, ...accessibilityPointsLayer];
+    const layers: any[] = [  ...[ queryData && !isLoading && lotsLayers ], ...buildingsLayers, ...amenitiesLayers, ...lensLayers, ...drawPoligonLayers, ...accessibilityPointsLayer];
 
     return { layers };
 };

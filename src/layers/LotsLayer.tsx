@@ -9,6 +9,7 @@ const useLotsLayer = ({ coordinates, queryData, metric, viewMode }: any) => {
     const condition = (!coordinates || coordinates.length === 0) && viewMode !== VIEW_MODES.FULL;
 
     useAborterEffect(async (signal: any, isMounted: boolean) => {
+        setPolygons( [] );
         if (condition) return;
         const polygons = await fetchPolygonData(
             {
@@ -23,19 +24,19 @@ const useLotsLayer = ({ coordinates, queryData, metric, viewMode }: any) => {
     useEffect(() => {
         setPolygons(polygons.filter((x: any) => true));
     }, [queryData]);
-    
+
     const getFillColor = useMemo(() => {
         const [quantiles, _] = getQuantiles(queryData, metric)
         return (d: any): RGBAColor => {
             if (!quantiles) return [200, 200, 200];
             const value = queryData[d.properties.ID];
-        
+
             if (value > 0) {
                 const colorString = quantiles(value);
                 const color = d3.color(colorString)?.rgb();
                 return color ? [color.r, color.g, color.b] : [255, 255, 255];
             }
-        
+
             return [200, 200, 200];
         }
     }, [queryData]);
