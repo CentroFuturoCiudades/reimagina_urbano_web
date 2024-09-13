@@ -22,7 +22,7 @@ export const INITIAL_STATE = {
 
 export const getQuantiles = (data: any, metric: string): [any, string[]] => {
     if (!data) return [null, []];
-    
+
     const metricInfo = METRICS_MAPPING[metric] || {};
     const domain = metricInfo.ranges || [
         Math.min(
@@ -43,11 +43,11 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
         ),
         metricInfo.ranges ? domain.length - 1 : 5
     );
-    
+
     const quantiles = metricInfo.ranges ?
         d3.scaleThreshold<number, string>().domain(domain).range([startColor, ...colors]) :
         d3.scaleQuantize<string>().domain(domain).range(colors);
-    
+
     return [quantiles, colors];
 };
 
@@ -61,13 +61,13 @@ export const METRICS_MAPPING: GenericObject = {
     "viviendas_tinaco": { query: "VPH_TINACO * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_pc": { query: "VPH_PC * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con PC", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_auto":{ query: "VPH_AUTOM * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [0, 50, 70, 90, 100], type: "percentage" },
-    "minutes": { 
-        query: "minutes", 
-        title: "Minutos", 
-        ranges: [0, 5, 15, 30, 45, 60], 
+    "minutes": {
+        query: "minutes",
+        title: "Minutos",
+        ranges: [0, 5, 15, 30, 45, 60],
         type: "minutes",
-        startColor: "darkblue",  
-        endColor: "lightblue"  
+        startColor: "darkblue",
+        endColor: "#cbe8f7"
     },
 }
 export const amenitiesOptions = [
