@@ -22,7 +22,9 @@ export const INITIAL_STATE = {
 
 export const getQuantiles = (data: any, metric: string): [any, string[]] => {
     if (!data) return [null, []];
-    const domain = METRICS_MAPPING[metric]?.ranges || [
+
+    const metricInfo = METRICS_MAPPING[metric] || {};
+    const domain = metricInfo.ranges || [
         Math.min(
             ...(Object.values(data) as any).filter(
                 (x: number) => x > 0
@@ -30,16 +32,22 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
         ),
         Math.max(...(Object.values(data) as any)),
     ];
+
+    const startColor = metricInfo.startColor || VIEW_COLORS_RGBA.ACCESIBILIDAD.light;
+    const endColor = metricInfo.endColor || VIEW_COLORS_RGBA.ACCESIBILIDAD.dark;
+
     const colors = d3.quantize(
         d3.interpolateRgb(
-            VIEW_COLORS_RGBA.ACCESIBILIDAD.light,
-            VIEW_COLORS_RGBA.ACCESIBILIDAD.dark
+            startColor,
+            endColor
         ),
-        METRICS_MAPPING[metric]?.ranges ? domain.length - 1 : 5
+        metricInfo.ranges ? domain.length - 1 : 5
     );
-    const quantiles = METRICS_MAPPING[metric]?.ranges ?
-        d3.scaleThreshold<number, string>().domain(domain).range([VIEW_COLORS_RGBA.ACCESIBILIDAD.light, ...colors]) :
+
+    const quantiles = metricInfo.ranges ?
+        d3.scaleThreshold<number, string>().domain(domain).range([startColor, ...colors]) :
         d3.scaleQuantize<string>().domain(domain).range(colors);
+
     return [quantiles, colors];
 };
 
@@ -53,7 +61,14 @@ export const METRICS_MAPPING: GenericObject = {
     "viviendas_tinaco": { query: "VPH_TINACO * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_pc": { query: "VPH_PC * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con PC", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_auto":{ query: "VPH_AUTOM * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [0, 50, 70, 90, 100], type: "percentage" },
-    "minutes": { query: "minutes", title: "Minutos", ranges: [0, 5, 15, 30, 45, 60], type: "minutes" },
+    "minutes": {
+        query: "minutes",
+        title: "Minutos",
+        ranges: [0, 5, 15, 30, 45, 60],
+        type: "minutes",
+        startColor: "darkblue",
+        endColor: "#cbe8f7"
+    },
 }
 export const amenitiesOptions = [
     { value: 'asistencial_social', label: 'Asistencia social', type: 'health' },
@@ -136,27 +151,3 @@ export const ACCESSIBILITY_POINTS_COLORS: GenericObject = {
 }
 
 export const ZOOM_SHOW_DETAILS = 17;
-
-
-export const AMENITIES_MAP: GenericObject =
-{
-    "Asistencia social": { value: 'asistencia_social', type: 'health' },
-    "Laboratorios clínicos": { value: 'laboratorios_clinicos', type: 'health' },
-    "Otros consultorios": { value: 'otros_consultorios', type: 'health' },
-    "Consultorios médicos": { value: 'consultorios_medicos', type: 'health' },
-    "Hospital general": { value: 'hospital_general', type: 'health' },
-    "Hospitales psiquiátricos": { value: 'hospitales_psiquiatricos', type: 'health' },
-    "Hospitales otras especialidades": { value: 'hospitales_otras_especialidades', type: 'health' },
-    "Farmacia": { value: 'farmacia', type: 'health' },
-    "Clubs deportivos y de acondicionamiento físico": { value: 'clubs_deportivos_y_acondicionamiento_fisico', type: 'health' },
-    "Cine": { value: 'cine', type: 'recreation' },
-    "Otros Servicios recreativos": { value: 'otros_servicios_recreativos', type: 'recreation' },
-    "Parques recreativos": { value: 'parques_recreativos', type: 'recreation' },
-    "Museos": { value: 'museos', type: 'recreation' },
-    "Biblioteca": { value: 'biblioteca', type: 'recreation' },
-    "Guarderia": { value: 'guarderia', type: 'education' },
-    "Educación Preescolar": { value: 'educacion_preescolar', type: 'education' },
-    "Educación Primaria": { value: 'educacion_primaria', type: 'education' },
-    "Educación Secundaria": { value: 'educacion_secundaria', type: 'education' },
-    "Educación Media Superior": { value: 'educacion_media_superior', type: 'education' }
-  }
