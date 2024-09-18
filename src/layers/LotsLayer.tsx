@@ -3,10 +3,16 @@ import { fetchPolygonData, useAborterEffect } from "../utils";
 import { getQuantiles, VIEW_MODES } from "../constants";
 import { useEffect, useMemo, useState } from "react";
 import * as d3 from "d3";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/store";
 
 const useLotsLayer = ({ coordinates, queryData, metric, viewMode }: any) => {
     const [polygons, setPolygons] = useState<any>([]);
     const condition = (!coordinates || coordinates.length === 0) && viewMode !== VIEW_MODES.FULL;
+    const legendLimits = useSelector(
+        (state: RootState) => state.viewMode.legendLimits
+    );
+
 
     useAborterEffect(async (signal: any, isMounted: boolean) => {
         setPolygons( [] );
@@ -23,13 +29,18 @@ const useLotsLayer = ({ coordinates, queryData, metric, viewMode }: any) => {
 
     useEffect(() => {
         setPolygons(polygons.filter((x: any) => true));
-    }, [queryData]);
+    }, [queryData, legendLimits ]);
+
 
     const getFillColor = useMemo(() => {
         const [quantiles, _] = getQuantiles(queryData, metric)
         return (d: any): RGBAColor => {
             if (!quantiles) return [200, 200, 200];
             const value = queryData[d.properties.ID];
+
+            if( legendLimits != null && ( value < legendLimits.min || value > legendLimits.max ) ) {
+                return [200, 200, 200];
+            }
 
             if (value > 0) {
                 const colorString = quantiles(value);
@@ -39,7 +50,7 @@ const useLotsLayer = ({ coordinates, queryData, metric, viewMode }: any) => {
 
             return [200, 200, 200];
         }
-    }, [queryData]);
+    }, [queryData, legendLimits]);
 
     if (condition) return [];
 

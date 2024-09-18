@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { PureComponent, ReactElement, useState } from "react";
 import { SelectAutoComplete } from "../../components";
 import {
     Accordion,
@@ -21,6 +21,7 @@ import {
     CartesianGrid,
     Legend,
     ResponsiveContainer,
+    Treemap,
     XAxis,
     YAxis,
 } from "recharts";
@@ -28,6 +29,44 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { ACCESSIBILITY_POINTS_COLORS, amenitiesOptions } from "../../constants";
 import { mappingCategories } from "../../components/SelectAutoComplete/SelectAutoComplete";
+import { center } from "@turf/turf";
+
+
+class CustomizedContent extends PureComponent {
+    render() {
+        //@ts-ignore
+      const { root, depth, x, y, width, height, index, payload, colors, rank, name, size } = this.props;
+
+      let color = ACCESSIBILITY_POINTS_COLORS[ name ];
+
+      return (
+        <g>
+          <rect
+            x={x}
+            y={y}
+            width={width}
+            height={height}
+            style={{
+              fill: depth < 2 ? color : '#ffffff00',
+              stroke: '#fff',
+              strokeWidth: 2 / (depth + 1e-10),
+              strokeOpacity: 1 / (depth + 1e-10),
+            }}
+          />
+            {depth === 1 ? (
+                <text x={x + width / 2} y={y + height / 2 + 7} textAnchor="middle" fill="#fff" fontSize={14}>
+                    { mappingCategories[ name ] }
+                </text>
+            ) : null}
+            {depth === 2 ? (
+                <text x={x + 4} y={y + 18} fill="#fff" fontSize={16} fillOpacity={0.9}>
+                    {size}
+                </text>
+            ) : null}
+        </g>
+      );
+    }
+  }
 
 const Accesibilidad = ({ metrics }: any) => {
 
@@ -36,37 +75,74 @@ const Accesibilidad = ({ metrics }: any) => {
 
     let graphBars: ReactElement[] = []
     let accessibilityData: any = { name: "" };
+    let accessibilityTree: any = {};
+    let accessibilityTreeArray: any[] = [];
     let accessibilityPointsCount = 0;
+
     accessibilityPoints.forEach( ( item: any )=> {
 
-        let category = "";
+        //Get the parent category for the item
+        let parentCategory: string = "";
 
         amenitiesOptions.forEach( amenityOption => {
             if( item.amenity ==  amenityOption.label ){
-                category = amenityOption.type
+                parentCategory = amenityOption.type
             }
         } )
 
-        if( !accessibilityData[ category ] ){
-            accessibilityData[ category ] = 0;
+        if( !accessibilityTree[parentCategory] ){
+            accessibilityTree[ parentCategory ] = {}
+        }
+
+        if( !accessibilityTree[parentCategory][ item.amenity ] ){
+            accessibilityTree[parentCategory][ item.amenity ] = 0;
+        }
+
+        accessibilityTree[parentCategory][ item.amenity ] += 1;
+
+        if( !accessibilityData[ parentCategory ] ){
+            accessibilityData[ parentCategory ] = 0;
 
 
-            let color = ACCESSIBILITY_POINTS_COLORS[ category ];
+            let color = ACCESSIBILITY_POINTS_COLORS[ parentCategory ];
 
             graphBars.push(
                 <Bar
-                    dataKey={ category }
-                    name={ mappingCategories[ category ] }
+                    dataKey={ parentCategory }
+                    name={ mappingCategories[ parentCategory ] }
                     fill={ color || "gray" }
                 >
                 </Bar>
             )
         }
 
-        accessibilityData[ category ] ++;
+        accessibilityData[ parentCategory ] ++;
 
         accessibilityPointsCount++;
     })
+
+    //Convert accesibility Tree Dictionary to Data Array
+    for (const [key, value] of Object.entries( accessibilityTree )) {
+
+        const childrenArray = []
+
+        for (const [ amenity , count] of Object.entries( value as any )) {
+            childrenArray.push( {
+                name: amenity,
+                size: count
+            })
+        }
+
+        accessibilityTreeArray.push(
+            {
+                name: key,
+                children: childrenArray
+            }
+        )
+    }
+
+    const COLORS = ['#8889DD', '#9597E4', '#8DC77B', '#A5D297', '#E2CF45', '#F8C12D'];
+
 
     return (
         <div className="accesibilidad tab__main">
@@ -129,10 +205,25 @@ const Accesibilidad = ({ metrics }: any) => {
                                 </Box>
                                 <Box className="stat-value full">
                                     <ResponsiveContainer
-                                        width={"90%"}
+                                        width={"100%"}
                                         height={ 200 }
+                                        style={{ margin: "1rem" }}
                                     >
-                                        <BarChart
+                                        {
+                                            accessibilityTreeArray.length?
+                                                <Treemap
+                                                    data={accessibilityTreeArray}
+                                                    dataKey={"size"}
+                                                    animationDuration={ 100 }
+                                                    content={ <CustomizedContent></CustomizedContent>}
+                                                >
+                                                   <Legend></Legend>
+                                                </Treemap>
+                                            :
+                                            <div>No hay datos en el área</div>
+                                        }
+
+                                        {/* <BarChart
                                             layout="vertical"
                                             data={[ accessibilityData ]}
                                             barSize={16}
@@ -149,7 +240,7 @@ const Accesibilidad = ({ metrics }: any) => {
 
                                             { graphBars }
 
-                                        </BarChart>
+                                        </BarChart> */}
                                     </ResponsiveContainer>
                                 </Box>
                             </Box>

@@ -1,24 +1,42 @@
-.legend { 
-    position: absolute; 
-    bottom: 1dvh; 
-    right: 1dvw; 
+.legend {
+    position: absolute;
+    bottom: 1dvh;
+    right: 1dvw;
     background: white;
     padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 0 0 0.5rem rgba(0,0,0,0.3);
     width: fit-content;
 
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
     &__title {
         width: min-content;
     }
 
     &__label {
-        display: flex; 
+        display: flex;
         align-items: center;
+
+        border: 1px solid gray;
+        padding: 0 0.5rem;
+        border-radius: 0.5rem;
+
+        &--active{
+            background-color: #a4bcff !important;
+            color: white;
+        }
+
+        &:hover {
+            background-color: lightgray;
+            cursor: pointer;
+        }
     }
 
     &__icon {
-        width: 1rem; 
+        width: 1rem;
         height: 1rem;
         margin-right: 0.5rem;
     }
