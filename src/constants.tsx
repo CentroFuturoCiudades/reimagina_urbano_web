@@ -56,6 +56,7 @@ export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
 export const METRICS_MAPPING: GenericObject = {
     "poblacion": { query: "POBTOT", title: "Población Total", ranges: [0, 100, 200, 300, 400, 800], type: "number" },
     "viviendas_habitadas": { query: "VIVPAR_HAB", title: "Viviendas Particulares Habitadas", ranges: [0, 25, 50, 100, 150, 200], type: "number" },
+    "viviendas_deshabitadas": { query: "VIVPAR_DES * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 25, 50, 75, 100], type: "percentage" }, // rango de 0-89
     "grado_escuela": { query: "GRAPROES", title: "Grado Promedio de Escolaridad", ranges: [1, 6, 9, 12, 16, 18], type: "number" },
     "indice_bienestar": { query: "wellness_index", title: "Índice de Bienestar", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_tinaco": { query: "VPH_TINACO * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 25, 50, 75, 100], type: "percentage" },

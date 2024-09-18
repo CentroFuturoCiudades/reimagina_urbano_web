@@ -11,6 +11,7 @@ import {
     CircularProgressLabel,
     VStack,
 } from "@chakra-ui/react";
+
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
@@ -19,6 +20,7 @@ import { RootState } from "../../app/store";
 import PopulationPyramid from "../../components/PopulationPyramid";
 import { mappingGradoEscolaridad, METRICS_MAPPING, VIEW_COLORS_RGBA } from "../../constants";
 import { GenericObject } from "../../types";
+import { IoCaretUp, IoCaretDown } from "react-icons/io5";
 
 
 const ComparativeMetric = ({name, metric, children}: {name?: string, metric?: string, children: React.ReactNode[]}) => {
@@ -116,15 +118,42 @@ const GraphPercent = ({ value, base }: { value: number, base: number }) => {
             value={
                 percent
             }
-            color={ VIEW_COLORS_RGBA.VISOR.primary}
+            color={ VIEW_COLORS_RGBA.VISOR.primary }
         >
-            <CircularProgressLabel>
-                { percent.toFixed(0) }
-                %
+            <CircularProgressLabel fontSize="16px" display="flex" alignItems="center"  justifyContent="center" textAlign="center">
+                {percent.toFixed(0)}%
             </CircularProgressLabel>
         </CircularProgress>
-    )
+    );
 }
+
+const GraphPercentWIndicator = ({ value, base, compareWith }: { value: number, base: number, compareWith: number }) => {
+    const percent = (value / base) * 100;
+  
+    const isHigher = percent > compareWith;
+    const ArrowIcon = isHigher ? IoCaretUp : IoCaretDown;
+    const indicatorColor = isHigher ? "green" : "red";
+  
+    return (
+      <CircularProgress
+        size="100px"
+        value={percent}
+        color={VIEW_COLORS_RGBA.VISOR.primary}
+      >
+        <CircularProgressLabel
+          fontSize="16px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+        >
+          {percent.toFixed(0)}% {compareWith !== undefined && (
+        <ArrowIcon style={{ marginLeft: "4px", color: indicatorColor }} />
+        )}
+        </CircularProgressLabel>
+      </CircularProgress>
+    );
+  };
 
 const Visor = ({ metrics }: { metrics: any }) => {
     const dispatch = useDispatch();
@@ -196,12 +225,25 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 <PopulationPyramid data={ getPyramidData( globalData ) } />
                             </ComparativeMetric>
                             <ComparativeMetric metric="grado_escuela">
+                            <Box display="flex" alignItems="center">
                                 <Text fontSize="sm">
-                                    { mappingGradoEscolaridad[metrics?.GRAPROES?.toFixed(0)] || "" } ({ metrics?.GRAPROES?.toFixed(0) })
+                                {mappingGradoEscolaridad[metrics?.GRAPROES?.toFixed(0)] || ""} 
+                                ({metrics?.GRAPROES?.toFixed(0)})
                                 </Text>
-                                <Text fontSize="sm">
-                                    { mappingGradoEscolaridad[globalData?.GRAPROES?.toFixed(0)] || "" } ({ globalData?.GRAPROES?.toFixed(0) })
-                                </Text>
+                                {metrics?.GRAPROES !== undefined && globalData?.GRAPROES !== undefined && (
+                                <>
+                                    {metrics?.GRAPROES > globalData?.GRAPROES ? (
+                                    <IoCaretUp style={{ marginLeft: "4px", color: "green" }} />
+                                    ) : metrics?.GRAPROES < globalData?.GRAPROES ? (
+                                    <IoCaretDown style={{ marginLeft: "4px", color: "red" }} />
+                                    ) : null}
+                                </>
+                                )}
+                            </Box>
+
+                            <Text fontSize="sm">
+                                { mappingGradoEscolaridad[globalData?.GRAPROES?.toFixed(0)] || "" } ({ globalData?.GRAPROES?.toFixed(0) })
+                            </Text>
                             </ComparativeMetric>
                             <ComparativeMetric metric="viviendas_habitadas">
                                 <Text>
@@ -214,6 +256,17 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                         maximumFractionDigits: 0,
                                     }) || "" }
                                 </Text>
+                            </ComparativeMetric>
+                            <ComparativeMetric metric="viviendas_deshabitadas">
+                            <GraphPercentWIndicator
+                                value={metrics?.VIVPAR_DES || 0} 
+                                base={metrics?.VIVPAR_HAB || 0} 
+                                compareWith={(globalData?.VIVPAR_DES / globalData?.VIVPAR_HAB) * 100 || 0} 
+                            />
+                            <GraphPercent 
+                                value={globalData?.VIVPAR_DES || 0} 
+                                base={globalData?.VIVPAR_HAB || 0} 
+                            />
                             </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>
@@ -235,20 +288,51 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 </Box>
                             </Box>
                             <ComparativeMetric metric="indice_bienestar">
-                                <GraphPercent value={ metrics?.wellness_index || 0 } base={ 100 } />
-                                <GraphPercent value={ globalData?.wellness_index || 0 } base={ 100 } />
+                                <GraphPercentWIndicator 
+                                    value={metrics?.wellness_index || 0} 
+                                    base={100} 
+                                    compareWith={globalData?.wellness_index || 0} 
+                                />
+                                <GraphPercent 
+                                    value={globalData?.wellness_index || 0} 
+                                    base={100} 
+                                />
                             </ComparativeMetric>
+
                             <ComparativeMetric metric="viviendas_auto">
-                                <GraphPercent value={ metrics?.VPH_AUTOM || 0 } base={ metrics?.VIVPAR_HAB || 0 } />
-                                <GraphPercent value={ globalData?.VPH_AUTOM || 0 } base={ globalData?.VIVPAR_HAB || 0 } />
+                                <GraphPercentWIndicator 
+                                    value={metrics?.VPH_AUTOM || 0} 
+                                    base={metrics?.VIVPAR_HAB || 0} 
+                                    compareWith={(globalData?.VPH_AUTOM / globalData?.VIVPAR_HAB) * 100 || 0} 
+                                />
+                                <GraphPercent 
+                                    value={globalData?.VPH_AUTOM || 0} 
+                                    base={globalData?.VIVPAR_HAB || 0} 
+                                />
                             </ComparativeMetric>
+
                             <ComparativeMetric metric="viviendas_pc">
-                                <GraphPercent value={ metrics?.VPH_PC || 0 } base={ metrics?.VIVPAR_HAB || 0 } />
-                                <GraphPercent value={ globalData?.VPH_PC || 0 } base={ globalData?.VIVPAR_HAB || 0 } />
+                                <GraphPercentWIndicator 
+                                    value={metrics?.VPH_PC || 0} 
+                                    base={metrics?.VIVPAR_HAB || 0} 
+                                    compareWith={(globalData?.VPH_PC / globalData?.VIVPAR_HAB) * 100 || 0} 
+                                />
+                                <GraphPercent 
+                                    value={globalData?.VPH_PC || 0} 
+                                    base={globalData?.VIVPAR_HAB || 0} 
+                                />
                             </ComparativeMetric>
+
                             <ComparativeMetric metric="viviendas_tinaco">
-                                <GraphPercent value={ metrics?.VPH_TINACO || 0 } base={ metrics?.VIVPAR_HAB || 0 } />
-                                <GraphPercent value={ globalData?.VPH_TINACO || 0 } base={ globalData?.VIVPAR_HAB || 0 } />
+                                <GraphPercentWIndicator 
+                                    value={metrics?.VPH_TINACO || 0} 
+                                    base={metrics?.VIVPAR_HAB || 0} 
+                                    compareWith={(globalData?.VPH_TINACO / globalData?.VIVPAR_HAB) * 100 || 0} 
+                                />
+                                <GraphPercent 
+                                    value={globalData?.VPH_TINACO || 0} 
+                                    base={globalData?.VIVPAR_HAB || 0} 
+                                />
                             </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>
