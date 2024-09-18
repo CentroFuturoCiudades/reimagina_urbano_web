@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
 import "./MainSidebar.scss";
-import { API_URL, TABS, VIEW_MODES } from "../../constants";
+import { TABS, VIEW_MODES } from "../../constants";
 import axios from "axios";
 import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
@@ -31,8 +31,9 @@ const MainSidebar = () => {
                     ? selectedLots.filter((x) => x !== undefined)
                     : undefined;
             console.log('--PREDIOS--');
-            const response = await axios.post(`${API_URL}/predios`, { lots });
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/predios`, { lots });
             if (response && response.data) {
+                console.log(response.data);
                 setMetrics(response.data);
             }
         };

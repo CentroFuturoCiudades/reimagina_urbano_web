@@ -3,7 +3,7 @@ import { DeckGL } from "@deck.gl/react";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { Map } from "react-map-gl";
 import { useFetchGeo } from "../../utils";
-import { API_URL, INITIAL_STATE } from "../../constants";
+import { INITIAL_STATE } from "../../constants";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
@@ -22,10 +22,10 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     const isLoading = useSelector((state: RootState) => state.viewMode.isLoading );
 
     const { data: poligono } = useFetchGeo(
-        `${API_URL}/polygon/bounds`
+        `${process.env.REACT_APP_API_URL}/polygon/bounds`
     );
     const { data: colonias } = useFetchGeo(
-        `${API_URL}/polygon/colonias`
+        `${process.env.REACT_APP_API_URL}/polygon/colonias`
     );
 
     const { layers } = Layers();

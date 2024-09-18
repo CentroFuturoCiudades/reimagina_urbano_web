@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { FlatGeobufLoader } from '@loaders.gl/flatgeobuf';
 import { load } from '@loaders.gl/core';
 import { geojson } from 'flatgeobuf';
-import { API_URL, METRICS_MAPPING } from "./constants";
+import { METRICS_MAPPING } from "./constants";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setQueryData } from "./features/queryData/queryDataSlice";
@@ -240,7 +240,7 @@ export const fetchPolygonData = async ({
     layer,
 }, signal) => {
     console.log('--POLYGON--', layer);
-    const url = `${API_URL}/polygon`;
+    const url = `${process.env.REACT_APP_API_URL}/polygon`;
     try {
         const response = await fetch(url, {
             method: "POST",

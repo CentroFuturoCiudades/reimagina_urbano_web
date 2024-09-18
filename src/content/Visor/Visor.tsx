@@ -60,51 +60,51 @@ const getPyramidData = (metrics: any) => {
         ? [
               {
                   age: "0-2",
-                  male: metrics.P_0A2_M,
-                  female: metrics.P_0A2_F,
-                  total: metrics.P_0A2_M + metrics.P_0A2_F,
+                  male: metrics.p_0a2_m,
+                  female: metrics.p_0a2_f,
+                  total: metrics.p_0a2_m + metrics.p_0a2_f,
               },
               {
                   age: "3-5",
-                  male: metrics.P_3A5_M,
-                  female: metrics.P_3A5_F,
-                  total: metrics.P_3A5_M + metrics.P_3A5_F,
+                  male: metrics.p_3a5_m,
+                  female: metrics.p_3a5_f,
+                  total: metrics.p_3a5_m + metrics.p_3a5_f,
               },
               {
                   age: "6-11",
-                  male: metrics.P_6A11_M,
-                  female: metrics.P_6A11_F,
-                  total: metrics.P_6A11_M + metrics.P_6A11_F,
+                  male: metrics.p_6a11_m,
+                  female: metrics.p_6a11_f,
+                  total: metrics.p_6a11_m + metrics.p_6a11_f,
               },
               {
                   age: "12-14",
-                  male: metrics.P_12A14_M,
-                  female: metrics.P_12A14_F,
-                  total: metrics.P_12A14_M + metrics.P_12A14_F,
+                  male: metrics.p_12a14_m,
+                  female: metrics.p_12a14_f,
+                  total: metrics.p_12a14_m + metrics.p_12a14_f,
               },
               {
                   age: "15-17",
-                  male: metrics.P_15A17_M,
-                  female: metrics.P_15A17_F,
-                  total: metrics.P_15A17_M + metrics.P_15A17_F,
+                  male: metrics.p_15a17_m,
+                  female: metrics.p_15a17_f,
+                  total: metrics.p_15a17_m + metrics.p_15a17_f,
               },
               {
                   age: "18-24",
-                  male: metrics.P_18A24_M,
-                  female: metrics.P_18A24_F,
-                  total: metrics.P_18A24_M + metrics.P_18A24_F,
+                  male: metrics.p_18a24_m,
+                  female: metrics.p_18a24_f,
+                  total: metrics.p_18a24_m + metrics.p_18a24_f,
               },
               {
                   age: "25-59",
-                  male: metrics.P_25A59_M,
-                  female: metrics.P_25A59_F,
-                  total: metrics.P_25A59_M + metrics.P_25A59_F,
+                  male: metrics.p_25a59_m,
+                  female: metrics.p_25a59_f,
+                  total: metrics.p_25a59_M + metrics.p_25a59_f,
               },
               {
                   age: "60+",
-                  male: metrics.P_60YMAS_M,
-                  female: metrics.P_60YMAS_F,
-                  total: metrics.P_60YMAS_M + metrics.P_60YMAS_F,
+                  male: metrics.p_60ymas_m,
+                  female: metrics.p_60ymas_f,
+                  total: metrics.p_60ymas_m + metrics.p_60ymas_f,
               },
           ]
         : [];
@@ -158,22 +158,21 @@ const GraphPercentWIndicator = ({ value, base, compareWith }: { value: number, b
 const Visor = ({ metrics }: { metrics: any }) => {
     const dispatch = useDispatch();
     const globalData: GenericObject = {
-        POBTOT: 1003530,
-        GRAPROES: 11.06,
-        VIVPAR_HAB: 270235,
-        VIVPAR_DES: 46489.0,
-        "P_0A2_F": 22745.0,
-        "P_0A2_M": 23760.0,
-        "P_3A5_F": 24415.0, "P_3A5_M": 25097.0,
-        "P_6A11_F": 49274.0, "P_6A11_M": 51630.0,
-        "P_12A14_F": 25139.0, "P_12A14_M": 25983.0,
-        "P_15A17_F": 25163.0, "P_15A17_M": 25683.0,
-        "P_18A24_F": 62928.0, "P_18A24_M": 61763.0,
-        "P_25A59_F": 327737.0 , "P_25A59_M": 314356.0,
-        "P_60YMAS_F": 60860.0, "P_60YMAS_M": 50853.0,
-        VPH_TINACO: 128589,
-        VPH_PC: 131189,
-        VPH_AUTOM: 166497
+        pobtot: 1003530,
+        graproes: 11.06,
+        vivpar_hab: 270235,
+        vivpar_des: 46489.0,
+        "p_0a2_f": 22745.0, "p_0a2_m": 23760.0,
+        "p_3a5_f": 24415.0, "p_3a5_m": 25097.0,
+        "p_6a11_f": 49274.0, "p_6a11_m": 51630.0,
+        "p_12a14_f": 25139.0, "p_12a14_m": 25983.0,
+        "p_15a17_f": 25163.0, "p_15a17_m": 25683.0,
+        "p_18a24_f": 62928.0, "p_18a24_m": 61763.0,
+        "p_25a59_f": 327737.0 , "p_25a59_m": 314356.0,
+        "p_60ymas_f": 60860.0, "p_60ymas_m": 50853.0,
+        vph_tinaco: 128589,
+        vph_pc: 131189,
+        vph_autom: 166497
     }
     const [pyramidData, setPyramidData] = useState<any[]>([]);
 
@@ -208,13 +207,13 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             </Box>
                             <ComparativeMetric metric="poblacion">
                                 <Text>
-                                    { metrics?.POBTOT?.toLocaleString("es-MX", {
+                                    { metrics?.pobtot?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
                                     }) || "" }
                                     hab
                                 </Text>
                                 <Text>
-                                    { globalData?.POBTOT?.toLocaleString("es-MX", {
+                                    { globalData?.pobtot?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
                                     })}
                                     hab
@@ -227,14 +226,14 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             <ComparativeMetric metric="grado_escuela">
                             <Box display="flex" alignItems="center">
                                 <Text fontSize="sm">
-                                {mappingGradoEscolaridad[metrics?.GRAPROES?.toFixed(0)] || ""} 
-                                ({metrics?.GRAPROES?.toFixed(0)})
+                                {mappingGradoEscolaridad[metrics?.graproes?.toFixed(0)] || ""} 
+                                ({metrics?.graproes?.toFixed(0)})
                                 </Text>
-                                {metrics?.GRAPROES !== undefined && globalData?.GRAPROES !== undefined && (
+                                {metrics?.graproes !== undefined && globalData?.graproes !== undefined && (
                                 <>
-                                    {metrics?.GRAPROES > globalData?.GRAPROES ? (
+                                    {metrics?.graproes > globalData?.graproes ? (
                                     <IoCaretUp style={{ marginLeft: "4px", color: "green" }} />
-                                    ) : metrics?.GRAPROES < globalData?.GRAPROES ? (
+                                    ) : metrics?.graproes < globalData?.graproes ? (
                                     <IoCaretDown style={{ marginLeft: "4px", color: "red" }} />
                                     ) : null}
                                 </>
@@ -242,30 +241,30 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             </Box>
 
                             <Text fontSize="sm">
-                                { mappingGradoEscolaridad[globalData?.GRAPROES?.toFixed(0)] || "" } ({ globalData?.GRAPROES?.toFixed(0) })
+                                { mappingGradoEscolaridad[globalData?.graproes?.toFixed(0)] || "" } ({ globalData?.graproes?.toFixed(0) })
                             </Text>
                             </ComparativeMetric>
                             <ComparativeMetric metric="viviendas_habitadas">
                                 <Text>
-                                    { metrics?.VIVPAR_HAB?.toLocaleString("es-MX", {
+                                    { metrics?.vivpar_hab?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
                                     }) || "" }
                                 </Text>
                                 <Text>
-                                    { globalData?.VIVPAR_HAB?.toLocaleString("es-MX", {
+                                    { globalData?.vivpar_hab?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
                                     }) || "" }
                                 </Text>
                             </ComparativeMetric>
                             <ComparativeMetric metric="viviendas_deshabitadas">
                             <GraphPercentWIndicator
-                                value={metrics?.VIVPAR_DES || 0} 
-                                base={metrics?.VIVPAR_HAB || 0} 
-                                compareWith={(globalData?.VIVPAR_DES / globalData?.VIVPAR_HAB) * 100 || 0} 
+                                value={metrics?.vivpar_des || 0} 
+                                base={metrics?.vivpar_hab || 0} 
+                                compareWith={(globalData?.vivpar_des / globalData?.vivpar_hab) * 100 || 0} 
                             />
                             <GraphPercent 
-                                value={globalData?.VIVPAR_DES || 0} 
-                                base={globalData?.VIVPAR_HAB || 0} 
+                                value={globalData?.vivpar_des || 0} 
+                                base={globalData?.vivpar_hab || 0} 
                             />
                             </ComparativeMetric>
                         </VStack>
@@ -289,49 +288,49 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             </Box>
                             <ComparativeMetric metric="indice_bienestar">
                                 <GraphPercentWIndicator 
-                                    value={metrics?.wellness_index || 0} 
+                                    value={metrics?.puntuaje_hogar_digno || 0} 
                                     base={100} 
-                                    compareWith={globalData?.wellness_index || 0} 
+                                    compareWith={globalData?.puntuaje_hogar_digno || 0} 
                                 />
                                 <GraphPercent 
-                                    value={globalData?.wellness_index || 0} 
+                                    value={globalData?.puntuaje_hogar_digno || 0} 
                                     base={100} 
                                 />
                             </ComparativeMetric>
 
                             <ComparativeMetric metric="viviendas_auto">
                                 <GraphPercentWIndicator 
-                                    value={metrics?.VPH_AUTOM || 0} 
-                                    base={metrics?.VIVPAR_HAB || 0} 
-                                    compareWith={(globalData?.VPH_AUTOM / globalData?.VIVPAR_HAB) * 100 || 0} 
+                                    value={metrics?.vph_autom || 0} 
+                                    base={metrics?.vivpar_hab || 0} 
+                                    compareWith={(globalData?.vph_autom / globalData?.vivpar_hab) * 100 || 0} 
                                 />
                                 <GraphPercent 
-                                    value={globalData?.VPH_AUTOM || 0} 
-                                    base={globalData?.VIVPAR_HAB || 0} 
+                                    value={globalData?.vph_autom || 0} 
+                                    base={globalData?.vivpar_hab || 0} 
                                 />
                             </ComparativeMetric>
 
                             <ComparativeMetric metric="viviendas_pc">
                                 <GraphPercentWIndicator 
-                                    value={metrics?.VPH_PC || 0} 
-                                    base={metrics?.VIVPAR_HAB || 0} 
-                                    compareWith={(globalData?.VPH_PC / globalData?.VIVPAR_HAB) * 100 || 0} 
+                                    value={metrics?.vph_pc || 0} 
+                                    base={metrics?.vivpar_hab || 0} 
+                                    compareWith={(globalData?.vph_pc / globalData?.vivpar_hab) * 100 || 0} 
                                 />
                                 <GraphPercent 
-                                    value={globalData?.VPH_PC || 0} 
-                                    base={globalData?.VIVPAR_HAB || 0} 
+                                    value={globalData?.vph_pc || 0} 
+                                    base={globalData?.vivpar_hab || 0} 
                                 />
                             </ComparativeMetric>
 
                             <ComparativeMetric metric="viviendas_tinaco">
                                 <GraphPercentWIndicator 
-                                    value={metrics?.VPH_TINACO || 0} 
-                                    base={metrics?.VIVPAR_HAB || 0} 
-                                    compareWith={(globalData?.VPH_TINACO / globalData?.VIVPAR_HAB) * 100 || 0} 
+                                    value={metrics?.vph_tinaco || 0} 
+                                    base={metrics?.vivpar_hab || 0} 
+                                    compareWith={(globalData?.vph_tinaco / globalData?.vivpar_hab) * 100 || 0} 
                                 />
                                 <GraphPercent 
-                                    value={globalData?.VPH_TINACO || 0} 
-                                    base={globalData?.VIVPAR_HAB || 0} 
+                                    value={globalData?.vph_tinaco || 0} 
+                                    base={globalData?.vivpar_hab || 0} 
                                 />
                             </ComparativeMetric>
                         </VStack>

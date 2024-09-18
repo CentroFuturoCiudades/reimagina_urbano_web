@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { API_URL, getQuantiles, INITIAL_STATE, METRICS_MAPPING, POLYGON_MODES, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
+import { getQuantiles, INITIAL_STATE, METRICS_MAPPING, POLYGON_MODES, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
 import { RGBAColor, TextLayer } from "deck.gl";
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
@@ -128,7 +128,7 @@ const Layers = () => {
         if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL) return;
         console.log('--QUERY--')
         dispatch(setIsLoading(true));
-        const response = await axios.post(`${API_URL}/query`, {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/query`, {
             metric: METRICS_MAPPING[metric]?.query || metric,
             accessibility_info: accessibilityList.map((x: any) => ({
                 name: x.label,

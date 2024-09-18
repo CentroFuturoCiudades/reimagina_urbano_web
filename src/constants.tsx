@@ -2,7 +2,6 @@ import { GenericObject } from "./types";
 import { generateGradientColors } from "./utils";
 import * as d3 from "d3";
 
-export const API_URL = "http://127.0.0.1:8000";
 export const startColor = "#bdddff";
 export const endColor = "#1A57FF";
 export const AMOUNT = 8;
@@ -54,14 +53,14 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
 export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
 
 export const METRICS_MAPPING: GenericObject = {
-    "poblacion": { query: "POBTOT", title: "Población Total", ranges: [0, 100, 200, 300, 400, 800], type: "number" },
-    "viviendas_habitadas": { query: "VIVPAR_HAB", title: "Viviendas Particulares Habitadas", ranges: [0, 25, 50, 100, 150, 200], type: "number" },
+    "poblacion": { query: "pobtot", title: "Población Total", ranges: [0, 100, 200, 300, 400, 800], type: "number" },
+    "viviendas_habitadas": { query: "vivpar_hab", title: "Viviendas Particulares Habitadas", ranges: [0, 25, 50, 100, 150, 200], type: "number" },
     "viviendas_deshabitadas": { query: "VIVPAR_DES * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 25, 50, 75, 100], type: "percentage" }, // rango de 0-89
-    "grado_escuela": { query: "GRAPROES", title: "Grado Promedio de Escolaridad", ranges: [1, 6, 9, 12, 16, 18], type: "number" },
-    "indice_bienestar": { query: "wellness_index", title: "Índice de Bienestar", ranges: [0, 25, 50, 75, 100], type: "percentage" },
-    "viviendas_tinaco": { query: "VPH_TINACO * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 25, 50, 75, 100], type: "percentage" },
-    "viviendas_pc": { query: "VPH_PC * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con PC", ranges: [0, 25, 50, 75, 100], type: "percentage" },
-    "viviendas_auto":{ query: "VPH_AUTOM * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [0, 50, 70, 90, 100], type: "percentage" },
+    "grado_escuela": { query: "graproes", title: "Grado Promedio de Escolaridad", ranges: [1, 6, 9, 12, 16, 18], type: "number" },
+    "indice_bienestar": { query: "puntuaje_hogar_digno * 100", title: "Índice de Bienestar", ranges: [0, 25, 50, 75, 100], type: "percentage" },
+    "viviendas_tinaco": { query: "vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 25, 50, 75, 100], type: "percentage" },
+    "viviendas_pc": { query: "vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100", title: "Porcentaje de Viviendas con PC", ranges: [0, 25, 50, 75, 100], type: "percentage" },
+    "viviendas_auto":{ query: "vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [0, 50, 70, 90, 100], type: "percentage" },
     "minutes": {
         query: "minutes",
         title: "Minutos",
@@ -69,7 +68,7 @@ export const METRICS_MAPPING: GenericObject = {
         type: "minutes",
         startColor: "darkblue",
         endColor: "#cbe8f7"
-    },
+    }
 }
 export const amenitiesOptions = [
     { value: 'asistencial_social', label: 'Asistencia social', type: 'health' },
