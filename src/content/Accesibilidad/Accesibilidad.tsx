@@ -160,11 +160,13 @@ const Accesibilidad = ({ metrics }: any) => {
         )
     }
 
-    const COLORS = ['#8889DD', '#9597E4', '#8DC77B', '#A5D297', '#E2CF45', '#F8C12D'];
-
     const renderLegend = ( _: any ) => {
 
         const items = Object.keys( accessibilityTree );
+
+        items.forEach( item  => {
+            console.log( ACCESSIBILITY_POINTS_COLORS[item])
+        } )
 
         return (
           <ul>

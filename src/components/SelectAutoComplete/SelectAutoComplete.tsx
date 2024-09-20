@@ -20,6 +20,7 @@ export const mappingCategories: any = {
   health: 'Salud',
   recreation: 'Recreación',
   education: 'Educación',
+  park: "Parques"
 };
 
 const SelectAutoComplete = () => {
