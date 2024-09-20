@@ -88,7 +88,7 @@ export const amenitiesOptions = [
     { value: 'guarderia', label: 'Guarderia', type: 'education' },
     { value: 'educacion_preescolar', label: 'Educación preescolar', type: 'education' },
     { value: 'educacion_primaria', label: 'Educación primaria', type: 'education' },
-    { value: 'educacion_secundaria', label: 'Educación pecundaria', type: 'education' },
+    { value: 'educacion_secundaria', label: 'Educación secundaria', type: 'education' },
     { value: 'educacion_media_superior', label: 'Educación media superior', type: 'education' },
 ];
 export const mappingGradoEscolaridad: GenericObject = {
