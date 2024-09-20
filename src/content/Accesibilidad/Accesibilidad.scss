@@ -8,3 +8,22 @@
         background-color: var(--accesibilidad-primary-opacity);
     }
 }
+
+.treemapContainer {
+
+    .recharts-legend-wrapper {
+        position: relative !important;
+
+        ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            list-style: none;
+
+            li {
+                min-width: 50%;
+                text-align: center;
+            }
+        }
+    }
+}

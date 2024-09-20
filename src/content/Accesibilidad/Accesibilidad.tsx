@@ -10,6 +10,7 @@ import {
     Text,
     VStack,
     Icon,
+    Tooltip,
 } from "@chakra-ui/react";
 import { TbAngle } from "react-icons/tb";
 import { FaWalking } from "react-icons/fa";
@@ -40,30 +41,39 @@ class CustomizedContent extends PureComponent {
       let color = ACCESSIBILITY_POINTS_COLORS[ name ];
 
       return (
-        <g>
-          <rect
-            x={x}
-            y={y}
-            width={width}
-            height={height}
-            style={{
-              fill: depth < 2 ? color : '#ffffff00',
-              stroke: '#fff',
-              strokeWidth: 2 / (depth + 1e-10),
-              strokeOpacity: 1 / (depth + 1e-10),
-            }}
-          />
-            {depth === 1 ? (
-                <text x={x + width / 2} y={y + height / 2 + 7} textAnchor="middle" fill="#fff" fontSize={14}>
-                    { mappingCategories[ name ] }
-                </text>
-            ) : null}
-            {depth === 2 ? (
-                <text x={x + 4} y={y + 18} fill="#fff" fontSize={16} fillOpacity={0.9}>
-                    {size}
-                </text>
-            ) : null}
-        </g>
+        <Tooltip
+            label= { ` ${ name } ` }
+            aria-label='A tooltip'
+            placement="top" hasArrow={true}
+            bg={"#a2a2a2"}
+        >
+            <g>
+            <rect
+                x={x}
+                y={y}
+                width={width}
+                height={height}
+                style={{
+                fill: depth < 2 ? color : '#ffffff00',
+                stroke: '#fff',
+                strokeWidth: 2 / (depth + 1e-10),
+                strokeOpacity: 1 / (depth + 1e-10),
+                }}
+            />
+                {/* {depth === 1 ? (
+                    <text x={x + width / 2} y={y + height / 2 + 7} textAnchor="middle" fill="#fff" fontSize={14}>
+                        { mappingCategories[ name ] }
+                    </text>
+                ) : null} */}
+                {
+                    depth === 2 ? (
+                        <text x={x + 4} y={y + 18} fill="#fff" fontSize={16} fillOpacity={0.9}>
+                            {size}
+                        </text>
+                    ) : null
+                }
+            </g>
+        </Tooltip>
       );
     }
   }
@@ -121,6 +131,15 @@ const Accesibilidad = ({ metrics }: any) => {
         accessibilityPointsCount++;
     })
 
+    const sortedAmenities = Object.entries( accessibilityTree ).sort((a: any, b: any) => {
+
+        const sumA: any = Object.values(a).reduce((acc: any, val) => acc + val, 0);
+        const sumB: any = Object.values(b).reduce((acc: any, val) => acc + val, 0);
+        return sumB - sumA;
+    });
+
+    accessibilityTree = Object.fromEntries(sortedAmenities);
+
     //Convert accesibility Tree Dictionary to Data Array
     for (const [key, value] of Object.entries( accessibilityTree )) {
 
@@ -143,6 +162,22 @@ const Accesibilidad = ({ metrics }: any) => {
 
     const COLORS = ['#8889DD', '#9597E4', '#8DC77B', '#A5D297', '#E2CF45', '#F8C12D'];
 
+    const renderLegend = ( _: any ) => {
+
+        const items = Object.keys( accessibilityTree );
+
+        return (
+          <ul>
+            { items.map((entry: any, index: number) => (
+              <li key={`item-${index}`}
+                style={{ color: ACCESSIBILITY_POINTS_COLORS[ entry ] }}
+              >
+                { mappingCategories[ entry ] }
+              </li>
+            ))}
+          </ul>
+        );
+      };
 
     return (
         <div className="accesibilidad tab__main">
@@ -203,45 +238,29 @@ const Accesibilidad = ({ metrics }: any) => {
                                         Tipos de equipamientos
                                     </Text>
                                 </Box>
-                                <Box className="stat-value full">
-                                    <ResponsiveContainer
-                                        width={"100%"}
-                                        height={ 200 }
-                                        style={{ margin: "1rem" }}
-                                    >
-                                        {
-                                            accessibilityTreeArray.length?
-                                                <Treemap
-                                                    data={accessibilityTreeArray}
-                                                    dataKey={"size"}
-                                                    animationDuration={ 100 }
-                                                    content={ <CustomizedContent></CustomizedContent>}
-                                                >
-                                                   <Legend></Legend>
-                                                </Treemap>
-                                            :
-                                            <div>No hay datos en el área</div>
-                                        }
-
-                                        {/* <BarChart
-                                            layout="vertical"
-                                            data={[ accessibilityData ]}
-                                            barSize={16}
-                                            barGap={0}
+                                <Box
+                                    className="stat-value full treemapContainer"
+                                    style={{ flexDirection: "column", padding: "1rem" }}
+                                >
+                                {
+                                    accessibilityTreeArray.length ?
+                                    <>
+                                        <ResponsiveContainer
+                                            width={"100%"}
+                                            height={ 200 }
                                         >
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <YAxis
-                                                type="category"
-                                                dataKey={"name"}
-                                                name=""
-                                            />
-                                            <XAxis type="number" />
-                                            <Legend />
-
-                                            { graphBars }
-
-                                        </BarChart> */}
-                                    </ResponsiveContainer>
+                                            <Treemap
+                                                data={accessibilityTreeArray}
+                                                dataKey={"size"}
+                                                animationDuration={ 100 }
+                                                content={ <CustomizedContent></CustomizedContent>}
+                                            >
+                                            </Treemap>
+                                        </ResponsiveContainer>
+                                        <Legend  content={ renderLegend } ></Legend>
+                                    </>
+                                    :   <div>No hay datos en el área</div>
+                                 }
                                 </Box>
                             </Box>
                         </VStack>
