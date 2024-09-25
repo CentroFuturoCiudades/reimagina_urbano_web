@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { getQuantiles, INITIAL_STATE, METRICS_MAPPING, POLYGON_MODES, VIEW_COLORS_RGBA, VIEW_MODES, ZOOM_SHOW_DETAILS } from "../../constants";
-import { RGBAColor, TextLayer } from "deck.gl";
+import { INITIAL_STATE, METRICS_MAPPING, POLYGON_MODES, VIEW_MODES } from "../../constants";
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";

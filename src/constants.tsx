@@ -53,14 +53,14 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
 export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
 
 export const METRICS_MAPPING: GenericObject = {
-    "poblacion": { query: "pobtot", title: "Población Total", ranges: [0, 100, 200, 300, 400, 800], type: "number" },
+    "poblacion": { query: "pobtot", title: "Población Total", ranges: [50, 65, 80, 100, 130, 800], type: "number" },
     "viviendas_habitadas": { query: "vivpar_hab", title: "Viviendas Particulares Habitadas", ranges: [0, 25, 50, 100, 150, 200], type: "number" },
-    "viviendas_deshabitadas": { query: "VIVPAR_DES * 1.0 / VIVPAR_HAB * 100", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 25, 50, 75, 100], type: "percentage" }, // rango de 0-89
-    "grado_escuela": { query: "graproes", title: "Grado Promedio de Escolaridad", ranges: [1, 6, 9, 12, 16, 18], type: "number" },
+    "viviendas_deshabitadas": { query: "GREATEST(VIVPAR_DES * 1.0 / NULLIF(VIVPAR_HAB, 0) * 100, 0)", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 10, 20, 30, 40, 100], type: "percentage" }, // rango de 0-89
+    "grado_escuela": { query: "graproes", title: "Grado Promedio de Escolaridad", ranges: [6, 9, 10, 12, 16, 18], type: "number" },
     "indice_bienestar": { query: "puntuaje_hogar_digno * 100", title: "Índice de Bienestar", ranges: [0, 25, 50, 75, 100], type: "percentage" },
-    "viviendas_tinaco": { query: "vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 25, 50, 75, 100], type: "percentage" },
-    "viviendas_pc": { query: "vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100", title: "Porcentaje de Viviendas con PC", ranges: [0, 25, 50, 75, 100], type: "percentage" },
-    "viviendas_auto":{ query: "vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [0, 50, 70, 90, 100], type: "percentage" },
+    "viviendas_tinaco": { query: "LEAST(vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 15, 30, 60, 90, 100], type: "percentage" },
+    "viviendas_pc": { query: "LEAST(vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con PC", ranges: [0, 25, 35, 50, 60, 80, 100], type: "percentage" },
+    "viviendas_auto":{ query: "LEAST(vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [40, 50, 60, 70, 80, 100], type: "percentage" },
     "minutes": {
         query: "minutes",
         title: "Minutos",
@@ -71,25 +71,25 @@ export const METRICS_MAPPING: GenericObject = {
     }
 }
 export const amenitiesOptions = [
-    { value: 'asistencial_social', label: 'Asistencia social', type: 'health' },
-    { value: 'laboratorios_clinicos', label: 'Laboratorios clínicos', type: 'health' },
-    { value: 'otros_consultorios', label: 'Otros consultorios', type: 'health' },
-    { value: 'consultorios_medicos', label: 'Consultorios médicos', type: 'health' },
+    // Salud
     { value: 'hospital_general', label: 'Hospital general', type: 'health' },
-    { value: 'hospitales_psiquiatricos', label: 'Hospitales psiquiátricos', type: 'health' },
-    { value: 'hospitales_otras_especialidades', label: 'Hospitales otras especialidades', type: 'health' },
+    { value: 'consultorios_medicos', label: 'Consultorios médicos', type: 'health' },
     { value: 'farmacia', label: 'Farmacia', type: 'health' },
+    // Recreativo
+    { value: 'parques_recreativos', label: 'Parques recreativos', type: 'park' },
     { value: 'clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico', type: 'health' },
     { value: 'cine', label: 'Cine', type: 'recreation' },
     { value: 'otros_servicios_recreativos', label: 'Otros servicios recreativos', type: 'recreation' },
-    { value: 'parques_recreativos', label: 'Parques recreativos', type: 'park' },
-    { value: 'museos', label: 'Museos', type: 'recreation' },
-    { value: 'biblioteca', label: 'Biblioteca', type: 'recreation' },
+    // Educación
     { value: 'guarderia', label: 'Guarderia', type: 'education' },
     { value: 'educacion_preescolar', label: 'Educación preescolar', type: 'education' },
     { value: 'educacion_primaria', label: 'Educación primaria', type: 'education' },
     { value: 'educacion_secundaria', label: 'Educación secundaria', type: 'education' },
     { value: 'educacion_media_superior', label: 'Educación media superior', type: 'education' },
+    { value: 'educacion_superior', label: 'Educación superior', type: 'education' },
+    // Otros
+    { value: 'capilla', label: 'Capilla', type: 'other' },
+    { value: 'comedor', label: 'Comedor', type: 'other' },
 ];
 export const mappingGradoEscolaridad: GenericObject = {
     1: "1ero Primaria",
@@ -148,6 +148,7 @@ export const ACCESSIBILITY_POINTS_COLORS: GenericObject = {
     "health": "#7c6eb1",
     "recreation":  "#eab642",
     "park": "#7ea48d",
+    "other": "gray"
 }
 
 export const ZOOM_SHOW_DETAILS = 17;

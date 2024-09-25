@@ -6,6 +6,8 @@ import { amenitiesOptions } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAccessibilityList, setAccessibilityPoints } from '../features/accessibilityList/accessibilityListSlice';
 import { RootState } from '../app/store';
+import _ from 'lodash';
+import { Tooltip } from '../components';
 
 interface AccessibilityPointsProps {
     metric: string;
@@ -61,12 +63,12 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
         new IconLayer({
             id: 'icon-layer',
             data: polygons,
-            getIcon: (d: any) => amenitiesOptions.find(option => option.label === d.properties.amenity)?.type || "health",
+            getIcon: (d: any) => amenitiesOptions.find(option => option.label === d.properties.amenity)?.type || "other",
             getPosition: (d: any) => d.geometry.coordinates,
             getSize: 40,
             iconAtlas: 'images/amenities.png',
             iconMapping: {
-                "health": {
+                "recreation": {
                     x: 0,
                     y: 0,
                     width: 512,
@@ -82,7 +84,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     mask: false,
                     anchorY: 512, // Align the center at the bottom
                 },
-                "recreation": {
+                "other": {
                     x: 1024,
                     y: 0,
                     width: 512,
@@ -98,29 +100,17 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     mask: false,
                     anchorY: 512, // Align the center at the bottom
                 },
+                "health": {
+                    x: 2048,
+                    y: 0,
+                    width: 512,
+                    height: 512,
+                    mask: false,
+                    anchorY: 512, // Align the center at the bottom
+                },
             },
             zIndex: 1000,
             pickable: true,
-            onHover: ({ x, y, object }) => {
-                iconHover(x, y, object);
-            },
-        }),
-        hoverInfo && new TextLayer({
-            id: 'text-layer',
-            data: [hoverInfo],
-            getPosition:( d: any ) => d.object.geometry.coordinates,  // Adjust depending on your data
-            getText: ( d: any) => d.object.properties.amenity,  // Customize based on your data properties
-            getPixelOffset: [0, -50],
-            getSize: 16,
-            getColor: [255, 255, 255],
-            background: true,
-            backgroundColor: [0, 0, 0, 150], // Semi-transparent black background
-            backgroundPadding: [6, 4], // Horizontal and vertical padding
-            getTextAnchor: 'middle',
-            getAlignmentBaseline: 'bottom',
-            fontFamily: '"Arial", sans-serif',
-            zIndex: 1000,
-            characterSet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789éó', // Include special characters
         }),
     ];
 };

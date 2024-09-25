@@ -20,7 +20,8 @@ export const mappingCategories: any = {
   health: 'Salud',
   recreation: 'Recreación',
   education: 'Educación',
-  park: "Parques"
+  park: 'Parque',
+  other: 'Otro',
 };
 
 const SelectAutoComplete = () => {
@@ -89,7 +90,7 @@ const SelectAutoComplete = () => {
       const someSelected = amenities.some((amenity) => checkedItems[amenity.value]);
 
       if (allSelected) {
-        summary.push(category.charAt(0).toUpperCase() + category.slice(1));
+        summary.push(mappingCategories[category]);
       } else if (someSelected) {
         amenities.forEach((amenity) => {
           if (checkedItems[amenity.value]) {
