@@ -1,4 +1,4 @@
-import React, { PureComponent, ReactElement, useState } from "react";
+import React, { PureComponent, ReactElement, useEffect, useState } from "react";
 import { SelectAutoComplete } from "../../components";
 import {
     Accordion,
@@ -13,8 +13,8 @@ import {
     Tooltip,
 } from "@chakra-ui/react";
 import { TbAngle } from "react-icons/tb";
-import { FaWalking } from "react-icons/fa";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
+import { FaHospital, FaWalking } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaIcons, FaLocationDot, FaSchool } from "react-icons/fa6";
 import "./Accesibilidad.scss";
 import {
     Bar,
@@ -26,68 +26,84 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { ACCESSIBILITY_POINTS_COLORS, amenitiesOptions } from "../../constants";
 import { mappingCategories } from "../../components/SelectAutoComplete/SelectAutoComplete";
 import { center } from "@turf/turf";
+import { setActiveAmenity } from "../../features/viewMode/viewModeSlice";
+import { PiParkFill } from "react-icons/pi";
 
 
-class CustomizedContent extends PureComponent {
-    render() {
-        //@ts-ignore
-      const { root, depth, x, y, width, height, index, payload, colors, rank, name, size } = this.props;
-
-      let color = ACCESSIBILITY_POINTS_COLORS[ name ];
-
-      return (
-        <Tooltip
-            label= { ` ${ name } ` }
-            aria-label='A tooltip'
-            placement="top" hasArrow={true}
-            bg={"#a2a2a2"}
-        >
-            <g>
-            <rect
-                x={x}
-                y={y}
-                width={width}
-                height={height}
-                style={{
-                fill: depth < 2 ? color : '#ffffff00',
-                stroke: '#fff',
-                strokeWidth: 2 / (depth + 1e-10),
-                strokeOpacity: 1 / (depth + 1e-10),
-                }}
-            />
-                {/* {depth === 1 ? (
-                    <text x={x + width / 2} y={y + height / 2 + 7} textAnchor="middle" fill="#fff" fontSize={14}>
-                        { mappingCategories[ name ] }
-                    </text>
-                ) : null} */}
-                {
-                    depth === 2 ? (
-                        <text x={x + 4} y={y + 18} fill="#fff" fontSize={16} fillOpacity={0.9}>
-                            {size}
-                        </text>
-                    ) : null
-                }
-            </g>
-        </Tooltip>
-      );
-    }
-  }
 
 const Accesibilidad = ({ metrics }: any) => {
 
     const accessibilityPoints = useSelector( (state: RootState) => state.accessibilityList.accessibilityPoints );
+    const [activeAmenity, setActiveAmenityState ] = useState<string>("");
 
+    const dispatch = useDispatch();
+
+    useEffect( ()=>{
+        dispatch( setActiveAmenity( activeAmenity ) );
+    }, [activeAmenity]);
 
     let graphBars: ReactElement[] = []
     let accessibilityData: any = { name: "" };
     let accessibilityTree: any = {};
     let accessibilityTreeArray: any[] = [];
     let accessibilityPointsCount = 0;
+
+    class CustomizedContent extends PureComponent {
+        render() {
+            //@ts-ignore
+          const { root, depth, x, y, width, height, index, payload, colors, rank, name, size } = this.props;
+
+          let color = ACCESSIBILITY_POINTS_COLORS[ name ];
+
+          return (
+            <Tooltip
+                label= { `${size} ${ name } ` }
+                aria-label='A tooltip'
+                placement="top" hasArrow={true}
+                bg={"#a2a2a2"}
+                isOpen= { activeAmenity == name && activeAmenity != "" ? true : false }
+            >
+                <g>
+                <rect
+                    x={x}
+                    y={y}
+                    width={ depth === 2 ? width - 2 : width }
+                    height={depth === 2 ? height - 2 : height}
+                    style={{
+                    fill: depth < 2 ? color : '#ffffff',
+                    stroke: '#fff',
+                    strokeWidth: 2 / (depth + 1e-10),
+                    strokeOpacity: 1 / (depth + 1e-10),
+                    opacity: depth === 2 ? ( activeAmenity == name? "0": "0.3" ) : 1
+                    }}
+                    onMouseOver={ ()=>{
+                        setActiveAmenityState( name )
+                    }}
+                />
+                    {/* {depth === 1 ? (
+                        <text x={x + width / 2} y={y + height / 2 + 7} textAnchor="middle" fill="#fff" fontSize={14}>
+                            { mappingCategories[ name ] }
+                        </text>
+                    ) : null} */}
+                    {
+                        depth === 2 && width > 25 && height > 25 ? (
+                            <text x={x + 4} y={y + 18} fill="#fff" fontSize={16} fillOpacity={0.9}>
+                                {size}
+                            </text>
+                        ) : null
+                    }
+                </g>
+            </Tooltip>
+          );
+        }
+    }
+
+    console.log( activeAmenity )
 
     accessibilityPoints.forEach( ( item: any )=> {
 
@@ -99,6 +115,10 @@ const Accesibilidad = ({ metrics }: any) => {
                 parentCategory = amenityOption.type
             }
         } )
+
+        if( !parentCategory ){
+            parentCategory = "other";
+        }
 
         if( !accessibilityTree[parentCategory] ){
             accessibilityTree[ parentCategory ] = {}
@@ -164,9 +184,16 @@ const Accesibilidad = ({ metrics }: any) => {
 
         const items = Object.keys( accessibilityTree );
 
-        items.forEach( item  => {
-            console.log( ACCESSIBILITY_POINTS_COLORS[item])
-        } )
+        console.log( accessibilityTree )
+
+        const iconMap: any = {
+            "education": <FaSchool></FaSchool>,
+            "health": <FaHospital />,
+            "park": <PiParkFill />,
+            "recreation": <FaIcons />,
+            "other": <FaLocationDot />
+        };
+
 
         return (
           <ul>
@@ -174,7 +201,7 @@ const Accesibilidad = ({ metrics }: any) => {
               <li key={`item-${index}`}
                 style={{ color: ACCESSIBILITY_POINTS_COLORS[ entry ] }}
               >
-                { mappingCategories[ entry ] }
+                {iconMap[entry]} { mappingCategories[ entry ] }
               </li>
             ))}
           </ul>
@@ -252,6 +279,9 @@ const Accesibilidad = ({ metrics }: any) => {
                                             height={ 200 }
                                         >
                                             <Treemap
+                                                onMouseLeave={ ()=> {
+                                                    setActiveAmenityState( "" );
+                                                } }
                                                 data={accessibilityTreeArray}
                                                 dataKey={"size"}
                                                 animationDuration={ 100 }

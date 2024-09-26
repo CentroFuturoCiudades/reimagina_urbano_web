@@ -17,14 +17,14 @@ const METRIC_COLOR: GenericObject = {
 const useAmenitiesLayer = ({coordinates, metric}: any) => {
     const [polygons, setPolygons] = useState<any>([]);
     const condition = metric !== "minutes";
-    
+
     useAborterEffect(async (signal: any, isMounted: boolean) => {
         if (condition) return;
         const data = await fetchPolygonData({ coordinates, layer: "landuse_amenity" }, signal);
         console.log(data)
         isMounted && setPolygons(data?.features || []);
-    }, [coordinates]);
-    
+    }, [coordinates, metric ]);
+
     if (condition) return [];
     return [
         new GeoJsonLayer({

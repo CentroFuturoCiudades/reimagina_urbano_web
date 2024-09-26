@@ -138,7 +138,7 @@ const Toolbar = () => {
                         viewMode == VIEW_MODES.POLIGON  &&
                         <div className="toolbar__section">
                             <div className="toolbar__vista">
-                                <div onClick={ ()=> {  }}>
+                                <div onClick={ ()=> { dispatch(  setPoligonMode( POLYGON_MODES.EDIT ) ) }}>
                                     Editar
                                     <img src="https://cdn-icons-png.flaticon.com/512/1159/1159633.png"></img>
                                 </div>
