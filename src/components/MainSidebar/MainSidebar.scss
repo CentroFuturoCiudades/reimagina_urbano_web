@@ -14,7 +14,7 @@
         text-align: center;
         border-radius: 0;
         padding: 1rem;
-        background-color: rgba(255, 255, 255, 1); /* Color sólido */
+        background-color: rgb(255, 255, 255); /* Color sólido */
         transition: background-color 0.3s;
         color: white;
         transition: none;
@@ -23,17 +23,16 @@
     }
 
     .tab-visor {
-        background-color: var(--visor-primary-opacity)
+        background-color: var(--visor-light);
     }
 
     .tab-accesibilidad {
-        background-color: #996699cc;
+        background-color: var(--accesibilidad-unactive);
 
     }
 
     .tab-potencial {
-        background-color: #cc9933cc;
-
+        background-color: var(--potencial-light);
     }
 
     .chakra-tabs__tabpanel {
@@ -52,7 +51,7 @@
 }
 
 .tab__main {
-    background-color: rgba(255, 255, 255, 0.97);
+    background-color: rgb(255, 255, 255);
     margin-top: -1rem;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
@@ -87,7 +86,6 @@
         width: 100%;
 
         &.header {
-            border-bottom: 1px solid gray;
             position: sticky;
             top: 0;
             background-color: white;
@@ -96,27 +94,47 @@
             p {
                 font-weight: bold;
                 font-size: 14px;
+                justify-content: center;
             }
         }
 
-        .stat-title-box {
+        .title-box {
             height: 36px;
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             justify-content: space-between;
             height: 36px;
+            z-index: 1;
+            overflow: hidden;
+        }
 
-            .stat-title-box-cell{
-                width: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
+        .stat-title-box {
+            height: 36px;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 36px;
+            z-index: 1;
+            overflow: hidden;
+            border-radius: 5px;
+            &.active {
+                // background-color: #cceffb;
+                background-color: var(--primary);
+                // background-color: #2f4e92;
+            }
 
-                &.dark {
-                    background: rgba( 220, 220, 220, 0.9);
+            &.regular {
+                &:not(.active) {
+                    border: 1px solid #c3cff0;
+                    &:hover {
+                        box-shadow: 0 6px 6px rgba(69, 69, 69, 0.4) !important;
+                        background-color: rgb(236, 239, 249) !important;
+                        border: 0px;
+                    }
                 }
             }
         }
@@ -129,10 +147,10 @@
             line-height: 1.2;
             height: 100%;
             align-items: center;
+            width: 100%;
 
             &.dark {
-                background: rgba(100, 100, 100, 0.8);
-                color: white;
+                background: rgb(199, 199, 199);
             }
         }
 
@@ -156,7 +174,9 @@
                 width: 50%;
 
                 &.dark {
-                    background-color:  rgba( 200, 200, 200, 0.4);
+                    background-color:  rgb(223, 223, 223);
+                    border-radius: 8px;
+                    margin: 8px 0px;
                 }
             }
 

@@ -19,7 +19,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
 
     const [polygons, setPolygons] = React.useState<any>([]);
-    const condition = (metric !== "minutes" || ( (!coordinates || coordinates.length === 0) && viewMode != VIEW_MODES.FULL ));
+    const condition = ((metric !== "minutes" && metric !== "accessibility_score") || !coordinates || coordinates.length === 0);
     const [hoverInfo, setHoverInfo] = React.useState<any>(null);
     const accessibilityList = useSelector((state: RootState) => state.accessibilityList.accessibilityList);
     const activeAmenity = useSelector((state: RootState) => state.viewMode.activeAmenity );
@@ -90,7 +90,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     anchorY: 412, // Align the center at the bottom
                 },
                 "recreation-transparent": {
-                    x: 2100,
+                    x: 2050,
                     y: 0,
                     width: 412,
                     height: 412,
@@ -98,7 +98,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     anchorY: 412, // Align the center at the bottom
                 },
                 "education": {
-                    x: 460,
+                    x: 410,
                     y: 0,
                     width: 412,
                     height: 412,
@@ -106,7 +106,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     anchorY: 412, // Align the center at the bottom
                 },
                 "education-transparent": {
-                    x: 2500,
+                    x: 2460,
                     y: 0,
                     width: 412,
                     height: 412,
@@ -114,7 +114,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     anchorY: 412, // Align the center at the bottom
                 },
                 "other": {
-                    x: 860,
+                    x: 820,
                     y: 0,
                     width: 412,
                     height: 412,
@@ -122,7 +122,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     anchorY: 412, // Align the center at the bottom
                 },
                 "other-transparent": {
-                    x: 2900,
+                    x: 2870,
                     y: 0,
                     width: 412,
                     height: 412,
@@ -130,7 +130,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     anchorY: 412, // Align the center at the bottom
                 },
                 "park": {
-                    x: 3330,
+                    x: 1230,
                     y: 0,
                     width: 412,
                     height: 412,
@@ -138,7 +138,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     anchorY: 412, // Align the center at the bottom
                 },
                 "park-transparent": {
-                    x: 1648,
+                    x: 3280,
                     y: 0,
                     width: 412,
                     height: 412,
@@ -146,7 +146,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     anchorY: 412, // Align the center at the bottom
                 },
                 "health": {
-                    x: 1680,
+                    x: 1640,
                     y: 0,
                     width: 412,
                     height: 412,
@@ -154,7 +154,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
                     anchorY: 412, // Align the center at the bottom
                 },
                 "health-transparent": {
-                    x: 3730,
+                    x: 3690,
                     y: 0,
                     width: 412,
                     height: 412,

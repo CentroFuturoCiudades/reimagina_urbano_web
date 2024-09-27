@@ -50,7 +50,7 @@ const MainSidebar = () => {
                 <Tab
                     className="tab-visor"
                     _selected={{
-                        bg: "var(--visor-primary-opacity)",
+                        bg: "var(--visor-primary)",
                         color: "white",
                     }}
                     onClick={() => {
@@ -63,7 +63,7 @@ const MainSidebar = () => {
                 <Tab
                     className="tab-accesibilidad"
                     _selected={{
-                        bg: "var(--accesibilidad-primary-opacity)",
+                        bg: "var(--accesibilidad-primary)",
                         color: "white",
                     }}
                     onClick={() => {
@@ -76,7 +76,7 @@ const MainSidebar = () => {
                 <Tab
                     className="tab-potencial"
                     _selected={{
-                        bg: "rgba(206, 173, 102, 0.8)",
+                        bg: "var(--potencial-primary)",
                         color: "white",
                     }}
                     onClick={() => {

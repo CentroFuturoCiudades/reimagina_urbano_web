@@ -1,10 +1,10 @@
 .visor.tab__main {
-    border: solid var(--visor-primary-opacity);
+    border: solid var(--visor-primary);
     border-width: 0px 2px 2px 2px;
     overflow: hidden;
     padding: 0px;
 
     .accordion-header{
-        background-color: var(--visor-primary-opacity);
+        background-color: var(--visor-primary);
     }
 }

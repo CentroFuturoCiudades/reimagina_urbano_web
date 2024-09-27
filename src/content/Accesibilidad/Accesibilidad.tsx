@@ -33,6 +33,8 @@ import { mappingCategories } from "../../components/SelectAutoComplete/SelectAut
 import { center } from "@turf/turf";
 import { setActiveAmenity } from "../../features/viewMode/viewModeSlice";
 import { PiParkFill } from "react-icons/pi";
+import { ComparativeMetric, GraphPercent } from "../Visor/Visor";
+import { MdOutlineAccessTime } from "react-icons/md";
 
 
 
@@ -65,7 +67,7 @@ const Accesibilidad = ({ metrics }: any) => {
                 label= { `${size} ${ name } ` }
                 aria-label='A tooltip'
                 placement="top" hasArrow={true}
-                bg={"#a2a2a2"}
+                bg={"#34353c"}
                 isOpen= { activeAmenity == name && activeAmenity != "" ? true : false }
             >
                 <g>
@@ -219,34 +221,22 @@ const Accesibilidad = ({ metrics }: any) => {
                         <AccordionIcon />
                     </AccordionButton>
                     <AccordionPanel p={0}>
-                        <VStack spacing={"0"} className="accordion-body">
-                            <Box className="stat-row">
-                                <Box className="stat-title-box">
-                                    <Text className="stat-title">Puntuaje de Accesibilidad (0 a 100)</Text>
-                                </Box>
-                                <Box className="stat-value full">
-                                    <Box>
-                                        <Text>
-                                            {" "}
-                                            <Icon as={FaWalking}></Icon>{" "}
-                                            {Math.trunc(metrics.accessibility_score * 100)}
-                                        </Text>
-                                    </Box>
-                                </Box>
-                            </Box>
-                            <Box className="stat-row">
-                                <Box className="stat-title-box">
-                                    <Text className="stat-title">
-                                        Servicios y equipamientos
-                                    </Text>
-                                </Box>
-                                <Box
-                                    className="stat-value full"
-                                    style={{ width: "100%", padding: "0 1rem" }}
-                                >
-                                    <SelectAutoComplete />
-                                </Box>
-                            </Box>
+                        <VStack spacing={"0"} className="accordion-body" style={{ padding: "0.4rem" }}>
+                            <SelectAutoComplete />
+                            <ComparativeMetric metric="accessibility_score" icon={FaWalking}>
+                                <GraphPercent
+                                    value={metrics?.accessibility_score || 0}
+                                    base={1}
+                                />
+                                {/* <Text>
+                                    {Math.trunc(metrics.accessibility_score * 100)}
+                                </Text> */}
+                            </ComparativeMetric>
+                            <ComparativeMetric metric="minutes" icon={MdOutlineAccessTime}>
+                                <Text>
+                                    {Math.trunc(metrics.minutes)} min
+                                </Text>
+                            </ComparativeMetric>
 
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
@@ -309,7 +299,7 @@ const Accesibilidad = ({ metrics }: any) => {
                     <AccordionPanel p={0}>
                         <VStack spacing={"0"} className="accordion-body">
                             <Box className="stat-row">
-                                <Box className="stat-title-box">
+                                <Box className="stat-title-box regular">
                                     <Text className="stat-title">
                                         Radio de cobertura
                                     </Text>
@@ -322,7 +312,7 @@ const Accesibilidad = ({ metrics }: any) => {
                             </Box>
 
                             <Box className="stat-row">
-                                <Box className="stat-title-box">
+                                <Box className="stat-title-box regular">
                                     <Text className="stat-title">Pendiente</Text>
                                 </Box>
                                 <Box className="stat-value full">

@@ -8,11 +8,10 @@ export const AMOUNT = 8;
 export const COLORS = generateGradientColors(startColor, endColor, AMOUNT);
 
 export const INITIAL_STATE = {
-    latitude: 24.748492613357698,
-    longitude: -107.39527779958091,
-    zoom: 15,
+    latitude: 24.755,
+    longitude: -107.40527779958091,
+    zoom: 13,
     transitionDuration: 100,
-    pitch: 60,
     maxPitch: 85,
     bearing: 0,
     minZoom: 12,
@@ -53,21 +52,22 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
 export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
 
 export const METRICS_MAPPING: GenericObject = {
-    "poblacion": { query: "pobtot", title: "Población Total", ranges: [50, 65, 80, 100, 130, 800], type: "number" },
+    "poblacion": { query: "pobtot", title: "Población Total", ranges: [0, 65, 80, 100, 130, 800], type: "number" },
     "viviendas_habitadas": { query: "vivpar_hab", title: "Viviendas Particulares Habitadas", ranges: [0, 25, 50, 100, 150, 200], type: "number" },
     "viviendas_deshabitadas": { query: "GREATEST(VIVPAR_DES * 1.0 / NULLIF(VIVPAR_HAB, 0) * 100, 0)", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 10, 20, 30, 40, 100], type: "percentage" }, // rango de 0-89
     "grado_escuela": { query: "graproes", title: "Grado Promedio de Escolaridad", ranges: [6, 9, 10, 12, 16, 18], type: "number" },
-    "indice_bienestar": { query: "puntuaje_hogar_digno * 100", title: "Índice de Bienestar", ranges: [0, 25, 50, 75, 100], type: "percentage" },
+    "indice_bienestar": { query: "puntuaje_hogar_digno * 1000", title: "Índice de Bienestar", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_tinaco": { query: "LEAST(vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 15, 30, 60, 90, 100], type: "percentage" },
     "viviendas_pc": { query: "LEAST(vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con PC", ranges: [0, 25, 35, 50, 60, 80, 100], type: "percentage" },
     "viviendas_auto":{ query: "LEAST(vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [40, 50, 60, 70, 80, 100], type: "percentage" },
+    "accessibility_score":{ query: "accessibility_score * 100", title: "Puntuaje de Accesibilidad (0 a 100)", ranges: [0, 20, 40, 60, 80, 100], type: "percentage" },
     "minutes": {
         query: "minutes",
-        title: "Minutos",
+        title: "Promedio minutos",
         ranges: [0, 5, 15, 30, 45, 60],
         type: "minutes",
-        startColor: "darkblue",
-        endColor: "#cbe8f7"
+        startColor: "#2c406f",
+        endColor: "lightblue"
     }
 }
 export const amenitiesOptions = [
@@ -77,7 +77,7 @@ export const amenitiesOptions = [
     { value: 'farmacia', label: 'Farmacia', type: 'health' },
     // Recreativo
     { value: 'parques_recreativos', label: 'Parques recreativos', type: 'park' },
-    { value: 'clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico', type: 'health' },
+    { value: 'clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico', type: 'recreation' },
     { value: 'cine', label: 'Cine', type: 'recreation' },
     { value: 'otros_servicios_recreativos', label: 'Otros servicios recreativos', type: 'recreation' },
     // Educación
@@ -138,8 +138,8 @@ export const VIEW_COLORS_RGBA = {
         dark: "rgba(0, 100, 0, 1)"
     },
     ACCESIBILIDAD : {
-        light: `lightblue`,
-        dark: "darkblue"
+        light: `#BFE5F8`,
+        dark: "#2C238B"
     }
 }
 

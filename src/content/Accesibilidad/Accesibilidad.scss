@@ -1,11 +1,11 @@
 .accesibilidad.tab__main{
-    border: solid var(--accesibilidad-primary-opacity);
+    border: solid var(--accesibilidad-primary);
     border-width: 0px 2px 2px 2px;
     overflow: hidden;
     padding: 0px;
 
     .accordion-header{
-        background-color: var(--accesibilidad-primary-opacity);
+        background-color: var(--accesibilidad-primary);
     }
 }
 
@@ -26,11 +26,12 @@
                 justify-content: center;
                 display: flex;
                 align-items: center;
-                font-size: 1rem;
+                font-size: 0.9rem;
                 text-align: center;
 
                 svg {
                     margin-right: 4px;
+                    font-size: 0.9rem;
                 }
             }
         }

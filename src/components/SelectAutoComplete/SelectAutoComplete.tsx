@@ -6,6 +6,15 @@ import {
   ListItem,
   Text,
   Checkbox,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  useBoolean,
+  Tag,
+  TagCloseButton,
+  FormControl,
+  FormLabel,
+  Button,
 } from '@chakra-ui/react';
 import { setAccessibilityList } from '../../features/accessibilityList/accessibilityListSlice';
 import { AppDispatch } from "../../app/store";
@@ -15,6 +24,7 @@ import { GenericObject } from '../../types';
 
 import "./SelectAutoComplete.scss"
 import { amenitiesOptions } from '../../constants';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 
 export const mappingCategories: any = {
   health: 'Salud',
@@ -24,9 +34,10 @@ export const mappingCategories: any = {
   other: 'Otro',
 };
 
+const orderCategories = ['education', 'health', 'recreation', 'other'];
+
 const SelectAutoComplete = () => {
-  const [search, setSearch] = useState<string>('');
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isFocused, setIsFocused] = useBoolean();
   const accessibilityList = useSelector((state: RootState) => state.accessibilityList.accessibilityList);
   const dispatch: AppDispatch = useDispatch();
 
@@ -82,10 +93,11 @@ const SelectAutoComplete = () => {
     }
   };
 
-  const getSelectedSummary = (): string => {
+  const getSelectedSummary = (): string[] => {
     const summary: string[] = [];
 
-    Object.entries(groupedAmenitiesOptions).forEach(([category, amenities]) => {
+    Object.entries(groupedAmenitiesOptions)
+      .forEach(([category, amenities]) => {
       const allSelected = amenities.every((amenity) => checkedItems[amenity.value]);
       const someSelected = amenities.some((amenity) => checkedItems[amenity.value]);
 
@@ -100,58 +112,70 @@ const SelectAutoComplete = () => {
       }
     });
 
-    return summary.join(', ');
+    return summary;
   };
+  const summay = getSelectedSummary();
+
+  // remove either amenity or category
+  const removeAmenity = (amenity: string) => {
+    const category = Object.keys(mappingCategories).find((key) => mappingCategories[key] === amenity);
+    console.log(category);
+    if (!category) {
+      const updatedSelectedOptions = accessibilityList.filter((x) => x.label !== amenity);
+      dispatch(setAccessibilityList(updatedSelectedOptions));
+    } else {
+      const updatedSelectedOptions = accessibilityList.filter((x) => x.type !== category);
+      dispatch(setAccessibilityList(updatedSelectedOptions));
+    }
+  }
 
   return (
-    <Box className="selectAutoComplete" position="relative">
-      <Input
-        variant="filled"
-        placeholder="Selecciona un equipamiento de interés"
-        value={search}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setTimeout(() => setIsFocused(false), 100)}
-        size="sm"
-        mt="2"
-      />
-      {isFocused && (
-        <Box
-          position="absolute"
-          top="3rem"
-          left="0"
-          right="0"
-          borderWidth="1px"
-          borderRadius="md"
-          maxH="200px"
-          overflowY="auto"
-          bg="white"
-          zIndex="1"
-        >
-          <List size="sm" spacing={1}>
-            {Object.entries(groupedAmenitiesOptions).map(([category, amenities]) => {
+    <Box className="selectAutoComplete" position="relative" w="100%">
+      <Popover
+        placement='bottom'
+        closeOnBlur={true}
+        isOpen={isFocused}
+        onOpen={setIsFocused.on}
+        onClose={setIsFocused.off}
+      >
+        <PopoverTrigger>
+            <Button
+              className='seleccionAccesibilidad'
+              rightIcon={isFocused ? <FaChevronUp /> : <FaChevronDown />}
+              onClick={setIsFocused.toggle}
+              w="100%"
+              size="sm"
+              height="35px"
+              borderRadius="5px"
+            >Equipamientos esenciales</Button>
+        </PopoverTrigger>
+        <PopoverContent border="1px solid #c3cff0" height="200px">
+          <List size="sm" spacing={1} style={{ overflowY: 'scroll' }}>
+            {Object.entries(groupedAmenitiesOptions)
+            .sort((a, b) => orderCategories.indexOf(a[0]) - orderCategories.indexOf(b[0]))
+            .map(([category, amenities]) => {
               const allChecked = amenities.every((amenity) => checkedItems[amenity.value]);
               const isIndeterminate = amenities.some((amenity) => checkedItems[amenity.value]) && !allChecked;
 
               return (
                 <React.Fragment key={category}>
-                  <ListItem px="2" py="2" fontWeight="bold" bg="gray.100" borderBottom="1px solid" borderColor="gray.200">
+                  <ListItem px="2" py="1" fontWeight="bold" bg="gray.100" borderBottom="1px solid" borderColor="gray.200">
                     <Checkbox
                       isChecked={allChecked}
                       isIndeterminate={isIndeterminate}
-                      colorScheme="purple"
+                      colorScheme="blue"
                       onChange={(e: ChangeEvent<HTMLInputElement>) => handleCategoryChange(category, e.target.checked)}
                     >
                       {mappingCategories[category]}
                     </Checkbox>
                   </ListItem>
-
+                  <ListItem mb="2">
                   {amenities.map((amenity: GenericObject) => (
                     <Box>
                       <Checkbox
                         px="4"
-                        size='sm'
-                        colorScheme="purple"
+                        size='md'
+                        colorScheme="blue"
                         isChecked={checkedItems[amenity.value] || false}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => {
                           handleSubcategoryChange(amenity, e.target.checked)
@@ -159,18 +183,34 @@ const SelectAutoComplete = () => {
                           e.preventDefault()
                         }}
                       >
-                        {amenity.label}
+                        <Text fontSize="sm">{amenity.label}</Text>
                       </Checkbox>
                       </Box>
                   ))}
+                  </ListItem>
                 </React.Fragment>
               );
             })}
           </List>
-        </Box>
-      )}
-      <Box mt={2} width="100%">
-        <Text fontSize="sm" fontWeight="400"><b>Seleccionados: </b>{getSelectedSummary() || 'Todos'}</Text>
+      </PopoverContent>
+      </Popover>
+      <Box width="100%" my="2">
+        {summay.map((item: any) => (<Tag m="0.5"
+              className='tag-selection'
+              size="xs"
+              px="1"
+              fontSize="12px"
+              key={item}
+            >{item}<TagCloseButton fontSize="xs"
+              onClick={() => removeAmenity(item)} /></Tag>))}
+          {summay.length === 0 && <Tag
+            variant="outline"
+            color="black"
+            m="1"
+            size="md"
+            p="1"
+            fontSize="12px"
+            colorScheme="gray">Todos los equipamientos</Tag>}
       </Box>
     </Box>
   );
