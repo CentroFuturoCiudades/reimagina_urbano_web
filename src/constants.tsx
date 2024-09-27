@@ -19,6 +19,20 @@ export const INITIAL_STATE = {
     maxZoom: 22,
 };
 
+export const METRIC_DESCRIPTIONS: GenericObject = {
+    "poblacion": "Población Total",
+    "grado_escuela": "Grado Promedio de Escolaridad",
+    "viviendas_habitadas": "Viviendas Particulares Habitadas",
+    "viviendas_deshabitadas": "Porcentaje de Viviendas Particulares Deshabitadas",
+    "indice_bienestar": "Índice de Bienestar",
+    "viviendas_auto": "Porcentaje de Viviendas con Vehículo Privado",
+    "viviendas_pc": "Porcentaje de Viviendas con PC",
+    "viviendas_tinaco": "Porcentaje de Viviendas con Tinaco",
+    "minutes": "Minutos",
+    "accessibility_score": "Puntuaje de Accesibilidad (0 a 100)",
+    "equipamientos": "Total de equipamientos dentro del área",
+};
+
 export const getQuantiles = (data: any, metric: string): [any, string[]] => {
     if (!data) return [null, []];
 

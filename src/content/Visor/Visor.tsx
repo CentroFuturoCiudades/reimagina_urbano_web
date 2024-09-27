@@ -6,10 +6,11 @@ import {
     AccordionPanel,
     AccordionIcon,
     Box,
-    Text,
+    Text, 
     CircularProgress,
     CircularProgressLabel,
     VStack,
+    Tooltip,
 } from "@chakra-ui/react";
 
 import React from "react";
@@ -18,9 +19,10 @@ import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import "./Visor.scss";
 import { RootState } from "../../app/store";
 import PopulationPyramid from "../../components/PopulationPyramid";
-import { mappingGradoEscolaridad, METRICS_MAPPING, VIEW_COLORS_RGBA } from "../../constants";
+import { mappingGradoEscolaridad, METRICS_MAPPING, VIEW_COLORS_RGBA, METRIC_DESCRIPTIONS } from "../../constants";
 import { GenericObject } from "../../types";
 import { IoCaretUp, IoCaretDown } from "react-icons/io5";
+import { FaInfoCircle } from "react-icons/fa";
 
 
 const ComparativeMetric = ({name, metric, children}: {name?: string, metric?: string, children: React.ReactNode[]}) => {
@@ -40,7 +42,12 @@ const ComparativeMetric = ({name, metric, children}: {name?: string, metric?: st
             }}
         >
             <Box className="stat-title-box" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>
-                <Text className="stat-title" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>{title}</Text>
+                <Text className="stat-title" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>
+                    {title}
+                    <Tooltip label={METRIC_DESCRIPTIONS[metric || name || ""] || title} fontSize="md">
+                        <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                    </Tooltip>
+                </Text>
             </Box>
             <Box className="stat-value" style={{ backgroundColor: isCurrent ? '#e2e6d1' : 'transparent' }}>
                 <Box>
@@ -54,6 +61,7 @@ const ComparativeMetric = ({name, metric, children}: {name?: string, metric?: st
         </Box>
     )
 }
+
 
 const getPyramidData = (metrics: any) => {
     return metrics

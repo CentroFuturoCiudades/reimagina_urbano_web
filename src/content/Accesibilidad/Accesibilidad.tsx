@@ -28,10 +28,10 @@ import {
 } from "recharts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { ACCESSIBILITY_POINTS_COLORS, amenitiesOptions } from "../../constants";
+import { ACCESSIBILITY_POINTS_COLORS, amenitiesOptions, METRIC_DESCRIPTIONS } from "../../constants";
 import { mappingCategories } from "../../components/SelectAutoComplete/SelectAutoComplete";
 import { center } from "@turf/turf";
-
+import { FaInfoCircle } from "react-icons/fa";
 
 class CustomizedContent extends PureComponent {
     render() {
@@ -195,7 +195,12 @@ const Accesibilidad = ({ metrics }: any) => {
                         <VStack spacing={"0"} className="accordion-body">
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
-                                    <Text className="stat-title">Puntuaje de Accesibilidad (0 a 100)</Text>
+                                    <Text className="stat-title">
+                                        Puntuaje de Accesibilidad (0 a 100)
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
+                                    </Text>
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
@@ -211,6 +216,9 @@ const Accesibilidad = ({ metrics }: any) => {
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">
                                         Servicios y equipamientos
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
                                     </Text>
                                 </Box>
                                 <Box
@@ -225,6 +233,9 @@ const Accesibilidad = ({ metrics }: any) => {
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">
                                         Total de equipamientos dentro del área
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
                                     </Text>
                                 </Box>
                                 <Box className="stat-value full">
@@ -238,6 +249,9 @@ const Accesibilidad = ({ metrics }: any) => {
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">
                                         Tipos de equipamientos
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
                                     </Text>
                                 </Box>
                                 <Box
@@ -282,6 +296,9 @@ const Accesibilidad = ({ metrics }: any) => {
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">
                                         Radio de cobertura
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
                                     </Text>
                                 </Box>
                                 <Box className="stat-value full">
@@ -293,7 +310,12 @@ const Accesibilidad = ({ metrics }: any) => {
 
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
-                                    <Text className="stat-title">Pendiente</Text>
+                                    <Text className="stat-title">
+                                        Pendiente
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
+                                    </Text>
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
