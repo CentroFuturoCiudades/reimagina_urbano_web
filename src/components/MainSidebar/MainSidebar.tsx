@@ -6,7 +6,6 @@ import axios from "axios";
 import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import Toolbar from "../Toolbar";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import { Accesibilidad } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
@@ -98,7 +97,6 @@ const MainSidebar = () => {
                     {/* Agrega el contenido específico de Infraestructura aquí */}
                 </TabPanel>
             </TabPanels>
-            <Toolbar></Toolbar>
         </Tabs>
     );
 };

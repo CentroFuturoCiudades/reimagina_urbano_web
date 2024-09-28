@@ -66,8 +66,10 @@ const useDrawPoligonLayer = () => {
         pickable: true,
         getTentativeFillColor: [255, 255, 255, 50],
         getFillColor: [0, 0, 0, 0],
-        getTentativeLineColor: [0, 0, 255, 200],
-        getLineColor: [0, 0, 255, 200],
+        getTentativeLineColor: [0, 100, 0, 200],
+        getTentativeLineWidth: 4,
+        getLineColor: [0, 100, 0, 200],
+        getLineWidth: 4,
     });
 
     return { drawPoligonData: polygon, layers: [drawLayer] };

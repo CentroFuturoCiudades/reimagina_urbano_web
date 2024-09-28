@@ -2,11 +2,6 @@ import { GenericObject } from "./types";
 import { generateGradientColors } from "./utils";
 import * as d3 from "d3";
 
-export const startColor = "#bdddff";
-export const endColor = "#1A57FF";
-export const AMOUNT = 8;
-export const COLORS = generateGradientColors(startColor, endColor, AMOUNT);
-
 export const INITIAL_STATE = {
     latitude: 24.755,
     longitude: -107.40527779958091,
@@ -58,7 +53,7 @@ export const METRICS_MAPPING: GenericObject = {
     "grado_escuela": { query: "graproes", title: "Grado Promedio de Escolaridad", ranges: [6, 9, 10, 12, 16, 18], type: "number" },
     "indice_bienestar": { query: "puntuaje_hogar_digno * 1000", title: "Índice de Bienestar", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_tinaco": { query: "LEAST(vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 15, 30, 60, 90, 100], type: "percentage" },
-    "viviendas_pc": { query: "LEAST(vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con PC", ranges: [0, 25, 35, 50, 60, 80, 100], type: "percentage" },
+    "viviendas_pc": { query: "LEAST(vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con PC", ranges: [0, 35, 50, 60, 80, 100], type: "percentage" },
     "viviendas_auto":{ query: "LEAST(vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [40, 50, 60, 70, 80, 100], type: "percentage" },
     "accessibility_score":{ query: "accessibility_score * 100", title: "Puntuaje de Accesibilidad (0 a 100)", ranges: [0, 20, 40, 60, 80, 100], type: "percentage" },
     "minutes": {
@@ -66,8 +61,8 @@ export const METRICS_MAPPING: GenericObject = {
         title: "Promedio minutos",
         ranges: [0, 5, 15, 30, 45, 60],
         type: "minutes",
-        startColor: "#2c406f",
-        endColor: "lightblue"
+        startColor: "#2C238B",
+        endColor: "#BFE5F8"
     }
 }
 export const amenitiesOptions = [

@@ -149,7 +149,7 @@ const SelectAutoComplete = () => {
               borderRadius="5px"
             >Equipamientos esenciales</Button>
         </PopoverTrigger>
-        <PopoverContent border="1px solid #c3cff0" height="200px">
+        <PopoverContent border="1px solid #c3cff0" height="200px" style={{ overflow: 'hidden' }}>
           <List size="sm" spacing={1} style={{ overflowY: 'scroll' }}>
             {Object.entries(groupedAmenitiesOptions)
             .sort((a, b) => orderCategories.indexOf(a[0]) - orderCategories.indexOf(b[0]))
