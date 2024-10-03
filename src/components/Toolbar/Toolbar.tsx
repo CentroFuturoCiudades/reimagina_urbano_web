@@ -234,7 +234,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ handleActivateLanding }) => {
             <Box m="2" className="toolbar-close">
                 <Tooltip hasArrow label="Cerrar" fontSize="14px">
                     <Flex direction="row" justify="center">
-                        <Button size="xs" onClick={() => handleActivateLanding()} variant={"ghost"}>
+                        <Button size="xs" onClick={() => handleActivateLanding()}>
                         <span> x </span>
                         </Button>
                     </Flex>
