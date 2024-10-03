@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, forwardRef } from "react";
 import { Box, Text, Heading, VStack, SimpleGrid, Center, Button } from "@chakra-ui/react";
 import { MainSidebar, BaseMap } from "../";
-import { IoClose } from "react-icons/io5";
+import Toolbar from "../Toolbar";
 
 
 
@@ -218,7 +218,6 @@ const Landing: React.FC = () => {
                     zIndex={activateLanding ? -2 : 1}  
                     >
                         <BaseMap />
-
                     </Box>
 
                     <Box 
@@ -231,9 +230,7 @@ const Landing: React.FC = () => {
                     justifyContent={"space-between"}
                     >
                         <MainSidebar/>
-                        <Button onClick={() => handleActivateLanding()} variant={"ghost"}>
-                            <IoClose />
-                        </Button>
+                        <Toolbar handleActivateLanding={handleActivateLanding}/>
                     </Box>
                 </VStack>
             </Box>

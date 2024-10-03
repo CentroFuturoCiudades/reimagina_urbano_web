@@ -21,7 +21,11 @@ import {
 import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
 import { PiMouseLeftClickFill } from "react-icons/pi";
 
-const Toolbar = () => {
+interface ToolbarProps {
+    handleActivateLanding: () => void; // Define the prop type
+  }
+  
+const Toolbar: React.FC<ToolbarProps> = ({ handleActivateLanding }) => {
     const dispatch: AppDispatch = useDispatch();
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const viewState = useSelector((state: RootState) => state.viewState);
@@ -216,7 +220,6 @@ const Toolbar = () => {
             <Box m="2" className="toolbar-help">
                 <Tooltip hasArrow label="Girar 3D" bg="gray.700" fontSize="14px">
                     <Flex direction="row" justify="center">
-                        <Kbd>cmd</Kbd>
                         <span> + </span>
                         <Kbd>
                             <Icon
@@ -225,6 +228,15 @@ const Toolbar = () => {
                                 style={{ verticalAlign: "middle" }}
                             />
                         </Kbd>
+                    </Flex>
+                </Tooltip>
+            </Box>
+            <Box m="2" className="toolbar-close">
+                <Tooltip hasArrow label="Cerrar" fontSize="14px">
+                    <Flex direction="row" justify="center">
+                        <Button size="xs" onClick={() => handleActivateLanding()} variant={"ghost"}>
+                        <span> x </span>
+                        </Button>
                     </Flex>
                 </Tooltip>
             </Box>

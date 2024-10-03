@@ -71,7 +71,7 @@
 .toolbar-zoom {
     position: absolute;
     top: 0px;
-    right: 0px;
+    right: 100px;
     background-color: var(--primary-dark);
     opacity: 0.95;
     border-radius: 8px;
@@ -105,7 +105,7 @@
 .toolbar-help {
     position: absolute;
     top: 0px;
-    right: 100px;
+    right: 200px;
     background-color: var(--primary-dark);
     opacity: 0.95;
     border-radius: 8px;
@@ -126,5 +126,27 @@
     span {
         color: white;
         margin: 0 5px;
+    }
+}
+.toolbar-close {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: var(--primary-dark);
+    opacity: 0.95;
+    border-radius: 8px;
+    padding: 1.5px;
+    z-index: 1;
+    height: 30px;
+    
+    button {
+        margin: 1.5px !important;
+        background-color: var(--primary-dark);
+        color: white;
+        font-size: 15px;
+
+        &:hover {
+            background-color: var(--primary-dark3);
+        }
     }
 }
