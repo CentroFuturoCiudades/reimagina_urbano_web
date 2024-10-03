@@ -11,6 +11,7 @@ import { Layers, Legend } from "../index";
 import { setViewState } from "../../features/viewState/viewStateSlice";
 import "./BaseMap.scss";
 import _ from "lodash";
+import { Spinner } from "@chakra-ui/react";
 
 interface BaseMapProps {
     isSatellite?: boolean;
@@ -81,8 +82,15 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
         <>
             { isLoading &&
                 <div className="loading-container">
-                    <div className="spinner"></div>
-                    <div className="loading-text">Loading...</div>
+                    {/* <div className="spinner"></div> */}
+                    <Spinner
+                        thickness='6px'
+                        speed='0.65s'
+                        emptyColor='gray.200'
+                        color='gray.500'
+                        size='xl'
+                    />
+                    <div className="loading-text">Cargando...</div>
                 </div>
             }
             {/* @ts-ignore */}

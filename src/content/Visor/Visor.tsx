@@ -224,14 +224,14 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                     { metrics?.pobtot?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
                                     }) || "" }<br />
-                                    hab
+                                    habitantes
                                 </Text>
                                 <Text>
                                     { globalData?.pobtot?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
                                     })}
                                     <br />
-                                    hab
+                                   habitantes
                                 </Text>
                             </ComparativeMetric>
                             <ComparativeMetric name="Pirámide poblacional" icon={ImManWoman}>
