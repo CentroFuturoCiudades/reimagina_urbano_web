@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
+import { Tabs, Tab, TabList, TabPanels, TabPanel, Button } from "@chakra-ui/react";
 import "./MainSidebar.scss";
 import { TABS, VIEW_MODES } from "../../constants";
 import axios from "axios";
@@ -10,8 +10,11 @@ import Toolbar from "../Toolbar";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import { Accesibilidad } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
+import { FaChevronUp } from "react-icons/fa";
 
-const MainSidebar = () => {
+
+    
+  const MainSidebar = () => {    
     const [metrics, setMetrics] = useState<any>({});
 
     const selectedLots = useSelector(
@@ -41,6 +44,8 @@ const MainSidebar = () => {
     }, [selectedLots]);
 
     return (
+        <>
+
         <Tabs
             className="mainSidebar"
             variant="soft-rounded"
@@ -100,6 +105,9 @@ const MainSidebar = () => {
             </TabPanels>
             <Toolbar></Toolbar>
         </Tabs>
+        </>
+
+            
     );
 };
 
