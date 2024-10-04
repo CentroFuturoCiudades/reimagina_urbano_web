@@ -20,11 +20,12 @@ import {
 } from "@chakra-ui/react";
 import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
 import { PiMouseLeftClickFill } from "react-icons/pi";
+import { IoCloseOutline } from "react-icons/io5";
 
 interface ToolbarProps {
     handleActivateLanding: () => void; // Define the prop type
   }
-  
+
 const Toolbar: React.FC<ToolbarProps> = ({ handleActivateLanding }) => {
     const dispatch: AppDispatch = useDispatch();
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
@@ -49,8 +50,8 @@ const Toolbar: React.FC<ToolbarProps> = ({ handleActivateLanding }) => {
     };
 
     return (
-        <>
-            <Box m="2" className="toolbar">
+        <div className="toolbar">
+            <Box m="2" className="toolbar__main">
                 <Flex direction="row" justify="center">
                     <Tooltip
                         hasArrow
@@ -235,12 +236,12 @@ const Toolbar: React.FC<ToolbarProps> = ({ handleActivateLanding }) => {
                 <Tooltip hasArrow label="Cerrar" fontSize="14px">
                     <Flex direction="row" justify="center">
                         <Button size="xs" onClick={() => handleActivateLanding()}>
-                        <span> x </span>
+                          <IoCloseOutline></IoCloseOutline>
                         </Button>
                     </Flex>
                 </Tooltip>
             </Box>
-        </>
+        </div>
     );
 };
 

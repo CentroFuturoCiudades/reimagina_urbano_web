@@ -1,4 +1,10 @@
 .toolbar {
+    width: 100%;
+    position: fixed;
+    top: 0;
+}
+
+.toolbar__main {
     position: absolute;
     top: 0;
     left: calc(50dvw + 60px);
@@ -128,6 +134,7 @@
         margin: 0 5px;
     }
 }
+
 .toolbar-close {
     position: absolute;
     top: 0px;
@@ -138,7 +145,7 @@
     padding: 1.5px;
     z-index: 1;
     height: 30px;
-    
+
     button {
         margin: 1.5px !important;
         background-color: var(--primary-dark);
