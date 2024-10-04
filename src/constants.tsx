@@ -46,7 +46,16 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
 
 export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
 
-export const METRICS_MAPPING: GenericObject = {
+export interface MetricInterface {
+    query: string;
+    title: string;
+    ranges: number[];
+    type: "number" | "percentage" | "minutes" | "area";
+    startColor?: string;
+    endColor?: string;
+}
+
+export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     "poblacion": { query: "pobtot", title: "Población Total", ranges: [0, 65, 80, 100, 130, 800], type: "number" },
     "viviendas_habitadas": { query: "vivpar_hab", title: "Viviendas Particulares Habitadas", ranges: [0, 25, 50, 100, 150, 200], type: "number" },
     "viviendas_deshabitadas": { query: "GREATEST(VIVPAR_DES * 1.0 / NULLIF(VIVPAR_HAB, 0) * 100, 0)", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 10, 20, 30, 40, 100], type: "percentage" }, // rango de 0-89
@@ -63,7 +72,13 @@ export const METRICS_MAPPING: GenericObject = {
         type: "minutes",
         startColor: "#2C238B",
         endColor: "#BFE5F8"
-    }
+    },
+    //METRICAS POTENCIAL
+    "density": { query: "1", title: "Densidad", ranges: [ 1,2,3,4], type:"number" },
+    "max_height": { query: "1", title: "Alturas Máximas", ranges: [ 1,2,3,4], type:"number" },
+    "potencial": { query: "1", title: "Actual vs. Potencial", ranges: [ 1,2,3,4], type:"number" },
+    "subutilizacion": { query: "1", title: "Subutilización", ranges: [ 1,2,3,4], type:"percentage" },
+    "subutilizacion_type": { query: "1", title: "Tipos de Espacio Subutilizado", ranges: [ 1,2,3,4], type:"number" }
 }
 export const amenitiesOptions = [
     // Salud

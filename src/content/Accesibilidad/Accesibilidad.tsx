@@ -68,7 +68,7 @@ const Accesibilidad = ({ metrics }: any) => {
                 aria-label='A tooltip'
                 placement="top" hasArrow={true}
                 bg={"#34353c"}
-                isOpen= { activeAmenity == name && activeAmenity != "" ? true : false }
+                isOpen= { size && activeAmenity == name && activeAmenity != "" ? true : false }
             >
                 <g>
                 <rect
@@ -93,7 +93,7 @@ const Accesibilidad = ({ metrics }: any) => {
                         </text>
                     ) : null} */}
                     {
-                        depth === 2 && width > 25 && height > 25 ? (
+                        depth === 2 && width > 30 && height > 25 ? (
                             <text x={x + 4} y={y + 18} fill="#fff" fontSize={16} fillOpacity={0.9}>
                                 {size}
                             </text>

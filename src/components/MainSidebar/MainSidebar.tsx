@@ -7,7 +7,7 @@ import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
-import { Accesibilidad } from "../../content";
+import { Accesibilidad, Potencial } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
 
 const MainSidebar = () => {
@@ -93,8 +93,7 @@ const MainSidebar = () => {
                     <Accesibilidad metrics={metrics}></Accesibilidad>
                 </TabPanel>
                 <TabPanel>
-                    <p>Contenido de Potencial</p>
-                    {/* Agrega el contenido específico de Infraestructura aquí */}
+                    <Potencial metrics={metrics}></Potencial>
                 </TabPanel>
             </TabPanels>
         </Tabs>

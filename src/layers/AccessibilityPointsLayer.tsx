@@ -19,12 +19,10 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
 
     const [polygons, setPolygons] = React.useState<any>([]);
-    const condition = ((metric !== "minutes" && metric !== "accessibility_score") || !coordinates || coordinates.length === 0);
+    const condition = ( (metric !== "minutes" && metric !== "accessibility_score") || ( (!coordinates || coordinates.length === 0) && viewMode != VIEW_MODES.FULL ));
     const [hoverInfo, setHoverInfo] = React.useState<any>(null);
     const accessibilityList = useSelector((state: RootState) => state.accessibilityList.accessibilityList);
     const activeAmenity = useSelector((state: RootState) => state.viewMode.activeAmenity );
-
-    console.log( activeAmenity );
 
     useAborterEffect(async (signal: any, isMounted: boolean) => {
         if (condition) return;
