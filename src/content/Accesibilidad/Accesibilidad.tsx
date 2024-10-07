@@ -33,6 +33,19 @@ import { mappingCategories } from "../../components/SelectAutoComplete/SelectAut
 import { center } from "@turf/turf";
 import { FaInfoCircle } from "react-icons/fa";
 
+const ComparativeMetric = (title: string, metricKey: string) => (
+    <Text className="stat-title">
+        {title}
+        {METRIC_DESCRIPTIONS[metricKey] && (
+            <Tooltip label={METRIC_DESCRIPTIONS[metricKey]} fontSize="md">
+                <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}>
+                    <FaInfoCircle />
+                </span>
+            </Tooltip>
+        )}
+    </Text>
+);
+
 class CustomizedContent extends PureComponent {
     render() {
         //@ts-ignore
@@ -181,75 +194,63 @@ const Accesibilidad = ({ metrics }: any) => {
         );
       };
 
-    return (
+    return ( 
         <div className="accesibilidad tab__main">
             <Accordion defaultIndex={[0]} allowToggle>
                 <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
                             Servicios de proximidad
+                            <Tooltip label="Servicios urbanos esenciales, como escuelas, tiendas, hospitales y centros de transporte, ubicados en las cercanías de las áreas residenciales, facilitando el acceso rápido y eficiente para los habitantes." fontSize="md">
+                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
+                            </Tooltip>
                         </Box>
                         <AccordionIcon />
                     </AccordionButton>
                     <AccordionPanel p={0}>
                         <VStack spacing={"0"} className="accordion-body">
+
+                            
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
-                                    <Text className="stat-title">
-                                        Puntuaje de Accesibilidad (0 a 100)
-                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
-                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
-                                        </Tooltip>
-                                    </Text>
+                                    {ComparativeMetric("Puntuaje de Accesibilidad (0 a 100)", "accessibility_score")}
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
                                         <Text>
-                                            {" "}
                                             <Icon as={FaWalking}></Icon>{" "}
                                             {Math.trunc(metrics.accessibility_score * 100)}
                                         </Text>
                                     </Box>
                                 </Box>
                             </Box>
+
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
-                                    <Text className="stat-title">
-                                        Servicios y equipamientos
-                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
-                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
-                                        </Tooltip>
-                                    </Text>
+                                    {ComparativeMetric("Servicios y equipamientos", "services_equipment")}
                                 </Box>
-                                <Box
-                                    className="stat-value full"
-                                    style={{ width: "100%", padding: "0 1rem" }}
-                                >
+                                <Box className="stat-value full" style={{ width: "100%", padding: "0 1rem" }}>
                                     <SelectAutoComplete />
                                 </Box>
                             </Box>
 
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
-                                    <Text className="stat-title">
-                                        Total de equipamientos dentro del área
-                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
-                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
-                                        </Tooltip>
-                                    </Text>
+                                    {ComparativeMetric("Total de equipamientos dentro del área", "total_equipment")}
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
-                                        <Text> { accessibilityPointsCount } </Text>
+                                        <Text>{accessibilityPointsCount}</Text>
                                     </Box>
                                 </Box>
                             </Box>
+
 
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">
                                         Tipos de equipamientos
-                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Clasificación de los diferentes tipos de instalaciones urbanas, como centros educativos, de salud, deportivos, culturales, etc."} fontSize="md">
                                             <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
                                         </Tooltip>
                                     </Text>
@@ -279,6 +280,7 @@ const Accesibilidad = ({ metrics }: any) => {
                                  }
                                 </Box>
                             </Box>
+
                         </VStack>
                     </AccordionPanel>
                 </AccordionItem>
@@ -287,46 +289,41 @@ const Accesibilidad = ({ metrics }: any) => {
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
                             Radio de cobertura
+                            <Tooltip label="Distancia o área en la que los servicios o equipamientos públicos, como centros de salud o parques, son accesibles para la población, generalmente medido en kilómetros o minutos de desplazamiento." fontSize="md">
+                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
+                            </Tooltip>
                         </Box>
                         <AccordionIcon />
                     </AccordionButton>
+
                     <AccordionPanel p={0}>
                         <VStack spacing={"0"} className="accordion-body">
+
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
-                                    <Text className="stat-title">
-                                        Radio de cobertura
-                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
-                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
-                                        </Tooltip>
-                                    </Text>
+                                    {ComparativeMetric("Radio de cobertura", "coverage_radius")}
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
-                                        <Text> 0.4 KM</Text>
+                                        <Text>0.4 KM</Text>
                                     </Box>
                                 </Box>
                             </Box>
 
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
-                                    <Text className="stat-title">
-                                        Pendiente
-                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Pendiente"} fontSize="md">
-                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
-                                        </Tooltip>
-                                    </Text>
+                                    {ComparativeMetric("Pendiente", "slope")}
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
                                         <Text>
-                                            {" "}
                                             <Icon as={TbAngle}></Icon>{" "}
                                             {Math.trunc(metrics.mean_slope)}°
                                         </Text>
                                     </Box>
                                 </Box>
                             </Box>
+
                         </VStack>
                     </AccordionPanel>
                 </AccordionItem>

@@ -4,8 +4,22 @@
     overflow: hidden;
     padding: 0px;
 
-    .accordion-header{
+    .accordion-header {
         background-color: var(--accesibilidad-primary-opacity);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        span {
+            display: inline-block;
+            margin-left: 5px; 
+            vertical-align: middle;
+        }
+
+        svg {
+            vertical-align: middle; 
+            line-height: 1; 
+        }
     }
 }
 

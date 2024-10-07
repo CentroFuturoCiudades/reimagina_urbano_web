@@ -25,11 +25,15 @@ import { IoCaretUp, IoCaretDown } from "react-icons/io5";
 import { FaInfoCircle } from "react-icons/fa";
 
 
-const ComparativeMetric = ({name, metric, children}: {name?: string, metric?: string, children: React.ReactNode[]}) => {
+const ComparativeMetric = ({ name, metric, children }: { name?: string, metric?: string, children: React.ReactNode[] }) => {
     const dispatch = useDispatch();
     const currentMetric = useSelector((state: RootState) => state.queryMetric.queryMetric);
     const isCurrent = currentMetric === metric;
     const title = metric ? name || METRICS_MAPPING[metric]?.title || metric : name || "";
+
+    // Métricas sin hover
+    const metricsWithoutIcon = ["viviendas_habitadas", "viviendas_auto", "viviendas_pc"];
+
     return (
         <Box
             className="stat-row"
@@ -44,23 +48,21 @@ const ComparativeMetric = ({name, metric, children}: {name?: string, metric?: st
             <Box className="stat-title-box" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>
                 <Text className="stat-title" style={{ backgroundColor: isCurrent ? '#a2a888' : 'transparent' }}>
                     {title}
-                    <Tooltip label={METRIC_DESCRIPTIONS[metric || name || ""] || title} fontSize="md">
-                        <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
-                    </Tooltip>
+                    
+                    {!metricsWithoutIcon.includes(metric || "") && (
+                        <Tooltip label={METRIC_DESCRIPTIONS[metric || name || ""] || title} fontSize="md">
+                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                        </Tooltip>
+                    )}
                 </Text>
             </Box>
             <Box className="stat-value" style={{ backgroundColor: isCurrent ? '#e2e6d1' : 'transparent' }}>
-                <Box>
-                    {children[0]}
-                </Box>
-                {children.length > 1 &&
-                    <Box className="dark">
-                    {children[1]}
-                </Box>}
+                <Box>{children[0]}</Box>
+                {children.length > 1 && <Box className="dark">{children[1]}</Box>}
             </Box>
         </Box>
-    )
-}
+    );
+};
 
 
 const getPyramidData = (metrics: any) => {
@@ -199,9 +201,13 @@ const Visor = ({ metrics }: { metrics: any }) => {
             }
             }>
                 <AccordionItem style={{ borderWidth: "0px" }}>
+                    
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
                             Perfil sociodemográfico
+                            <Tooltip label="Información sobre las características demográficas de la población, incluyendo edad, género, estado civil, tamaño del hogar, migración, y etnicidad, que permite analizar la composición y estructura de la población en un área específica." fontSize="md">
+                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
+                            </Tooltip>
                         </Box>
                         <AccordionIcon />
                     </AccordionButton>
@@ -283,6 +289,9 @@ const Visor = ({ metrics }: { metrics: any }) => {
                     <AccordionButton className="accordion-header">
                         <Box flex="1" textAlign="left">
                             Perfil socioeconómico
+                            <Tooltip label="Datos sobre los niveles de ingresos, empleo, acceso a servicios básicos, vivienda, y nivel educativo, que permiten evaluar la calidad de vida y el bienestar económico de la población." fontSize="md">
+                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
+                            </Tooltip>
                         </Box>
                         <AccordionIcon />
                     </AccordionButton>

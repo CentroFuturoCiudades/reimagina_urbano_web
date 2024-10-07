@@ -20,17 +20,22 @@ export const INITIAL_STATE = {
 };
 
 export const METRIC_DESCRIPTIONS: GenericObject = {
-    "poblacion": "Población Total",
-    "grado_escuela": "Grado Promedio de Escolaridad",
+    "poblacion": "Total de habitantes que residen en el área analizada según los últimos datos del censo de INEGI.",
+    "grado_escuela": "Información sobre el grado máximo de estudios alcanzado por la población.",
     "viviendas_habitadas": "Viviendas Particulares Habitadas",
-    "viviendas_deshabitadas": "Porcentaje de Viviendas Particulares Deshabitadas",
-    "indice_bienestar": "Índice de Bienestar",
+    "viviendas_deshabitadas": " Porcentaje de viviendas que no están ocupadas en el área, con base en datos del censo de INEGI.",
+    "indice_bienestar": "Medición que clasifica áreas según el nivel de bienestar económico de sus habitantes, considerando factores como ingresos, acceso a servicios y calidad de vida.",
     "viviendas_auto": "Porcentaje de Viviendas con Vehículo Privado",
     "viviendas_pc": "Porcentaje de Viviendas con PC",
-    "viviendas_tinaco": "Porcentaje de Viviendas con Tinaco",
-    "minutes": "Minutos",
+    "viviendas_tinaco": "Porcentaje de viviendas que disponen de servicios básicos de bienestar como tinacos.",
     "accessibility_score": "Puntuaje de Accesibilidad (0 a 100)",
     "equipamientos": "Total de equipamientos dentro del área",
+    "Pirámide poblacional": "Distribución de la población por grupos de edad y género, representada en una pirámide para observar la estructura demográfica.",
+    "services_equipment": "Infraestructura y servicios urbanos disponibles en la zona, como escuelas, hospitales, transporte, parques y centros comunitarios.",
+    "total_equipment": "Número total de instalaciones y servicios públicos disponibles, tales como escuelas, hospitales y espacios recreativos.",
+    "equipment_types": "Clasificación de los diferentes tipos de instalaciones urbanas, como centros educativos, de salud, deportivos, culturales, etc.",
+    "coverage_radius": "Área geográfica en la que los servicios o equipamientos alcanzan a beneficiar a la población.",
+    "slope": "Diferencia de altitud en el terreno de la zona, relevante para evaluar accesibilidad y movilidad."
 };
 
 export const getQuantiles = (data: any, metric: string): [any, string[]] => {
