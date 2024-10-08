@@ -13,7 +13,7 @@ import {
     Tooltip,
 } from "@chakra-ui/react";
 import { TbAngle } from "react-icons/tb";
-import { FaHospital, FaWalking } from "react-icons/fa";
+import { FaHospital, FaInfoCircle, FaWalking } from "react-icons/fa";
 import { FaChevronDown, FaChevronUp, FaIcons, FaLocationDot, FaSchool } from "react-icons/fa6";
 import "./Accesibilidad.scss";
 import {
@@ -35,20 +35,6 @@ import { setActiveAmenity } from "../../features/viewMode/viewModeSlice";
 import { PiParkFill } from "react-icons/pi";
 import { ComparativeMetric, GraphPercent } from "../Visor/Visor";
 import { MdOutlineAccessTime } from "react-icons/md";
-
-// const ComparativeMetric = (title: string, metricKey: string) => (
-//     <Text className="stat-title">
-//         {title}
-//         {METRIC_DESCRIPTIONS[metricKey] && (
-//             <Tooltip label={METRIC_DESCRIPTIONS[metricKey]} fontSize="md">
-//                 <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}>
-//                     <FaInfoCircle />
-//                 </span>
-//             </Tooltip>
-//         )}
-//     </Text>
-// );
-
 
 const Accesibilidad = ({ metrics }: any) => {
 
@@ -255,15 +241,16 @@ const Accesibilidad = ({ metrics }: any) => {
 
                             <Box className="stat-row">
                                 <Box className="stat-title-box">
-                                    {ComparativeMetric("Total de equipamientos dentro del área", "total_equipment")}
+                                    <Text className="stat-title">
+                                        Total de equipamientos dentro del área
+                                    </Text>
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
-                                        <Text>{accessibilityPointsCount}</Text>
+                                        <Text> { accessibilityPointsCount } </Text>
                                     </Box>
                                 </Box>
                             </Box>
-
 
                             <Box className="stat-row">
                                 <Box className="stat-title-box">

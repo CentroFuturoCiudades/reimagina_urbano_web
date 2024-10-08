@@ -20,7 +20,7 @@ import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import "./Visor.scss";
 import { RootState } from "../../app/store";
 import PopulationPyramid from "../../components/PopulationPyramid";
-import { mappingGradoEscolaridad, METRICS_MAPPING, VIEW_COLORS_RGBA, VIEW_MODES } from "../../constants";
+import { mappingGradoEscolaridad, METRIC_DESCRIPTIONS, METRICS_MAPPING, VIEW_COLORS_RGBA, VIEW_MODES } from "../../constants";
 import { GenericObject } from "../../types";
 import { IoCaretUp, IoCaretDown, IoWater, IoHappy, IoHappyOutline } from "react-icons/io5";
 import { FaPerson, FaHouseUser, FaComputer } from "react-icons/fa6";
@@ -57,6 +57,13 @@ export const ComparativeMetric = ({name, metric, icon, children}: {name?: string
                  }}>
                     {icon && <Icon as={icon} mr="2" color={isCurrent ? 'white' : '#383b46'} />}
                     {title}</Text>
+                    {METRIC_DESCRIPTIONS[metric || ""] && (
+                        <Tooltip label={METRIC_DESCRIPTIONS[metric || ""]} fontSize="md">
+                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}>
+                                <FaInfoCircle />
+                            </span>
+                        </Tooltip>
+                    )}
             </Box>
             {Array.isArray(children) ?
                 <Box className="stat-value">
