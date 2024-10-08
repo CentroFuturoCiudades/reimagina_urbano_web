@@ -3,6 +3,7 @@ import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 import "./App.css";
 import { MainSidebar, BaseMap } from "./components";
+import Toolbar from "./components/Toolbar";
 
 function App() {
     const project = window.location.pathname.split("/")[1];
@@ -15,6 +16,7 @@ function App() {
     return (
         <div style={{ width: "100dvw", height: "100dvh" }}>
             <MainSidebar />
+            <Toolbar />
             <BaseMap />
         </div>
     );

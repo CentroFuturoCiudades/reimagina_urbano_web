@@ -4,13 +4,14 @@ import { GeoJsonLayer } from "@deck.gl/layers";
 import { Map } from "react-map-gl";
 import { useFetchGeo } from "../../utils";
 import { INITIAL_STATE } from "../../constants";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import { debounce } from "lodash";
 import { Layers, Legend } from "../index";
 import { setViewState } from "../../features/viewState/viewStateSlice";
 import "./BaseMap.scss";
+import _ from "lodash";
+import { Spinner } from "@chakra-ui/react";
 
 interface BaseMapProps {
     isSatellite?: boolean;
@@ -81,8 +82,15 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
         <>
             { isLoading &&
                 <div className="loading-container">
-                    <div className="spinner"></div>
-                    <div className="loading-text">Loading...</div>
+                    {/* <div className="spinner"></div> */}
+                    <Spinner
+                        thickness='6px'
+                        speed='0.65s'
+                        emptyColor='gray.200'
+                        color='gray.500'
+                        size='xl'
+                    />
+                    <div className="loading-text">Cargando...</div>
                 </div>
             }
             {/* @ts-ignore */}
@@ -92,6 +100,18 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                 layers={[poligonLayer, ...layers, coloniasLayer]}
                 viewState={{ ...localViewState }}
                 onViewStateChange={handleViewStateChange}
+                getTooltip={({ object }: any): any => {
+                    if (!object || !object.properties.name) return null;
+                    return {
+                        html: `<div>
+                            <p><b>Nombre:</b> ${_.capitalize(object.properties.name)}</p>
+                            <p><b>Categoría:</b> ${object.properties.amenity}</p>
+                            ${object.properties.opportunities_ratio ? `<p><b>Potencial de Aprovechamiento:</b> ${Math.round(object.properties.opportunities_ratio * 100)}%</p>` : ''}
+                            <p><b>Visitas:</b> XX</p>
+                            <p><b>Población Alcance:</b> XX</p>
+                        </div>`
+                };
+                }}
             >
                 <Map
                     mapStyle={

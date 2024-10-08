@@ -6,9 +6,8 @@ import axios from "axios";
 import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import Toolbar from "../Toolbar";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
-import { Accesibilidad } from "../../content";
+import { Accesibilidad, Potencial } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
 
 const MainSidebar = () => {
@@ -50,7 +49,7 @@ const MainSidebar = () => {
                 <Tab
                     className="tab-visor"
                     _selected={{
-                        bg: "var(--visor-primary-opacity)",
+                        bg: "var(--visor-primary)",
                         color: "white",
                     }}
                     onClick={() => {
@@ -63,12 +62,12 @@ const MainSidebar = () => {
                 <Tab
                     className="tab-accesibilidad"
                     _selected={{
-                        bg: "var(--accesibilidad-primary-opacity)",
+                        bg: "var(--accesibilidad-primary)",
                         color: "white",
                     }}
                     onClick={() => {
                         dispatch( setActiveTab( TABS.ACCESIBILIDAD ) )
-                        dispatch(setQueryMetric("minutes"));
+                        dispatch( setQueryMetric("minutes") );
                     }}
                 >
                     Accesibilidad
@@ -76,11 +75,12 @@ const MainSidebar = () => {
                 <Tab
                     className="tab-potencial"
                     _selected={{
-                        bg: "rgba(206, 173, 102, 0.8)",
+                        bg: "var(--potencial-primary)",
                         color: "white",
                     }}
                     onClick={() => {
-                        dispatch( setActiveTab( TABS.POTENCIAL ) )
+                        dispatch( setActiveTab( TABS.POTENCIAL ) );
+                        dispatch( setQueryMetric("density") );
                     }}
                 >
                     Potencial
@@ -94,11 +94,9 @@ const MainSidebar = () => {
                     <Accesibilidad metrics={metrics}></Accesibilidad>
                 </TabPanel>
                 <TabPanel>
-                    <p>Contenido de Potencial</p>
-                    {/* Agrega el contenido específico de Infraestructura aquí */}
+                    <Potencial metrics={metrics}></Potencial>
                 </TabPanel>
             </TabPanels>
-            <Toolbar></Toolbar>
         </Tabs>
     );
 };

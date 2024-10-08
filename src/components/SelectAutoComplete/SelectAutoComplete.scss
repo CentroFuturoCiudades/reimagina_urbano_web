@@ -7,3 +7,20 @@
         width: 100%;
     }
 }
+
+.seleccionAccesibilidad {
+    background-color: var(--accesibilidad-unactive) !important;
+    color: white !important;
+    justify-content: space-between !important;
+    &:hover {
+        background-color: var(--accesibilidad-primary) !important;
+    }
+}
+
+.tag-selection {
+    border: 1px solid var(--accesibilidad-unactive) !important;
+    background-color: white !important;
+    &:hover {
+        background-color: rgb(241, 240, 240) !important;
+    }
+}

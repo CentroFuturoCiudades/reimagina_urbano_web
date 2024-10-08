@@ -53,7 +53,7 @@ const useLensLayer = ({ coords }: any) => {
         filled: true,
         getFillColor: [ 255, 255, 255, 0],
         getLineColor: [0, 120, 0, 255],
-        getLineWidth: 5,
+        getLineWidth: 10,
         pickable: zoom < ZOOM_SHOW_DETAILS,
         onDragStart: () => {
             setIsDrag(true);

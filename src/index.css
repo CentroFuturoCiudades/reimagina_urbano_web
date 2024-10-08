@@ -1,15 +1,27 @@
 
 :root {
     --visor-primary: #6b7f14;
-    --visor-primary-opacity: #6b7f14fa;
-    --visor-secondary: #a3b16c;
+    --visor-light: rgb(148, 163, 82);
+    --visor-selected: #8f9c57;
+    --visor-selected-light: #f5fbe0;
+    --visor-selected-dark: #e0e5cd;
 
     --accesibilidad-primary: #996699;
-    --accesibilidad-primary-opacity: #996699f9;
+    --accesibilidad-unactive: #ad92ad;
+    --accesibilidad-light: rgb(255, 228, 255);
     --accesibilidad-parque: #7ea48d;
     --accesibilidad-educacion: #cc9999;
     --accesibilidad-cultura: #cfc7e3;
     --accesibiildad-salud: #7c6eb1;
+
+    --primary: #5971a8;
+    --primary-light: #7088c0;
+    --primary-dark: #4f5666;
+    --primary-dark2: #2a2f3a;
+    --primary-dark3: #373e4c;
+
+    --potencial-primary: #cb9319;
+    --potencial-light: #debb70;
 }
 
 

@@ -7,6 +7,7 @@ interface ViewModeState {
     activeTab: TABS;
     isLoading: boolean;
     legendLimits: { min: number, max: number } | null;
+    activeAmenity?: string;
 }
 
 const initialState: ViewModeState = {
@@ -14,7 +15,8 @@ const initialState: ViewModeState = {
     poligonMode: POLYGON_MODES.VIEW,
     activeTab: TABS.VISOR,
     isLoading: false,
-    legendLimits: null
+    legendLimits: null,
+    activeAmenity: undefined
 };
 
 const viewModeSlice = createSlice({
@@ -36,9 +38,12 @@ const viewModeSlice = createSlice({
         setLegendLimits: (state, action: PayloadAction< { min: number, max: number }  | null >) => {
             state.legendLimits = action.payload;
         },
+        setActiveAmenity: (state, action: PayloadAction< string | undefined >) => {
+            state.activeAmenity = action.payload;
+        },
     }
 });
 
-export const { setViewMode, setPoligonMode, setActiveTab, setIsLoading, setLegendLimits } = viewModeSlice.actions;
+export const { setViewMode, setPoligonMode, setActiveTab, setIsLoading, setLegendLimits, setActiveAmenity } = viewModeSlice.actions;
 
 export default viewModeSlice.reducer;
