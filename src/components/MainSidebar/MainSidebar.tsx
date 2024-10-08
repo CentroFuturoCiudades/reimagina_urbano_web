@@ -67,7 +67,7 @@ const MainSidebar = () => {
                     }}
                     onClick={() => {
                         dispatch( setActiveTab( TABS.ACCESIBILIDAD ) )
-                        dispatch(setQueryMetric("minutes"));
+                        dispatch( setQueryMetric("minutes") );
                     }}
                 >
                     Accesibilidad
@@ -79,7 +79,8 @@ const MainSidebar = () => {
                         color: "white",
                     }}
                     onClick={() => {
-                        dispatch( setActiveTab( TABS.POTENCIAL ) )
+                        dispatch( setActiveTab( TABS.POTENCIAL ) );
+                        dispatch( setQueryMetric("density") );
                     }}
                 >
                     Potencial

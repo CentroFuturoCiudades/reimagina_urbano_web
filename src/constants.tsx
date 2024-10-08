@@ -74,10 +74,10 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
         endColor: "#BFE5F8"
     },
     //METRICAS POTENCIAL
-    "density": { query: "1", title: "Densidad", ranges: [ 1,2,3,4], type:"number" },
-    "max_height": { query: "1", title: "Alturas Máximas", ranges: [ 1,2,3,4], type:"number" },
-    "potencial": { query: "1", title: "Actual vs. Potencial", ranges: [ 1,2,3,4], type:"number" },
-    "subutilizacion": { query: "1", title: "Subutilización", ranges: [ 1,2,3,4], type:"percentage" },
+    "density": { query: "home_density", title: "Densidad", ranges: [ 0, 1500, 2500, 5000, 25000 ], type:"number" },
+    "max_height": { query: "max_height", title: "Alturas Máximas", ranges: [ 0, 2, 3, 4, 6 ], type:"number" },
+    "potencial": { query: "potential_new_units", title: "Actual vs. Potencial", ranges: [ 0,1,2,5,1000], type:"number" },
+    "subutilizacion": { query: "LEAST( ( 1 - units_estimate * 1.0 / NULLIF(max_home_units, 0) * 100), 100)", title: "Subutilización", ranges: [ 0,40,70,90,100], type:"percentage" },
     "subutilizacion_type": { query: "1", title: "Tipos de Espacio Subutilizado", ranges: [ 1,2,3,4], type:"number" }
 }
 export const amenitiesOptions = [
