@@ -29,7 +29,12 @@ export const METRIC_DESCRIPTIONS: GenericObject = {
     "total_equipment": "Número total de instalaciones y servicios públicos disponibles, tales como escuelas, hospitales y espacios recreativos.",
     "equipment_types": "Clasificación de los diferentes tipos de instalaciones urbanas, como centros educativos, de salud, deportivos, culturales, etc.",
     "coverage_radius": "Área geográfica en la que los servicios o equipamientos alcanzan a beneficiar a la población.",
-    "slope": "Diferencia de altitud en el terreno de la zona, relevante para evaluar accesibilidad y movilidad."
+    "minutes": "Tiempo promedio que tarda la población en acceder a servicios o equipamientos esenciales.",
+    "density": "Relación entre el número de habitantes o viviendas y el área de la zona analizada, normalmente expresada en habitantes o viviendas por kilómetro cuadrado.",
+    "max_height": "Altura máxima permitida para los edificios en la zona, según las regulaciones de uso de suelo.",
+    "potencial": "Comparación entre el uso actual del suelo y el potencial que podría alcanzarse bajo diferentes condiciones o normativas.",
+    "subutilizacion": "Porcentaje de áreas, edificaciones o servicios que no están siendo utilizados a su máxima capacidad.",
+    "subutilizacion_type": "Clasificación de los diferentes tipos de espacios que están subutilizados, como terrenos baldíos, edificios vacíos, o espacios infrautilizados en equipamientos públicos.",
 };
 
 export const getQuantiles = (data: any, metric: string): [any, string[]] => {

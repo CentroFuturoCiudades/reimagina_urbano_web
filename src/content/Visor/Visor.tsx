@@ -30,8 +30,7 @@ import { MdSchool } from "react-icons/md";
 import { BsFillHouseSlashFill } from "react-icons/bs";
 
 
-
-export const ComparativeMetric = ({name, metric, icon, children}: {name?: string, metric?: string, icon?: any, children: React.ReactNode[] | React.ReactNode}) => {
+export const ComparativeMetric = ({ name, metric, icon, children }: { name?: string, metric?: string, icon?: any, children: React.ReactNode[] | React.ReactNode }) => {
     const dispatch = useDispatch();
     const currentMetric = useSelector((state: RootState) => state.queryMetric.queryMetric);
     const isCurrent = currentMetric === metric;
@@ -47,34 +46,31 @@ export const ComparativeMetric = ({name, metric, icon, children}: {name?: string
                 cursor: metric ? 'pointer' : 'default',
             }}
             onClick={() => {
-                if (metric)
-                    dispatch(setQueryMetric(metric));
+                if (metric) dispatch(setQueryMetric(metric));
             }}
         >
             <Box className={`stat-title-box${metric ? " regular" : ""}${isCurrent ? " active" : ""}`}>
-                <Text className="stat-title" style={{
-                    color: isCurrent ? 'white' : '#383b46',
-                 }}>
-                    {icon && <Icon as={icon} mr="2" color={isCurrent ? 'white' : '#383b46'} />}
-                    {title}</Text>
-                    {METRIC_DESCRIPTIONS[metric || ""] && (
+                <Text className="stat-title" style={{ color: isCurrent ? 'white' : '#383b46' }}>
+                    {icon && (
                         <Tooltip label={METRIC_DESCRIPTIONS[metric || ""]} fontSize="md">
-                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}>
-                                <FaInfoCircle />
+                            <span>
+                                <Icon as={icon} mr="2" color={isCurrent ? 'white' : '#383b46'} />
                             </span>
                         </Tooltip>
                     )}
+                    {title}
+                </Text>
             </Box>
-            {Array.isArray(children) ?
+            {Array.isArray(children) ? (
                 <Box className="stat-value">
-                    <Box>
-                        {children[0]}
-                    </Box>
-                    {children.length > 1 &&
-                        <Box className="dark">
-                        {children[1]}
-                    </Box>}
-                </Box> : <Box className="stat-value full"><Box>{children}</Box></Box>}
+                    <Box>{children[0]}</Box>
+                    {children.length > 1 && <Box className="dark">{children[1]}</Box>}
+                </Box>
+            ) : (
+                <Box className="stat-value full">
+                    <Box>{children}</Box>
+                </Box>
+            )}
         </Box>
     );
 };
@@ -211,7 +207,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
             <Accordion allowToggle defaultIndex={[0]} onChange={(index) => {
                 if (index === 0) {
                     dispatch(setQueryMetric("poblacion"));
-                } else {
+                } else {         
                     dispatch(setQueryMetric("indice_bienestar"));
                 }
             }
@@ -219,10 +215,12 @@ const Visor = ({ metrics }: { metrics: any }) => {
                 <AccordionItem style={{ borderWidth: "0px" }}>
 
                     <AccordionButton className="accordion-header">
-                        <Box flex="1" textAlign="left">
+                        <Box flex="1" textAlign="left" display="flex" alignItems="center">
                             Perfil sociodemográfico
                             <Tooltip label="Información sobre las características demográficas de la población, incluyendo edad, género, estado civil, tamaño del hogar, migración, y etnicidad, que permite analizar la composición y estructura de la población en un área específica." fontSize="md">
-                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
+                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer"}}>
+                                    <FaInfoCircle />
+                                </span>
                             </Tooltip>
                         </Box>
                         <AccordionIcon />
@@ -250,10 +248,12 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                    habitantes
                                 </Text>
                             </ComparativeMetric>
-                            <ComparativeMetric name="Pirámide poblacional" icon={ImManWoman}>
+
+                            <ComparativeMetric name="Pirámide poblacional" icon={ImManWoman} metric="Pirámide poblacional">
                                 <PopulationPyramid data={pyramidData} />
                                 <PopulationPyramid data={ getPyramidData( globalData ) } />
                             </ComparativeMetric>
+
                             <ComparativeMetric metric="grado_escuela" icon={MdSchool}>
                             <Box display="flex" alignItems="center">
                                 <Text fontSize="sm" justifyContent="center">
@@ -304,10 +304,12 @@ const Visor = ({ metrics }: { metrics: any }) => {
 
                 <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
-                        <Box flex="1" textAlign="left">
+                        <Box flex="1" textAlign="left" display="flex" alignItems="center">
                             Perfil socioeconómico
                             <Tooltip label="Datos sobre los niveles de ingresos, empleo, acceso a servicios básicos, vivienda, y nivel educativo, que permiten evaluar la calidad de vida y el bienestar económico de la población." fontSize="md">
-                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
+                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}>
+                                    <FaInfoCircle />
+                                </span>
                             </Tooltip>
                         </Box>
                         <AccordionIcon />
@@ -376,3 +378,5 @@ const Visor = ({ metrics }: { metrics: any }) => {
 };
 
 export default Visor;
+
+

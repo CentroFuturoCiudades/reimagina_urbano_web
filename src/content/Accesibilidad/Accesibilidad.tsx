@@ -213,7 +213,7 @@ const Accesibilidad = ({ metrics }: any) => {
             <Accordion defaultIndex={[0]} allowToggle>
                 <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
-                        <Box flex="1" textAlign="left">
+                        <Box flex="1" textAlign="left" display="flex" alignItems="center">
                             Servicios de proximidad
                             <Tooltip label="Servicios urbanos esenciales, como escuelas, tiendas, hospitales y centros de transporte, ubicados en las cercanías de las áreas residenciales, facilitando el acceso rápido y eficiente para los habitantes." fontSize="md">
                                 <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
@@ -233,6 +233,7 @@ const Accesibilidad = ({ metrics }: any) => {
                                     {Math.trunc(metrics.accessibility_score * 100)}
                                 </Text> */}
                             </ComparativeMetric>
+                            
                             <ComparativeMetric metric="minutes" icon={MdOutlineAccessTime}>
                                 <Text>
                                     {Math.trunc(metrics.minutes)} min
@@ -243,6 +244,9 @@ const Accesibilidad = ({ metrics }: any) => {
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">
                                         Total de equipamientos dentro del área
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Número total de instalaciones y servicios públicos disponibles, tales como escuelas, hospitales y espacios recreativos."} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
                                     </Text>
                                 </Box>
                                 <Box className="stat-value full">
@@ -296,7 +300,7 @@ const Accesibilidad = ({ metrics }: any) => {
 
                 <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
-                        <Box flex="1" textAlign="left">
+                        <Box flex="1" textAlign="left" display="flex" alignItems="center">
                             Radio de cobertura
                             <Tooltip label="Distancia o área en la que los servicios o equipamientos públicos, como centros de salud o parques, son accesibles para la población, generalmente medido en kilómetros o minutos de desplazamiento." fontSize="md">
                                 <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
@@ -312,6 +316,9 @@ const Accesibilidad = ({ metrics }: any) => {
                                 <Box className="stat-title-box regular">
                                     <Text className="stat-title">
                                         Radio de cobertura
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Área geográfica en la que los servicios o equipamientos alcanzan a beneficiar a la población."} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
                                     </Text>
                                 </Box>
                                 <Box className="stat-value full">
@@ -323,7 +330,12 @@ const Accesibilidad = ({ metrics }: any) => {
 
                             <Box className="stat-row">
                                 <Box className="stat-title-box regular">
-                                    <Text className="stat-title">Pendiente</Text>
+                                    <Text className="stat-title">
+                                        Pendiente
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || " Diferencia de altitud en el terreno de la zona, relevante para evaluar accesibilidad y movilidad."} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
+                                    </Text>
                                 </Box>
                                 <Box className="stat-value full">
                                     <Box>
