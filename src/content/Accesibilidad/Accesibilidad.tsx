@@ -13,8 +13,8 @@ import {
     Tooltip,
 } from "@chakra-ui/react";
 import { TbAngle } from "react-icons/tb";
-import { FaHospital, FaInfoCircle, FaWalking } from "react-icons/fa";
-import { FaChevronDown, FaChevronUp, FaIcons, FaLocationDot, FaSchool } from "react-icons/fa6";
+import { FaHospital, FaInfoCircle, FaWalking, FaBroadcastTower } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaIcons, FaLocationDot, FaSchool, FaBuilding, FaLayerGroup, FaChartLine } from "react-icons/fa6";
 import "./Accesibilidad.scss";
 import {
     Bar,
@@ -240,23 +240,12 @@ const Accesibilidad = ({ metrics }: any) => {
                                 </Text>
                             </ComparativeMetric>
 
-                            <Box className="stat-row">
-                                <Box className="stat-title-box">
-                                    <Text className="stat-title">
-                                        Total de equipamientos dentro del área
-                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Número total de instalaciones y servicios públicos disponibles, tales como escuelas, hospitales y espacios recreativos."} fontSize="md">
-                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
-                                        </Tooltip>
-                                    </Text>
-                                </Box>
-                                <Box className="stat-value full">
-                                    <Box>
-                                        <Text> { accessibilityPointsCount } </Text>
-                                    </Box>
-                                </Box>
-                            </Box>
+                            <ComparativeMetric metric="Total de equipamientos dentro del área" icon={FaBuilding}>
+                                <Text>{accessibilityPointsCount}</Text>
+                            </ComparativeMetric>
+                            
 
-                            <Box className="stat-row">
+                            {/* <Box className="stat-row">
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">
                                         Tipos de equipamientos
@@ -292,7 +281,32 @@ const Accesibilidad = ({ metrics }: any) => {
                                     :   <div>No hay datos en el área</div>
                                  }
                                 </Box>
-                            </Box>
+                            </Box> */}
+
+
+
+                            <ComparativeMetric metric="Tipos de equipamientos" icon={FaLayerGroup}>
+                                <Box className="treemapContainer" style={{ flexDirection: "column", padding: "1rem" }}>
+                                    {accessibilityTreeArray.length ? (
+                                    <>
+                                        <ResponsiveContainer width={"100%"} height={200}>
+                                            <Treemap
+                                                onMouseLeave={() => {
+                                                    setActiveAmenityState("");
+                                                }}
+                                                data={accessibilityTreeArray}
+                                                dataKey={"size"}
+                                                animationDuration={100}
+                                                content={<CustomizedContent />}
+                                            />
+                                        </ResponsiveContainer>
+                                        <Legend content={renderLegend} />
+                                    </>
+                                    ) : (
+                                        <div>No hay datos en el área</div>
+                                    )}
+                                </Box>
+                            </ComparativeMetric>
 
                         </VStack>
                     </AccordionPanel>
@@ -312,40 +326,13 @@ const Accesibilidad = ({ metrics }: any) => {
                     <AccordionPanel p={0}>
                         <VStack spacing={"0"} className="accordion-body">
 
-                            <Box className="stat-row">
-                                <Box className="stat-title-box regular">
-                                    <Text className="stat-title">
-                                        Radio de cobertura
-                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Área geográfica en la que los servicios o equipamientos alcanzan a beneficiar a la población."} fontSize="md">
-                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
-                                        </Tooltip>
-                                    </Text>
-                                </Box>
-                                <Box className="stat-value full">
-                                    <Box>
-                                        <Text>0.4 KM</Text>
-                                    </Box>
-                                </Box>
-                            </Box>
+                            <ComparativeMetric metric="Radio de cobertura" icon={FaBroadcastTower}>
+                                <Text>0.4 KM</Text>
+                            </ComparativeMetric>
 
-                            <Box className="stat-row">
-                                <Box className="stat-title-box regular">
-                                    <Text className="stat-title">
-                                        Pendiente
-                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || " Diferencia de altitud en el terreno de la zona, relevante para evaluar accesibilidad y movilidad."} fontSize="md">
-                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
-                                        </Tooltip>
-                                    </Text>
-                                </Box>
-                                <Box className="stat-value full">
-                                    <Box>
-                                        <Text>
-                                            <Icon as={TbAngle}></Icon>{" "}
-                                            {Math.trunc(metrics.mean_slope)}°
-                                        </Text>
-                                    </Box>
-                                </Box>
-                            </Box>
+                            <ComparativeMetric metric="Pendiente" icon={FaChartLine}>
+                                <Text>{Math.trunc(metrics.mean_slope)}°</Text>
+                            </ComparativeMetric>
 
                         </VStack>
                     </AccordionPanel>
