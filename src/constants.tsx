@@ -88,7 +88,12 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     "viviendas_tinaco": { query: "LEAST(vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 15, 30, 60, 90, 100], type: "percentage" },
     "viviendas_pc": { query: "LEAST(vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con PC", ranges: [0, 35, 50, 60, 80, 100], type: "percentage" },
     "viviendas_auto":{ query: "LEAST(vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [40, 50, 60, 70, 80, 100], type: "percentage" },
-    "accessibility_score":{ query: "accessibility_score * 100", title: "Puntuaje de Accesibilidad (0 a 100)", ranges: [0, 20, 40, 60, 80, 100], type: "percentage" },
+    "accessibility_score":{
+        query: "accessibility_score * 100",
+        title: "Puntuaje de Accesibilidad (0 a 100)",
+        ranges: [0, 60, 70, 80, 90, 100],
+        type: "percentage",
+    },
     "minutes": {
         query: "minutes",
         title: "Promedio minutos",
