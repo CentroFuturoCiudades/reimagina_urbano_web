@@ -132,7 +132,7 @@ export const GraphPercent = ({ value, base }: { value: number, base: number }) =
             }
             color="var(--primary-dark)"
         >
-            <CircularProgressLabel fontSize="16px" display="flex" alignItems="center"  justifyContent="center" textAlign="center">
+            <CircularProgressLabel fontSize="18px" display="flex" alignItems="center"  justifyContent="center" textAlign="center">
                 {percent.toFixed(0)}%
             </CircularProgressLabel>
         </CircularProgress>
@@ -153,7 +153,7 @@ export const GraphPercentWIndicator = ({ value, base, compareWith }: { value: nu
         color="var(--primary-dark)"
       >
         <CircularProgressLabel
-          fontSize="16px"
+          fontSize="18px"
           display="flex"
           alignItems="center"
           justifyContent="center"
@@ -222,15 +222,14 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 <Text>
                                     { metrics?.pobtot?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
-                                    }) || "" }<br />
-                                    habitantes
+                                    }) || "" }
+                                    <Text fontSize="sm">habitantes</Text>
                                 </Text>
                                 <Text>
                                     { globalData?.pobtot?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
                                     })}
-                                    <br />
-                                   habitantes
+                                    <Text fontSize="sm">habitantes</Text>
                                 </Text>
                             </ComparativeMetric>
                             <ComparativeMetric name="Pirámide poblacional" icon={ImManWoman}>
@@ -238,10 +237,10 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 <PopulationPyramid data={ getPyramidData( globalData ) } />
                             </ComparativeMetric>
                             <ComparativeMetric metric="grado_escuela" icon={MdSchool}>
-                            <Box display="flex" alignItems="center">
-                                <Text fontSize="sm" justifyContent="center">
+                            <Box display="flex" textAlign="center">
+                                <Text fontSize="md" justifyContent="center">
                                 {mappingGradoEscolaridad[metrics?.graproes?.toFixed(0)] || ""} 
-                                ({metrics?.graproes?.toFixed(0)})
+                                {/* ({metrics?.graproes?.toFixed(0)}) */}
                                 </Text>
                                 {metrics?.graproes !== undefined && globalData?.graproes !== undefined && (
                                 <>
@@ -254,7 +253,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 )}
                             </Box>
 
-                            <Text fontSize="sm">
+                            <Text fontSize="md" textAlign="center">
                                 { mappingGradoEscolaridad[globalData?.graproes?.toFixed(0)] || "" } ({ globalData?.graproes?.toFixed(0) })
                             </Text>
                             </ComparativeMetric>

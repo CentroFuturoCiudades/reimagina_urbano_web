@@ -223,19 +223,16 @@ const Accesibilidad = ({ metrics }: any) => {
                     <AccordionPanel p={0}>
                         <VStack spacing={"0"} className="accordion-body" style={{ padding: "0.4rem" }}>
                             <SelectAutoComplete />
+                            <ComparativeMetric metric="minutes" icon={MdOutlineAccessTime}>
+                                <Text>
+                                    {Math.trunc(metrics.minutes)} min
+                                </Text>
+                            </ComparativeMetric>
                             <ComparativeMetric metric="accessibility_score" icon={FaWalking}>
                                 <GraphPercent
                                     value={metrics?.accessibility_score || 0}
                                     base={1}
                                 />
-                                {/* <Text>
-                                    {Math.trunc(metrics.accessibility_score * 100)}
-                                </Text> */}
-                            </ComparativeMetric>
-                            <ComparativeMetric metric="minutes" icon={MdOutlineAccessTime}>
-                                <Text>
-                                    {Math.trunc(metrics.minutes)} min
-                                </Text>
                             </ComparativeMetric>
 
                             <Box className="stat-row">

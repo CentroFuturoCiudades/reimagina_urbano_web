@@ -106,9 +106,10 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                         html: `<div>
                             <p><b>Nombre:</b> ${_.capitalize(object.properties.name)}</p>
                             <p><b>Categoría:</b> ${object.properties.amenity}</p>
-                            ${object.properties.opportunities_ratio ? `<p><b>Potencial de Aprovechamiento:</b> ${Math.round(object.properties.opportunities_ratio * 100)}%</p>` : ''}
-                            <p><b>Visitas:</b> XX</p>
-                            <p><b>Población Alcance:</b> XX</p>
+                            ${object.properties.visits_category ? `<p><b>Visitas (estimadas por datos celular):</b> ${object.properties.visits_category}</p>` : ''}
+                            ${object.properties.opportunities_ratio ? `<p><b>Potencial de Aprovechamiento:</b> ${Math.round(100 / object.properties.opportunities_ratio).toLocaleString()}%</p>` : ''}
+                            ${object.properties.attraction ? `<p><b>Capacidad estimada:</b> ${Math.round(object.properties.attraction).toLocaleString()}</p>` : ''}
+                            ${object.properties.pob_reach ? `<p><b>Población Alcance:</b> ${Math.round(object.properties.pob_reach).toLocaleString()}</p>` : ''}
                         </div>`
                 };
                 }}
