@@ -13,8 +13,8 @@ import {
     Tooltip,
 } from "@chakra-ui/react";
 import { TbAngle } from "react-icons/tb";
-import { FaHospital, FaWalking } from "react-icons/fa";
-import { FaChevronDown, FaChevronUp, FaIcons, FaLocationDot, FaSchool } from "react-icons/fa6";
+import { FaHospital, FaInfoCircle, FaWalking, FaBroadcastTower } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp, FaIcons, FaLocationDot, FaSchool, FaBuilding, FaLayerGroup, FaChartLine } from "react-icons/fa6";
 import "./Accesibilidad.scss";
 import {
     Bar,
@@ -28,15 +28,13 @@ import {
 } from "recharts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { ACCESSIBILITY_POINTS_COLORS, amenitiesOptions } from "../../constants";
+import { ACCESSIBILITY_POINTS_COLORS, amenitiesOptions, METRIC_DESCRIPTIONS } from "../../constants";
 import { mappingCategories } from "../../components/SelectAutoComplete/SelectAutoComplete";
 import { center } from "@turf/turf";
 import { setActiveAmenity } from "../../features/viewMode/viewModeSlice";
 import { PiParkFill } from "react-icons/pi";
 import { ComparativeMetric, GraphPercent } from "../Visor/Visor";
 import { MdOutlineAccessTime } from "react-icons/md";
-
-
 
 const Accesibilidad = ({ metrics }: any) => {
 
@@ -215,8 +213,11 @@ const Accesibilidad = ({ metrics }: any) => {
             <Accordion defaultIndex={[0]} allowToggle>
                 <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
-                        <Box flex="1" textAlign="left">
+                        <Box flex="1" textAlign="left" display="flex" alignItems="center">
                             Servicios de proximidad
+                            <Tooltip label="Servicios urbanos esenciales, como escuelas, tiendas, hospitales y centros de transporte, ubicados en las cercanías de las áreas residenciales, facilitando el acceso rápido y eficiente para los habitantes." fontSize="md">
+                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
+                            </Tooltip>
                         </Box>
                         <AccordionIcon />
                     </AccordionButton>
@@ -235,23 +236,18 @@ const Accesibilidad = ({ metrics }: any) => {
                                 />
                             </ComparativeMetric>
 
-                            <Box className="stat-row">
-                                <Box className="stat-title-box">
-                                    <Text className="stat-title">
-                                        Total de equipamientos dentro del área
-                                    </Text>
-                                </Box>
-                                <Box className="stat-value full">
-                                    <Box>
-                                        <Text> { accessibilityPointsCount } </Text>
-                                    </Box>
-                                </Box>
-                            </Box>
+                            <ComparativeMetric metric="Total de equipamientos dentro del área" icon={FaBuilding}>
+                                <Text>{accessibilityPointsCount}</Text>
+                            </ComparativeMetric>
 
-                            <Box className="stat-row">
+
+                            {/* <Box className="stat-row">
                                 <Box className="stat-title-box">
                                     <Text className="stat-title">
                                         Tipos de equipamientos
+                                        <Tooltip label={METRIC_DESCRIPTIONS["pendiente"] || "Clasificación de los diferentes tipos de instalaciones urbanas, como centros educativos, de salud, deportivos, culturales, etc."} fontSize="md">
+                                            <span style={{ marginLeft: "5px", color: "gray", cursor: "pointer" }}><FaInfoCircle /></span>
+                                        </Tooltip>
                                     </Text>
                                 </Box>
                                 <Box
@@ -281,47 +277,59 @@ const Accesibilidad = ({ metrics }: any) => {
                                     :   <div>No hay datos en el área</div>
                                  }
                                 </Box>
-                            </Box>
+                            </Box> */}
+
+
+
+                            <ComparativeMetric metric="Tipos de equipamientos" icon={FaLayerGroup}>
+                                <Box className="treemapContainer" style={{ flexDirection: "column", padding: "1rem" }}>
+                                    {accessibilityTreeArray.length ? (
+                                    <>
+                                        <ResponsiveContainer width={"100%"} height={200}>
+                                            <Treemap
+                                                onMouseLeave={() => {
+                                                    setActiveAmenityState("");
+                                                }}
+                                                data={accessibilityTreeArray}
+                                                dataKey={"size"}
+                                                animationDuration={100}
+                                                content={<CustomizedContent />}
+                                            />
+                                        </ResponsiveContainer>
+                                        <Legend content={renderLegend} />
+                                    </>
+                                    ) : (
+                                        <div>No hay datos en el área</div>
+                                    )}
+                                </Box>
+                            </ComparativeMetric>
+
                         </VStack>
                     </AccordionPanel>
                 </AccordionItem>
 
                 <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionButton className="accordion-header">
-                        <Box flex="1" textAlign="left">
+                        <Box flex="1" textAlign="left" display="flex" alignItems="center">
                             Radio de cobertura
+                            <Tooltip label="Distancia o área en la que los servicios o equipamientos públicos, como centros de salud o parques, son accesibles para la población, generalmente medido en kilómetros o minutos de desplazamiento." fontSize="md">
+                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
+                            </Tooltip>
                         </Box>
                         <AccordionIcon />
                     </AccordionButton>
+
                     <AccordionPanel p={0}>
                         <VStack spacing={"0"} className="accordion-body">
-                            <Box className="stat-row">
-                                <Box className="stat-title-box regular">
-                                    <Text className="stat-title">
-                                        Radio de cobertura
-                                    </Text>
-                                </Box>
-                                <Box className="stat-value full">
-                                    <Box>
-                                        <Text> 0.4 KM</Text>
-                                    </Box>
-                                </Box>
-                            </Box>
 
-                            <Box className="stat-row">
-                                <Box className="stat-title-box regular">
-                                    <Text className="stat-title">Pendiente</Text>
-                                </Box>
-                                <Box className="stat-value full">
-                                    <Box>
-                                        <Text>
-                                            {" "}
-                                            <Icon as={TbAngle}></Icon>{" "}
-                                            {Math.trunc(metrics.mean_slope)}°
-                                        </Text>
-                                    </Box>
-                                </Box>
-                            </Box>
+                            <ComparativeMetric metric="Radio de cobertura" icon={FaBroadcastTower}>
+                                <Text>0.4 KM</Text>
+                            </ComparativeMetric>
+
+                            <ComparativeMetric metric="Pendiente" icon={FaChartLine}>
+                                <Text>{Math.trunc(metrics.mean_slope)}°</Text>
+                            </ComparativeMetric>
+
                         </VStack>
                     </AccordionPanel>
                 </AccordionItem>

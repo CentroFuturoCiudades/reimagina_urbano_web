@@ -13,6 +13,30 @@ export const INITIAL_STATE = {
     maxZoom: 22,
 };
 
+export const METRIC_DESCRIPTIONS: GenericObject = {
+    "poblacion": "Total de habitantes que residen en el área analizada según los últimos datos del censo de INEGI.",
+    "grado_escuela": "Información sobre el grado máximo de estudios alcanzado por la población.",
+    "viviendas_habitadas": "Viviendas Particulares Habitadas",
+    "viviendas_deshabitadas": " Porcentaje de viviendas que no están ocupadas en el área, con base en datos del censo de INEGI.",
+    "indice_bienestar": "Medición que clasifica áreas según el nivel de bienestar económico de sus habitantes, considerando factores como ingresos, acceso a servicios y calidad de vida.",
+    "viviendas_auto": "Porcentaje de Viviendas con Vehículo Privado",
+    "viviendas_pc": "Porcentaje de Viviendas con PC",
+    "viviendas_tinaco": "Porcentaje de viviendas que disponen de servicios básicos de bienestar como tinacos.",
+    "accessibility_score": "Puntuaje de Accesibilidad (0 a 100)",
+    "Pirámide poblacional": "Distribución de la población por grupos de edad y género, representada en una pirámide para observar la estructura demográfica.",
+    "services_equipment": "Infraestructura y servicios urbanos disponibles en la zona, como escuelas, hospitales, transporte, parques y centros comunitarios.",
+    "Total de equipamientos dentro del área": "Número total de instalaciones y servicios públicos disponibles, tales como escuelas, hospitales y espacios recreativos.",
+    "Tipos de equipamientos": "Clasificación de los diferentes tipos de instalaciones urbanas, como centros educativos, de salud, deportivos, culturales, etc.",
+    "Radio de cobertura": "Área geográfica en la que los servicios o equipamientos alcanzan a beneficiar a la población.",
+    "minutes": "Tiempo promedio que tarda la población en acceder a servicios o equipamientos esenciales.",
+    "density": "Relación entre el número de habitantes o viviendas y el área de la zona analizada, normalmente expresada en habitantes o viviendas por kilómetro cuadrado.",
+    "max_height": "Altura máxima permitida para los edificios en la zona, según las regulaciones de uso de suelo.",
+    "potencial": "Comparación entre el uso actual del suelo y el potencial que podría alcanzarse bajo diferentes condiciones o normativas.",
+    "subutilizacion": "Porcentaje de áreas, edificaciones o servicios que no están siendo utilizados a su máxima capacidad.",
+    "subutilizacion_type": "Clasificación de los diferentes tipos de espacios que están subutilizados, como terrenos baldíos, edificios vacíos, o espacios infrautilizados en equipamientos públicos.",
+    "Pendiente": "Diferencia de altitud en el terreno de la zona, relevante para evaluar accesibilidad y movilidad.",
+};
+
 export const getQuantiles = (data: any, metric: string): [any, string[]] => {
     if (!data) return [null, []];
 
