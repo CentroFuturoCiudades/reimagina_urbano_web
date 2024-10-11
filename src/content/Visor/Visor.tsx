@@ -30,7 +30,7 @@ import { MdSchool } from "react-icons/md";
 import { BsFillHouseSlashFill } from "react-icons/bs";
 
 
-export const ComparativeMetric = ({ name, metric, icon, children }: { name?: string, metric?: string, icon?: any, children: React.ReactNode[] | React.ReactNode }) => {
+export const ComparativeMetric = ({ name, metric, icon, disabled ,children}: { name?: string, metric?: string, icon?: any, disabled?: boolean , children: React.ReactNode[] | React.ReactNode }) => {
     const dispatch = useDispatch();
     const currentMetric = useSelector((state: RootState) => state.queryMetric.queryMetric);
     const isCurrent = currentMetric === metric;
@@ -43,13 +43,13 @@ export const ComparativeMetric = ({ name, metric, icon, children }: { name?: str
         <Box
             className="stat-row"
             style={{
-                cursor: metric ? 'pointer' : 'default',
+                cursor: metric && !disabled ? 'pointer' : 'default',
             }}
             onClick={() => {
-                if (metric) dispatch(setQueryMetric(metric));
+                if (metric && !disabled ) dispatch(setQueryMetric(metric));
             }}
         >
-            <Box className={`stat-title-box${metric ? " regular" : ""}${isCurrent ? " active" : ""}`}>
+            <Box className={`stat-title-box${metric && !disabled ? " regular" : ""}${isCurrent ? " active" : ""}`}>
                 <Text className="stat-title" style={{ color: isCurrent ? 'white' : '#383b46' }}>
                     {icon && (
                         <Tooltip label={METRIC_DESCRIPTIONS[metric || ""]} fontSize="md">
@@ -248,7 +248,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 </Text>
                             </ComparativeMetric>
 
-                            <ComparativeMetric name="Pirámide poblacional" icon={ImManWoman} metric="Pirámide poblacional">
+                            <ComparativeMetric disabled={true} name="Pirámide poblacional" icon={ImManWoman} metric="Pirámide poblacional">
                                 <PopulationPyramid data={pyramidData} />
                                 <PopulationPyramid data={ getPyramidData( globalData ) } />
                             </ComparativeMetric>

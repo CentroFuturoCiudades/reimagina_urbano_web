@@ -58,14 +58,14 @@ const Toolbar = () => {
                         py="2"
                     >
                         <Button
+                            onClick={() =>
+                                dispatch(setViewMode(VIEW_MODES.FULL))
+                            }
                             className={
                                 viewMode === VIEW_MODES.FULL ? "active" : ""
                             }
                         >
                             <img
-                                onClick={() =>
-                                    dispatch(setViewMode(VIEW_MODES.FULL))
-                                }
                                 src="https://sinaloa.travel/images/destinos/culiacan/Culiacan-map.png"
                             />
                         </Button>
@@ -80,14 +80,14 @@ const Toolbar = () => {
                         py="2"
                     >
                         <Button
+                            onClick={() =>
+                                dispatch(setViewMode(VIEW_MODES.POLIGON))
+                            }
                             className={
                                 viewMode === VIEW_MODES.POLIGON ? "active" : ""
                             }
                         >
                             <img
-                                onClick={() =>
-                                    dispatch(setViewMode(VIEW_MODES.POLIGON))
-                                }
                                 src="https://cdn-icons-png.flaticon.com/512/7168/7168063.png"
                             />
                         </Button>
@@ -102,14 +102,14 @@ const Toolbar = () => {
                         py="2"
                     >
                         <Button
+                            onClick={() =>
+                                dispatch(setViewMode(VIEW_MODES.LENS))
+                            }
                             className={
                                 viewMode === VIEW_MODES.LENS ? "active" : ""
                             }
                         >
                             <img
-                                onClick={() =>
-                                    dispatch(setViewMode(VIEW_MODES.LENS))
-                                }
                                 src="https://icones.pro/wp-content/uploads/2021/06/icone-loupe-noir.png"
                             />
                         </Button>

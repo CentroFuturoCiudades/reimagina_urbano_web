@@ -1,3 +1,4 @@
+export { default as AccessibilityPointsTreemap } from "./AccessibilityPointsTreemap";
 export { default as BaseMap } from "./BaseMap";
 export { default as Layers } from "./Layers";
 export { default as Legend } from "./Legend";
