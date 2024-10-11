@@ -207,6 +207,28 @@ const Landing: React.FC = () => {
       }
     }, []);
 
+    useEffect(() => {
+        // Function to scroll to the element based on the hash
+        const scrollToHashElement = () => {
+          const hash = window.location.hash;
+          if (hash) {
+            const element = document.querySelector(hash);
+            if (element) {
+              element.scrollIntoView({ behavior: "instant" });
+            }
+          }
+        };
+
+        scrollToHashElement();
+
+        window.addEventListener('hashchange', scrollToHashElement);
+
+        return () => {
+          window.removeEventListener('hashchange', scrollToHashElement);
+        };
+    }, []);
+
+
     return (
         <>
             <Box
@@ -219,7 +241,8 @@ const Landing: React.FC = () => {
                     <Section2 calcOpacity={calculatedOpacity} />
 
                     <Box
-                    zIndex={activateLanding ? -2 : 1}
+                        zIndex={activateLanding ? -2 : 1}
+                        id="map"
                     >
                         <BaseMap />
                     </Box>
@@ -233,6 +256,7 @@ const Landing: React.FC = () => {
                             width={"auto"}
                             display={"flex"}
                             justifyContent={"space-between"}
+                            id="map"
                         >
                             <MainSidebar/>
                             <Toolbar handleActivateLanding={handleActivateLanding}/>
