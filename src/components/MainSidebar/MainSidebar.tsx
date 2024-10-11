@@ -7,7 +7,7 @@ import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
-import { Accesibilidad } from "../../content";
+import { Accesibilidad, Potencial } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
 import { FaChevronUp } from "react-icons/fa";
 
@@ -72,7 +72,7 @@ import { FaChevronUp } from "react-icons/fa";
                     }}
                     onClick={() => {
                         dispatch( setActiveTab( TABS.ACCESIBILIDAD ) )
-                        dispatch(setQueryMetric("minutes"));
+                        dispatch( setQueryMetric("minutes") );
                     }}
                 >
                     Accesibilidad
@@ -84,7 +84,8 @@ import { FaChevronUp } from "react-icons/fa";
                         color: "white",
                     }}
                     onClick={() => {
-                        dispatch( setActiveTab( TABS.POTENCIAL ) )
+                        dispatch( setActiveTab( TABS.POTENCIAL ) );
+                        dispatch( setQueryMetric("density") );
                     }}
                 >
                     Potencial
@@ -98,8 +99,7 @@ import { FaChevronUp } from "react-icons/fa";
                     <Accesibilidad metrics={metrics}></Accesibilidad>
                 </TabPanel>
                 <TabPanel>
-                    <p>Contenido de Potencial</p>
-                    {/* Agrega el contenido específico de Infraestructura aquí */}
+                    <Potencial metrics={metrics}></Potencial>
                 </TabPanel>
             </TabPanels>
         </Tabs>

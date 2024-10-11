@@ -9,7 +9,42 @@
     }
 }
 
+.accesibilidad__equipment {
+
+    font-size: 1rem;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+
+    .accesibilidad__bar {
+        width: 70px;
+
+        &.education > div {
+        background-color: #cc9999;
+        }
+
+        &.health > div {
+        background-color: #7c6eb1;
+        }
+
+        &.recreation > div {
+        background-color: #eab642;
+        }
+
+        &.park > div {
+        background-color: #7ea48d;
+        }
+
+        &.other > div {
+        background-color: gray;
+        }
+    }
+}
+
+
 .treemapContainer {
+
+    width: 100%;
 
     .recharts-legend-wrapper {
         position: relative !important;

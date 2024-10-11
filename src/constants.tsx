@@ -13,6 +13,30 @@ export const INITIAL_STATE = {
     maxZoom: 22,
 };
 
+export const METRIC_DESCRIPTIONS: GenericObject = {
+    "poblacion": "Total de habitantes que residen en el área analizada según los últimos datos del censo de INEGI.",
+    "grado_escuela": "Información sobre el grado máximo de estudios alcanzado por la población.",
+    "viviendas_habitadas": "Viviendas Particulares Habitadas",
+    "viviendas_deshabitadas": " Porcentaje de viviendas que no están ocupadas en el área, con base en datos del censo de INEGI.",
+    "indice_bienestar": "Medición que clasifica áreas según el nivel de bienestar económico de sus habitantes, considerando factores como ingresos, acceso a servicios y calidad de vida.",
+    "viviendas_auto": "Porcentaje de Viviendas con Vehículo Privado",
+    "viviendas_pc": "Porcentaje de Viviendas con PC",
+    "viviendas_tinaco": "Porcentaje de viviendas que disponen de servicios básicos de bienestar como tinacos.",
+    "accessibility_score": "Puntuaje de Accesibilidad (0 a 100)",
+    "Pirámide poblacional": "Distribución de la población por grupos de edad y género, representada en una pirámide para observar la estructura demográfica.",
+    "services_equipment": "Infraestructura y servicios urbanos disponibles en la zona, como escuelas, hospitales, transporte, parques y centros comunitarios.",
+    "Total de equipamientos dentro del área": "Número total de instalaciones y servicios públicos disponibles, tales como escuelas, hospitales y espacios recreativos.",
+    "Tipos de equipamientos": "Clasificación de los diferentes tipos de instalaciones urbanas, como centros educativos, de salud, deportivos, culturales, etc.",
+    "Radio de cobertura": "Área geográfica en la que los servicios o equipamientos alcanzan a beneficiar a la población.",
+    "minutes": "Tiempo promedio que tarda la población en acceder a servicios o equipamientos esenciales.",
+    "density": "Relación entre el número de habitantes o viviendas y el área de la zona analizada, normalmente expresada en habitantes o viviendas por kilómetro cuadrado.",
+    "max_height": "Altura máxima permitida para los edificios en la zona, según las regulaciones de uso de suelo.",
+    "potencial": "Comparación entre el uso actual del suelo y el potencial que podría alcanzarse bajo diferentes condiciones o normativas.",
+    "subutilizacion": "Porcentaje de áreas, edificaciones o servicios que no están siendo utilizados a su máxima capacidad.",
+    "subutilizacion_type": "Clasificación de los diferentes tipos de espacios que están subutilizados, como terrenos baldíos, edificios vacíos, o espacios infrautilizados en equipamientos públicos.",
+    "Pendiente": "Diferencia de altitud en el terreno de la zona, relevante para evaluar accesibilidad y movilidad.",
+};
+
 export const getQuantiles = (data: any, metric: string): [any, string[]] => {
     if (!data) return [null, []];
 
@@ -46,7 +70,16 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
 
 export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
 
-export const METRICS_MAPPING: GenericObject = {
+export interface MetricInterface {
+    query: string;
+    title: string;
+    ranges: number[];
+    type: "number" | "percentage" | "minutes" | "area";
+    startColor?: string;
+    endColor?: string;
+}
+
+export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     "poblacion": { query: "pobtot", title: "Población Total", ranges: [0, 65, 80, 100, 130, 800], type: "number" },
     "viviendas_habitadas": { query: "vivpar_hab", title: "Viviendas Particulares Habitadas", ranges: [0, 25, 50, 100, 150, 200], type: "number" },
     "viviendas_deshabitadas": { query: "GREATEST(VIVPAR_DES * 1.0 / NULLIF(VIVPAR_HAB, 0) * 100, 0)", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 10, 20, 30, 40, 100], type: "percentage" }, // rango de 0-89
@@ -55,7 +88,12 @@ export const METRICS_MAPPING: GenericObject = {
     "viviendas_tinaco": { query: "LEAST(vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 15, 30, 60, 90, 100], type: "percentage" },
     "viviendas_pc": { query: "LEAST(vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con PC", ranges: [0, 35, 50, 60, 80, 100], type: "percentage" },
     "viviendas_auto":{ query: "LEAST(vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [40, 50, 60, 70, 80, 100], type: "percentage" },
-    "accessibility_score":{ query: "accessibility_score * 100", title: "Puntuaje de Accesibilidad (0 a 100)", ranges: [0, 20, 40, 60, 80, 100], type: "percentage" },
+    "accessibility_score":{
+        query: "accessibility_score * 100",
+        title: "Puntuaje de Accesibilidad (0 a 100)",
+        ranges: [0, 60, 70, 80, 90, 100],
+        type: "percentage",
+    },
     "minutes": {
         query: "minutes",
         title: "Promedio minutos",
@@ -63,7 +101,13 @@ export const METRICS_MAPPING: GenericObject = {
         type: "minutes",
         startColor: "#2C238B",
         endColor: "#BFE5F8"
-    }
+    },
+    //METRICAS POTENCIAL
+    "density": { query: "home_density", title: "Densidad", ranges: [ 0, 1500, 2500, 5000, 25000 ], type:"number" },
+    "max_height": { query: "max_height", title: "Alturas Máximas", ranges: [ 0, 2, 3, 4, 6 ], type:"number" },
+    "potencial": { query: "potential_new_units", title: "Actual vs. Potencial", ranges: [ 0,1,2,5,1000], type:"number" },
+    "subutilizacion": { query: "LEAST( ( 1 - units_estimate * 1.0 / NULLIF(max_home_units, 0) * 100), 100)", title: "Subutilización", ranges: [ 0,40,70,90,100], type:"percentage" },
+    "subutilizacion_type": { query: "1", title: "Tipos de Espacio Subutilizado", ranges: [ 1,2,3,4], type:"number" }
 }
 export const amenitiesOptions = [
     // Salud
