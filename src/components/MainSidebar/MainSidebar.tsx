@@ -12,8 +12,8 @@ import { setActiveTab } from "../../features/viewMode/viewModeSlice";
 import { FaChevronUp } from "react-icons/fa";
 
 
-    
-  const MainSidebar = () => {    
+
+  const MainSidebar = () => {
     const [metrics, setMetrics] = useState<any>({});
 
     const selectedLots = useSelector(
@@ -35,7 +35,6 @@ import { FaChevronUp } from "react-icons/fa";
             console.log('--PREDIOS--');
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/predios`, { lots });
             if (response && response.data) {
-                console.log(response.data);
                 setMetrics(response.data);
             }
         };
@@ -105,7 +104,7 @@ import { FaChevronUp } from "react-icons/fa";
         </Tabs>
         </>
 
-            
+
     );
 };
 

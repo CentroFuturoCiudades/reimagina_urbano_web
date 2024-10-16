@@ -66,7 +66,6 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
             data: polygons,
             getIcon: (d: any) => {
 
-                console.log( d.properties.amenity )
                 let iconName = amenitiesOptions.find(option => option.label === d.properties.amenity)?.type || "other";
 
                 if ( activeAmenity != "" && d.properties.amenity != activeAmenity ){

@@ -235,18 +235,18 @@ const Visor = ({ metrics }: { metrics: any }) => {
                         </Box>
                         <VStack spacing={0} className="accordion-body" style={{ padding: "0.4rem" }}>
                             <ComparativeMetric metric="poblacion" icon={FaPerson}>
-                                <Text>
+                                <Box>
                                     { metrics?.pobtot?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
                                     }) || "" }
-                                    <Text fontSize="sm">habitantes</Text>
-                                </Text>
-                                <Text>
+                                    <Text fontSize="sm" textAlign={"center"}>habitantes</Text>
+                                </Box>
+                                <Box>
                                     { globalData?.pobtot?.toLocaleString("es-MX", {
                                         maximumFractionDigits: 0,
                                     })}
-                                    <Text fontSize="sm">habitantes</Text>
-                                </Text>
+                                    <Text fontSize="sm" textAlign={"center"}>habitantes</Text>
+                                </Box>
                             </ComparativeMetric>
 
                             <ComparativeMetric disabled={true} name="Pirámide poblacional" icon={ImManWoman} metric="Pirámide poblacional">

@@ -95,6 +95,15 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
             }
             {/* @ts-ignore */}
             <DeckGL
+                onWebGLInitialized={ (gl) => {
+                    gl.canvas.addEventListener('webglcontextlost', (event) => {
+                      event.preventDefault();
+                      console.log('WebGL context lost');
+                    });
+                    gl.canvas.addEventListener('webglcontextrestored', () => {
+                      console.log('WebGL context restored');
+                    });
+                  }}
                 initialViewState={INITIAL_STATE}
                 controller={{ dragPan: !isDrag }}
                 layers={[poligonLayer, ...layers, coloniasLayer]}

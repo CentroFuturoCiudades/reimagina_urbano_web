@@ -58,7 +58,6 @@ const SelectAutoComplete = () => {
   }, [accessibilityList]);
 
   const handleCategoryChange = (category: string, checked: boolean) => {
-    console.log(category);
     const updatedCheckedItems = { ...checkedItems };
     groupedAmenitiesOptions[category].forEach((amenity) => {
       updatedCheckedItems[amenity.value] = checked;
@@ -119,7 +118,6 @@ const SelectAutoComplete = () => {
   // remove either amenity or category
   const removeAmenity = (amenity: string) => {
     const category = Object.keys(mappingCategories).find((key) => mappingCategories[key] === amenity);
-    console.log(category);
     if (!category) {
       const updatedSelectedOptions = accessibilityList.filter((x) => x.label !== amenity);
       dispatch(setAccessibilityList(updatedSelectedOptions));
@@ -170,8 +168,8 @@ const SelectAutoComplete = () => {
                     </Checkbox>
                   </ListItem>
                   <ListItem mb="2">
-                  {amenities.map((amenity: GenericObject) => (
-                    <Box>
+                  {amenities.map((amenity: GenericObject, index) => (
+                    <Box key={index}>
                       <Checkbox
                         px="4"
                         size='md'
