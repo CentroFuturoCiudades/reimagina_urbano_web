@@ -77,7 +77,7 @@ export const ComparativeMetric = ({ name, metric, icon, disabled ,children}: { n
 };
 
 
-const getPyramidData = (metrics: any) => {
+const getPyramidData = (metrics: any) => {      
     return metrics
         ? [
               {
@@ -131,6 +131,17 @@ const getPyramidData = (metrics: any) => {
           ]
         : [];
 };
+
+const testData = [             // Datos dummy para prueba de pirámide invertida
+    { age: "0-2", male: 5000, female: 4800, total: 9800 },
+    { age: "3-5", male: 5200, female: 5000, total: 10200 },
+    { age: "6-11", male: 5500, female: 5300, total: 10800 },
+    { age: "12-14", male: 6000, female: 5800, total: 11800 },
+    { age: "15-17", male: 6200, female: 6000, total: 12200 },
+    { age: "18-24", male: 7000, female: 6800, total: 13800 },
+    { age: "25-59", male: 8000, female: 7800, total: 15800 },
+    { age: "60+", male: 4000, female: 4500, total: 8500 },
+  ];
 
 export const GraphPercent = ({ value, base }: { value: number, base: number }) => {
     let percent = value / base * 100;
@@ -199,7 +210,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
     const [pyramidData, setPyramidData] = useState<any[]>([]);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
 
-    useEffect(() => {
+    useEffect(() => {      
         setPyramidData(getPyramidData(metrics));
     }, [metrics]);
 
@@ -249,10 +260,18 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 </Text>
                             </ComparativeMetric>
 
-                            <ComparativeMetric disabled={true} name="Pirámide poblacional" icon={ImManWoman} metric="Pirámide poblacional">
-                                <PopulationPyramid data={pyramidData} />
-                                <PopulationPyramid data={ getPyramidData( globalData ) } />
-                            </ComparativeMetric>
+
+
+
+                                    {/* Sustituir por pyramidData en lugar de testData */}
+                            <ComparativeMetric disabled={true} name="Pirámide poblacional" icon={ImManWoman} metric="Pirámide poblacional"> 
+                                <PopulationPyramid data={testData} invertAxes={true} /> 
+                                <PopulationPyramid data={ getPyramidData( globalData )} invertAxes={false} />  
+                            </ComparativeMetric> 
+                            
+
+
+                            
 
                             <ComparativeMetric metric="grado_escuela" icon={MdSchool}>
                             <Box display="flex" textAlign="center">
