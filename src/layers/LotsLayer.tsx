@@ -12,6 +12,7 @@ const useLotsLayer = ({ coordinates, queryData, metric, viewMode }: any) => {
     const legendLimits = useSelector(
         (state: RootState) => state.viewMode.legendLimits
     );
+    const id = viewMode === VIEW_MODES.FULL  ? "cvegeo" : "lot_id";
 
 
     useAborterEffect(async (signal: any, isMounted: boolean) => {
@@ -36,7 +37,7 @@ const useLotsLayer = ({ coordinates, queryData, metric, viewMode }: any) => {
         const [quantiles, _] = getQuantiles(queryData, metric)
         return (d: any): RGBAColor => {
             if (!quantiles) return [200, 200, 200];
-            const value = queryData[d.properties.ID];
+            const value = queryData[d.properties[id]];
 
             if( legendLimits != null && ( value < legendLimits.min || value > legendLimits.max ) ) {
                 return [200, 200, 200];

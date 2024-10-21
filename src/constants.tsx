@@ -82,17 +82,17 @@ export interface MetricInterface {
 export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     "poblacion": { query: "pobtot", title: "Población Total", ranges: [0, 65, 80, 100, 130, 800], type: "number" },
     "viviendas_habitadas": { query: "vivpar_hab", title: "Viviendas Particulares Habitadas", ranges: [0, 25, 50, 100, 150, 200], type: "number" },
-    "viviendas_deshabitadas": { query: "GREATEST(VIVPAR_DES * 1.0 / NULLIF(VIVPAR_HAB, 0) * 100, 0)", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 10, 20, 30, 40, 100], type: "percentage" }, // rango de 0-89
+    "viviendas_deshabitadas": { query: "GREATEST(vivpar_des * 1.0 / NULLIF(vivpar_hab, 0) * 100, 0)", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 10, 20, 30, 40, 100], type: "percentage" }, // rango de 0-89
     "grado_escuela": { query: "graproes", title: "Grado Promedio de Escolaridad", ranges: [6, 9, 10, 12, 16, 18], type: "number" },
     "indice_bienestar": { query: "puntuaje_hogar_digno * 1000", title: "Índice de Bienestar", ranges: [0, 25, 50, 75, 100], type: "percentage" },
     "viviendas_tinaco": { query: "LEAST(vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 15, 30, 60, 90, 100], type: "percentage" },
     "viviendas_pc": { query: "LEAST(vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con PC", ranges: [0, 35, 50, 60, 80, 100], type: "percentage" },
     "viviendas_auto":{ query: "LEAST(vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [40, 50, 60, 70, 80, 100], type: "percentage" },
     "accessibility_score":{
-        query: "accessibility_score * 100",
+        query: "accessibility_score",
         title: "Puntuaje de Accesibilidad (0 a 100)",
-        ranges: [0, 60, 70, 80, 90, 100],
-        type: "percentage",
+        ranges: [-0.05, 0, 0.25, 0.5, 3, 6],
+        type: "number",
     },
     "minutes": {
         query: "minutes",
@@ -103,32 +103,32 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
         endColor: "#BFE5F8"
     },
     //METRICAS POTENCIAL
-    "density": { query: "home_density", title: "Densidad", ranges: [ 0, 1500, 2500, 5000, 25000 ], type:"number" },
-    "max_height": { query: "max_height", title: "Alturas Máximas", ranges: [ 0, 2, 3, 4, 6 ], type:"number" },
-    "potencial": { query: "potential_new_units", title: "Actual vs. Potencial", ranges: [ 0,1,2,5,1000], type:"number" },
-    "subutilizacion": { query: "LEAST( ( 1 - units_estimate * 1.0 / NULLIF(max_home_units, 0) * 100), 100)", title: "Subutilización", ranges: [ 0,40,70,90,100], type:"percentage" },
+    "density": { query: "AVG(l.home_density)", title: "Densidad", ranges: [ 0, 1500, 2500, 5000, 25000 ], type:"number" },
+    "max_height": { query: "AVG(l.max_height)", title: "Alturas Máximas", ranges: [ 0, 3, 4, 5, 6 ], type:"number" },
+    "potencial": { query: "AVG(l.potential_new_units)", title: "Actual vs. Potencial", ranges: [0, 5, 50, 100, 1000], type:"number" },
+    "subutilizacion": { query: "AVG(LEAST( ( 1 - (l.units_estimate * 100.0 / NULLIF(l.max_home_units, 0))), 100))", title: "Subutilización", ranges: [ 0,40,70,90,100], type:"percentage" },
     "subutilizacion_type": { query: "1", title: "Tipos de Espacio Subutilizado", ranges: [ 1,2,3,4], type:"number" }
 }
 export const amenitiesOptions = [
     // Salud
-    { value: 'hospital_general', label: 'Hospital general', type: 'health' },
-    { value: 'consultorios_medicos', label: 'Consultorios médicos', type: 'health' },
-    { value: 'farmacia', label: 'Farmacia', type: 'health' },
+    { value: 'Hospital_general', label: 'Hospital general', type: 'health' },
+    { value: 'Consultorios_medicos', label: 'Consultorios médicos', type: 'health' },
+    { value: 'Farmacia', label: 'Farmacia', type: 'health' },
     // Recreativo
-    { value: 'parques_recreativos', label: 'Parques recreativos', type: 'park' },
-    { value: 'clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico', type: 'recreation' },
-    { value: 'cine', label: 'Cine', type: 'recreation' },
-    { value: 'otros_servicios_recreativos', label: 'Otros servicios recreativos', type: 'recreation' },
+    { value: 'Parques_recreativos', label: 'Parques recreativos', type: 'park' },
+    { value: 'Clubs_deportivos_y_acondicionamiento_fisico', label: 'Clubs deportivos y de acondicionamiento físico', type: 'recreation' },
+    { value: 'Cine', label: 'Cine', type: 'recreation' },
+    { value: 'Otros_servicios_recreativos', label: 'Otros servicios recreativos', type: 'recreation' },
     // Educación
-    { value: 'guarderia', label: 'Guarderia', type: 'education' },
-    { value: 'educacion_preescolar', label: 'Educación preescolar', type: 'education' },
-    { value: 'educacion_primaria', label: 'Educación primaria', type: 'education' },
-    { value: 'educacion_secundaria', label: 'Educación secundaria', type: 'education' },
-    { value: 'educacion_media_superior', label: 'Educación media superior', type: 'education' },
-    { value: 'educacion_superior', label: 'Educación superior', type: 'education' },
+    { value: 'Guarderia', label: 'Guarderia', type: 'education' },
+    { value: 'Educacion_preescolar', label: 'Educación preescolar', type: 'education' },
+    { value: 'Educacion_primaria', label: 'Educación primaria', type: 'education' },
+    { value: 'Educacion_secundaria', label: 'Educación secundaria', type: 'education' },
+    { value: 'Educacion_media_superior', label: 'Educación media superior', type: 'education' },
+    { value: 'Educacion_superior', label: 'Educación superior', type: 'education' },
     // Otros
-    { value: 'capilla', label: 'Capilla', type: 'other' },
-    { value: 'comedor', label: 'Comedor', type: 'other' },
+    { value: 'Capilla', label: 'Capilla', type: 'other' },
+    { value: 'Comedor', label: 'Comedor', type: 'other' },
 ];
 export const mappingGradoEscolaridad: GenericObject = {
     1: "1ero Primaria",

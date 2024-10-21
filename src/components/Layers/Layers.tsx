@@ -7,7 +7,7 @@ import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
 import { GenericObject } from "../../types";
-import { useLotsLayer, useLensLayer, useBuildingsLayer, useAccessibilityPointsLayer, useAmenitiesLayer } from "../../layers";
+import { useLotsLayer, useLensLayer, useBuildingsLayer, useAccessibilityPointsLayer, useAmenitiesLayer, useSelectLayer } from "../../layers";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 import { setIsLoading, setPoligonMode } from "../../features/viewMode/viewModeSlice";
 import { useAborterEffect } from "../../utils";
@@ -92,13 +92,15 @@ const Layers = () => {
     const [queryDataFloors, setQueryDataFloorsState] = useState<any>({});
     const [coordinates, setCoordinates] = useState<any>(undefined);
 
+    const { layers: selectLayers, selectedPolygons } = useSelectLayer();
     const { lensData, layers: lensLayers } = useLensLayer({ coords: {latitude: INITIAL_STATE.latitude, longitude: INITIAL_STATE.longitude} });
     const { drawPoligonData, layers: drawPoligonLayers } =
     useDrawPoligonLayer();
     const lotsLayers = useLotsLayer({ coordinates, viewMode, queryData, metric });
-    const buildingsLayers: any = useBuildingsLayer({ coordinates, queryDataFloors, zoom });
+    const buildingsLayers: any = useBuildingsLayer({ coordinates, queryDataFloors, zoom, viewMode });
     const accessibilityPointsLayer: any = useAccessibilityPointsLayer({ coordinates, metric });
     const amenitiesLayers = useAmenitiesLayer({ coordinates, metric });
+    const id = viewMode === VIEW_MODES.FULL ? "cvegeo" : "lot_id";
 
     //String values allow the serialization of those properties. Avoids infinite re-rendering
     const lensDataString = useMemo(() => JSON.stringify(lensData), [lensData]);
@@ -108,36 +110,32 @@ const Layers = () => {
     );
 
     useEffect(()=>{
-        setCoordinates( null );
+        setCoordinates(undefined);
     }, [isDrag, viewMode]);
 
     useEffect(() => {
         if (viewMode === VIEW_MODES.FULL) {
-            if (coordinates) {
-                setCoordinates(undefined);
-            }
+            const coords = selectedPolygons?.map((x: any) => x.geometry.coordinates[0]);
+            setCoordinates(coords);
         } else if (viewMode === VIEW_MODES.LENS) {
             if (!isDrag) {
-                setCoordinates(lensData?.geometry.coordinates[0]);
+                console.log(lensData?.geometry.coordinates[0]);
+                setCoordinates([lensData?.geometry.coordinates[0]]);
             }
         } else if (viewMode === VIEW_MODES.POLIGON) {
-            setCoordinates(drawPoligonData?.features[0]?.geometry.coordinates[0]);
+            setCoordinates([drawPoligonData?.features[0]?.geometry.coordinates[0]]);
         }
-    }, [viewMode, isDrag, lensDataString, drawPoligonDataString]);
+    }, [viewMode, isDrag, lensDataString, drawPoligonDataString, selectedPolygons]);
 
     useAborterEffect(async (signal: any, isMounted: boolean) => {
         if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL) return;
         console.log('--QUERY--')
         dispatch(setIsLoading(true));
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/query`, {
-            metric: METRICS_MAPPING[metric]?.query || metric,
-            accessibility_info: accessibilityList.map((x: any) => ({
-                name: x.label,
-                radius: 1600 * 2,
-                importance: 1,
-            })),
+            metric,
+            accessibility_info: accessibilityList.map((x: any) => x.value),
             coordinates,
-            layer: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
+            level: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
         }, { signal });
         if (!response || !response.data) return;
         dispatch( setIsLoading( false ) );
@@ -145,12 +143,12 @@ const Layers = () => {
         if (isMounted) {
             const queryDataByProductId: GenericObject = {};
             const queryDataFloorsData: GenericObject = {};
-            const ids: string[] = response.data.map((x: any) => x.ID);
+            const ids: any[] = Array.from(new Set(response.data.map((x: any) => x[id])).values());
             dispatch(setSelectedLots(ids));
 
             response.data.forEach((data: any) => {
-                queryDataByProductId[data["ID"]] = data["value"];
-                queryDataFloorsData[data["ID"]] = {
+                queryDataByProductId[data[id]] = data["value"];
+                queryDataFloorsData[data[id]] = {
                     num_floors: data["num_floors"],
                     max_height: data["max_height"],
                 };
@@ -162,7 +160,7 @@ const Layers = () => {
         }
     }, [metric, coordinates, accessibilityList]);
 
-    const layers: any[] = [  ...[ queryData && !isLoading && lotsLayers ], ...buildingsLayers, ...amenitiesLayers, ...lensLayers, ...drawPoligonLayers, ...accessibilityPointsLayer];
+    const layers: any[] = [  ...[ queryData && !isLoading && lotsLayers ], ...buildingsLayers, ...amenitiesLayers, ...selectLayers, ...lensLayers, ...drawPoligonLayers, ...accessibilityPointsLayer];
 
     return { layers };
 };

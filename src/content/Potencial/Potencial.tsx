@@ -58,8 +58,7 @@ const Potencial = ( { metrics } : { metrics: any } ) => {
 
                             <ComparativeMetric metric="subutilizacion" icon={ FaPeopleGroup }>
                                 <GraphPercent
-                                    value={ 50 }
-                                    base={ 100 }
+                                    value={ 50 / 100 }
                                 />
                             </ComparativeMetric>
 

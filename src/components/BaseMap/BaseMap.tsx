@@ -22,13 +22,6 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
 
     const isLoading = useSelector((state: RootState) => state.viewMode.isLoading );
 
-    const { data: poligono } = useFetchGeo(
-        `${process.env.REACT_APP_API_URL}/polygon/bounds`
-    );
-    const { data: colonias } = useFetchGeo(
-        `${process.env.REACT_APP_API_URL}/polygon/colonias`
-    );
-
     const { layers } = Layers();
 
     //Redux
@@ -59,25 +52,6 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
         []
     );
 
-    //LAYER THAT MARKS THE LIMIT OF THE POLIGON
-    const poligonLayer = new GeoJsonLayer({
-        id: "poligono-layer",
-        data: poligono,
-        filled: true,
-        getFillColor: [0, 0, 0, 0],
-        getLineColor: [255, 0, 0, 255],
-        getLineWidth: 10,
-    });
-
-    const coloniasLayer = new GeoJsonLayer({
-        id: "colonias-layer",
-        data: colonias,
-        filled: true,
-        getFillColor: [0, 0, 0, 0],
-        getLineColor: [0, 0, 10, 255],
-        getLineWidth: 5,
-    });
-
     return (
         <>
             { isLoading &&
@@ -106,7 +80,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                   }}
                 initialViewState={INITIAL_STATE}
                 controller={{ dragPan: !isDrag }}
-                layers={[poligonLayer, ...layers, coloniasLayer]}
+                layers={layers}
                 viewState={{ ...localViewState }}
                 onViewStateChange={handleViewStateChange}
                 getTooltip={({ object }: any): any => {
@@ -116,7 +90,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                             <p><b>Nombre:</b> ${_.capitalize(object.properties.name)}</p>
                             <p><b>Categoría:</b> ${object.properties.amenity}</p>
                             ${object.properties.visits_category ? `<p><b>Visitas (estimadas por datos celular):</b> ${object.properties.visits_category}</p>` : ''}
-                            ${object.properties.opportunities_ratio ? `<p><b>Potencial de Aprovechamiento:</b> ${Math.round(100 / object.properties.opportunities_ratio).toLocaleString()}%</p>` : ''}
+                            ${object.properties.opportunities_ratio ? `<p><b>Población potencialmente atendida:</b> ${Math.round(100 / object.properties.opportunities_ratio).toLocaleString()}%</p>` : ''}
                             ${object.properties.attraction ? `<p><b>Capacidad estimada:</b> ${Math.round(object.properties.attraction).toLocaleString()}</p>` : ''}
                             ${object.properties.pob_reach ? `<p><b>Población Alcance:</b> ${Math.round(object.properties.pob_reach).toLocaleString()}</p>` : ''}
                         </div>`

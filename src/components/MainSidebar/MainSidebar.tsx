@@ -10,14 +10,18 @@ import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import { Accesibilidad, Potencial } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
 import { FaChevronUp } from "react-icons/fa";
+import { GenericObject } from "../../types";
 
 
 
-  const MainSidebar = () => {
+const MainSidebar = () => {
     const [metrics, setMetrics] = useState<any>({});
 
     const selectedLots = useSelector(
         (state: RootState) => state.selectedLots.selectedLots
+    );
+    const accessibilityList: GenericObject = useSelector(
+        (state: RootState) => state.accessibilityList.accessibilityList
     );
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
 
@@ -28,18 +32,17 @@ import { FaChevronUp } from "react-icons/fa";
             if (selectedLots.length === 0) return;
             const lots =
                 selectedLots &&
-                selectedLots.length &&
-                viewMode !== VIEW_MODES.FULL
-                    ? selectedLots.filter((x) => x !== undefined)
-                    : undefined;
-            console.log('--PREDIOS--');
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/predios`, { lots });
+                selectedLots.length && selectedLots.filter((x) => x !== undefined);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/predios`, {
+                lots, type: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
+                accessibility_info: accessibilityList.map((x: any) => x.value)
+            });
             if (response && response.data) {
                 setMetrics(response.data);
             }
         };
         fetchData();
-    }, [selectedLots]);
+    }, [selectedLots, accessibilityList]);
 
     return (
         <>

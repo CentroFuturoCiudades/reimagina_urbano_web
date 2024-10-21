@@ -4,6 +4,7 @@ import { GenericObject } from '../types';
 import { fetchPolygonData, useAborterEffect } from "../utils";
 import { GeoJsonLayer } from "deck.gl";
 import { useEffect, useState } from "react";
+import { VIEW_MODES } from "../constants";
 
 
 type BuildingFeature = {
@@ -22,10 +23,12 @@ interface BuildingsLayerProps {
     coordinates: any[];
     queryDataFloors: GenericObject;
     zoom: number;
+    viewMode: any;
 }
 
-const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom }: BuildingsLayerProps) => {
+const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom, viewMode }: BuildingsLayerProps) => {
     const [polygons, setPolygons] = useState<any>([]);
+    const [polygons2, setPolygons2] = useState<any>([]);
     const isZoomedIn = zoom >= 17;
     useAborterEffect(async (signal: any, isMounted: boolean) => {
         if (!isZoomedIn || !coordinates || coordinates.length === 0) return;
@@ -36,7 +39,17 @@ const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom }: BuildingsLaye
             },
             signal
         );
+
+        const polygons2 = await fetchPolygonData(
+            {
+                coordinates,
+                layer: "ideal_buildings",
+            },
+            signal
+        );
+
         isMounted && setPolygons(polygons);
+        isMounted && setPolygons2(polygons2);
     }, [coordinates, queryDataFloors, isZoomedIn]);
     
     if (!isZoomedIn || !coordinates || coordinates.length === 0) return [];
@@ -54,7 +67,7 @@ const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom }: BuildingsLaye
             id: "buildings-floors-layer",
             data: polygons,
             filled: true,
-            getFillColor: [200, 200, 140, 200],
+            getFillColor: [200, 200, 140],
             getLineWidth: 0,
             pickable: true,
             extruded: true,
@@ -65,9 +78,9 @@ const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom }: BuildingsLaye
         }),
         new GeoJsonLayer({
             id: "buildings-max-height-layer",
-            data: polygons,
+            data: polygons2,
             filled: true,
-            getFillColor: [255, 255, 255, 50],
+            getFillColor: [255, 255, 255, 100],
             getLineWidth: 0,
             pickable: true,
             extruded: true,

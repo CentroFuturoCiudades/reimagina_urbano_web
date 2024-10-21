@@ -142,7 +142,6 @@ const Accesibilidad = ({ metrics }: any) => {
                             <ComparativeMetric metric="accessibility_score" icon={FaWalking}>
                                 <GraphPercent
                                     value={metrics?.accessibility_score || 0}
-                                    base={1}
                                 />
                             </ComparativeMetric>
 
