@@ -174,32 +174,10 @@ const Accesibilidad = ({ metrics }: any) => {
                                     }
                                 </Box>
                             </ComparativeMetric>
-                        </VStack>
-                    </AccordionPanel>
-                </AccordionItem>
-
-                <AccordionItem style={{ borderWidth: "0px" }}>
-                    <AccordionButton className="accordion-header">
-                        <Box flex="1" textAlign="left" display="flex" alignItems="center">
-                            Radio de cobertura
-                            <Tooltip label="Distancia o área en la que los servicios o equipamientos públicos, como centros de salud o parques, son accesibles para la población, generalmente medido en kilómetros o minutos de desplazamiento." fontSize="md">
-                                <span style={{ marginLeft: "5px", color: "white", cursor: "pointer" }}><FaInfoCircle /></span>
-                            </Tooltip>
-                        </Box>
-                        <AccordionIcon />
-                    </AccordionButton>
-
-                    <AccordionPanel p={0}>
-                        <VStack spacing={"0"} className="accordion-body">
-
-                            <ComparativeMetric metric="Radio de cobertura" icon={FaBroadcastTower}>
-                                <Text>0.4 KM</Text>
-                            </ComparativeMetric>
 
                             <ComparativeMetric metric="Pendiente" icon={FaChartLine}>
                                 <Text>{Math.trunc(metrics.mean_slope)}°</Text>
                             </ComparativeMetric>
-
                         </VStack>
                     </AccordionPanel>
                 </AccordionItem>

@@ -51,16 +51,17 @@ export const ComparativeMetric = ({ name, metric, icon, disabled ,children}: { n
             }}
         >
             <Box className={`stat-title-box${metric && !disabled ? " regular" : ""}${isCurrent ? " active" : ""}`}>
-                <Text className="stat-title" style={{ color: isCurrent ? 'white' : '#383b46' }}>
-                    {icon && (
-                        <Tooltip label={METRIC_DESCRIPTIONS[metric || ""]} fontSize="md">
-                            <span>
-                                <Icon as={icon} mr="2" color={isCurrent ? 'white' : '#383b46'} />
-                            </span>
-                        </Tooltip>
-                    )}
-                    {title}
-                </Text>
+                <Tooltip hasArrow label={METRIC_DESCRIPTIONS[metric || ""]} fontSize="md" placement="right" >
+                    <Text className="stat-title" style={{ color: isCurrent ? 'white' : '#383b46' }}>
+                        {icon && (
+
+                                <span>
+                                    <Icon as={icon} mr="2" color={isCurrent ? 'white' : '#383b46'} />
+                                </span>
+                        )}
+                        {title}
+                    </Text>
+                </Tooltip>
             </Box>
             {Array.isArray(children) ? (
                 <Box className="stat-value">
@@ -256,7 +257,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             <ComparativeMetric metric="grado_escuela" icon={MdSchool}>
                             <Box display="flex" textAlign="center">
                                 <Text fontSize="md" justifyContent="center">
-                                {mappingGradoEscolaridad[metrics?.grado_escuela?.toFixed(0)] || ""} 
+                                {mappingGradoEscolaridad[metrics?.grado_escuela?.toFixed(0)] || ""}
                                 {/* ({metrics?.graproes?.toFixed(0)}) */}
                                 </Text>
                                 {metrics?.grado_escuela !== undefined && globalData?.graproes !== undefined && (
@@ -271,7 +272,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             </Box>
 
                             <Text fontSize="md" textAlign="center">
-                                { mappingGradoEscolaridad[globalData?.graproes?.toFixed(0)] || "" } ({ globalData?.graproes?.toFixed(0) })
+                                { mappingGradoEscolaridad[globalData?.graproes?.toFixed(0)] || "" }
                             </Text>
                             </ComparativeMetric>
                             <ComparativeMetric metric="viviendas_habitadas" icon={FaHouseUser}>
@@ -286,14 +287,23 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                     }) || "" }
                                 </Text>
                             </ComparativeMetric>
+                            <ComparativeMetric metric="viviendas_habitadas" icon={FaHouseUser}>
+                                <GraphPercentWIndicator
+                                    value={ metrics?.vivpar_hab / metrics?.vivtot * 100 || 0}
+                                    compareWith={( globalData?.vivpar_hab / ( globalData?.vivpar_hab + globalData?.vivpar_des ) ) * 100 || 0}
+                                />
+                                <GraphPercent
+                                    value={ globalData?.vivpar_hab / ( globalData?.vivpar_hab + globalData?.vivpar_des ) * 100 || 0}
+                                />
+                            </ComparativeMetric>
                             <ComparativeMetric metric="viviendas_deshabitadas" icon={BsFillHouseSlashFill}>
-                            <GraphPercentWIndicator
-                                value={metrics?.viviendas_deshabitadas || 0}
-                                compareWith={(globalData?.vivpar_des / globalData?.vivpar_hab) * 100 || 0} 
-                            />
-                            <GraphPercent 
-                                value={globalData?.vivpar_des / globalData?.vivpar_hab * 100 || 0}
-                            />
+                                <GraphPercentWIndicator
+                                    value={metrics?.viviendas_deshabitadas || 0}
+                                    compareWith={(globalData?.vivpar_des / globalData?.vivpar_hab) * 100 || 0}
+                                />
+                                <GraphPercent
+                                    value={globalData?.vivpar_des / globalData?.vivpar_hab * 100 || 0}
+                                />
                             </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>
@@ -320,41 +330,41 @@ const Visor = ({ metrics }: { metrics: any }) => {
                         </Box>
                         <VStack spacing={0} className="accordion-body" style={{ padding: "0.4rem" }}>
                             <ComparativeMetric metric="indice_bienestar" icon={IoHappyOutline}>
-                                <GraphPercentWIndicator 
-                                    value={metrics?.indice_bienestar || 0} 
-                                    compareWith={globalData?.puntuaje_hogar_digno || 0} 
+                                <GraphPercentWIndicator
+                                    value={metrics?.indice_bienestar || 0}
+                                    compareWith={globalData?.puntuaje_hogar_digno || 0}
                                 />
-                                <GraphPercent 
+                                <GraphPercent
                                     value={globalData?.puntuaje_hogar_digno}
                                 />
                             </ComparativeMetric>
 
                             <ComparativeMetric metric="viviendas_auto" icon={FaCar}>
-                                <GraphPercentWIndicator 
-                                    value={metrics?.viviendas_auto || 0} 
-                                    compareWith={(globalData?.vph_autom / globalData?.vivpar_hab) * 100 || 0} 
+                                <GraphPercentWIndicator
+                                    value={metrics?.viviendas_auto || 0}
+                                    compareWith={(globalData?.vph_autom / globalData?.vivpar_hab) * 100 || 0}
                                 />
-                                <GraphPercent 
+                                <GraphPercent
                                     value={globalData?.vph_autom / globalData?.vivpar_hab * 100 || 0}
                                 />
                             </ComparativeMetric>
 
                             <ComparativeMetric metric="viviendas_pc" icon={FaComputer}>
-                                <GraphPercentWIndicator 
+                                <GraphPercentWIndicator
                                     value={metrics?.viviendas_pc || 0}
-                                    compareWith={(globalData?.vph_pc / globalData?.vivpar_hab) * 100 || 0} 
+                                    compareWith={(globalData?.vph_pc / globalData?.vivpar_hab) * 100 || 0}
                                 />
-                                <GraphPercent 
+                                <GraphPercent
                                     value={globalData?.vph_pc / globalData?.vivpar_hab * 100 || 0}
                                 />
                             </ComparativeMetric>
 
                             <ComparativeMetric metric="viviendas_tinaco" icon={IoWater}>
-                                <GraphPercentWIndicator 
+                                <GraphPercentWIndicator
                                     value={metrics?.viviendas_tinaco || 0}
-                                    compareWith={(globalData?.vph_tinaco / globalData?.vivpar_hab) * 100 || 0} 
+                                    compareWith={(globalData?.vph_tinaco / globalData?.vivpar_hab) * 100 || 0}
                                 />
-                                <GraphPercent 
+                                <GraphPercent
                                     value={globalData?.vph_tinaco / globalData?.vivpar_hab * 100 || 0}
                                 />
                             </ComparativeMetric>
