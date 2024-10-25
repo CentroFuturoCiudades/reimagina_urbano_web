@@ -22,10 +22,12 @@ const useLensLayer = ({ coords }: any) => {
     const [data, setData] = useState<any>();
 
     useEffect(() => {
-        const temp = turf.circle(circleCoords, circleRadius, {
-            units: "meters",
-        });
-        setData(temp);
+        if( coords.longitude ){
+            const temp = turf.circle(circleCoords, circleRadius, {
+                units: "meters",
+            });
+            setData(temp);
+        }
     }, [ circleCoords ]);
 
     const handleHover = useCallback((info: PickInfo<unknown>) => {
