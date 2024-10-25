@@ -138,6 +138,7 @@ const Layers = () => {
             metric,
             accessibility_info: accessibilityList.map((x: any) => x.value),
             coordinates,
+            metrics: viewMode === VIEW_MODES.FULL ? { [metric]: "value" } : {[metric]: "value", "num_floors": "num_floors", "max_height": "max_height"},
             level: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
             project
         }, { signal });

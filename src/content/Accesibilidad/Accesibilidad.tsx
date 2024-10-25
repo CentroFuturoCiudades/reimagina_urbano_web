@@ -175,8 +175,8 @@ const Accesibilidad = ({ metrics }: any) => {
                                 </Box>
                             </ComparativeMetric>
 
-                            <ComparativeMetric metric="Pendiente" icon={FaChartLine}>
-                                <Text>{Math.trunc(metrics.mean_slope)}°</Text>
+                            <ComparativeMetric metric="slope" icon={FaChartLine}>
+                                <Text>{Math.trunc(metrics.slope)}°</Text>
                             </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>

@@ -55,11 +55,11 @@ const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom, viewMode }: Bui
     if (!isZoomedIn || !coordinates || coordinates.length === 0) return [];
 
     function getMaxHeight(buildingId: string): number {
-        return queryDataFloors[buildingId]?.max_height*3 || 0;
+        return queryDataFloors[buildingId]?.max_height*3 || 3;
     }
 
     function getFloors(buildingId: string): number {
-        return queryDataFloors[buildingId]?.num_floors*3 || 0;
+        return queryDataFloors[buildingId]?.num_floors*3 || 3;
     }
 
     return [
@@ -73,7 +73,7 @@ const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom, viewMode }: Bui
             extruded: true,
             getElevation: (d: unknown) => {
                 const feature = d as BuildingFeature;
-                return getFloors(feature.properties.ID);
+                return getFloors(feature.properties.lot_id);
             },
         }),
         new GeoJsonLayer({
@@ -87,7 +87,7 @@ const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom, viewMode }: Bui
             wireframe: true,
             getElevation: (d: unknown) => {
                 const feature = d as BuildingFeature;
-                return getMaxHeight(feature.properties.ID);
+                return getMaxHeight(feature.properties.lot_id);
             },
         }),
     ];

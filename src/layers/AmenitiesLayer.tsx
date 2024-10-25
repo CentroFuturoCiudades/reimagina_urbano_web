@@ -15,13 +15,13 @@ const METRIC_COLOR: GenericObject = {
 };
 
 const useAmenitiesLayer = ({coordinates, metric}: any) => {
+    const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const [polygons, setPolygons] = useState<any>([]);
-    const condition = metric !== "minutes";
+    const condition = ( (metric !== "minutes" && metric !== "accessibility_score") || ( (!coordinates || coordinates.length === 0) && viewMode != VIEW_MODES.FULL ));
 
     useAborterEffect(async (signal: any, isMounted: boolean) => {
         if (condition) return;
-        const data = await fetchPolygonData({ coordinates, layer: "landuse_amenity" }, signal);
-        console.log(data)
+        const data = await fetchPolygonData({ coordinates, layer: "amenities" }, signal);
         isMounted && setPolygons(data?.features || []);
     }, [coordinates, metric ]);
 

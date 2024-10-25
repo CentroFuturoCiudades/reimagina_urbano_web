@@ -105,7 +105,7 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     "accessibility_score":{
         query: "accessibility_score",
         title: "Puntuaje de Accesibilidad (0 a 100)",
-        ranges: [-0.05, 0, 0.25, 0.5, 3, 6],
+        ranges: [0, 20, 30, 40, 50, 80],
         type: "number",
     },
     "minutes": {
@@ -115,6 +115,12 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
         type: "minutes",
         startColor: "#2C238B",
         endColor: "#BFE5F8"
+    },
+    "slope": {
+        query: "mean_slope",
+        title: "Pendiente",
+        ranges: [0, 10, 20, 30, 40, 50],
+        type: "number"
     },
     //METRICAS POTENCIAL
     "density": { query: "AVG(l.home_density)", title: "Densidad", ranges: [ 0, 1500, 2500, 5000, 25000 ], type:"number" },
