@@ -30,6 +30,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ handleActivateLanding }) => {
     const dispatch: AppDispatch = useDispatch();
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const viewState = useSelector((state: RootState) => state.viewState);
+    const project = window.location.pathname.split("/")[1];
 
     const zoomIn = () => {
         // dispatch(setViewState(zoomLevel.zoom + 1))
@@ -55,7 +56,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ handleActivateLanding }) => {
                 <Flex direction="row" justify="center">
                     <Tooltip
                         hasArrow
-                        label="Zona Sur"
+                        label={ project == "primavera" ? "Zona Sur": "Centro" }
                         bg="gray.700"
                         fontSize="18px"
                         borderRadius="6px"

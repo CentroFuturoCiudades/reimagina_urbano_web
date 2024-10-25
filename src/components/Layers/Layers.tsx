@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { INITIAL_STATE, METRICS_MAPPING, POLYGON_MODES, VIEW_MODES } from "../../constants";
+import { defaultCoords, INITIAL_STATE, METRICS_MAPPING, POLYGON_MODES, VIEW_MODES } from "../../constants";
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
@@ -87,13 +87,14 @@ const Layers = () => {
         (state: RootState) => state.queryMetric.queryMetric
     );
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
+    const coords = useSelector((state: RootState) => state.viewMode.coords);
 
     const [queryData, setQueryDataState] = useState<any>({});
     const [queryDataFloors, setQueryDataFloorsState] = useState<any>({});
     const [coordinates, setCoordinates] = useState<any>(undefined);
 
     const { layers: selectLayers, selectedPolygons } = useSelectLayer();
-    const { lensData, layers: lensLayers } = useLensLayer({ coords: {latitude: INITIAL_STATE.latitude, longitude: INITIAL_STATE.longitude} });
+    const { lensData, layers: lensLayers } = useLensLayer({ coords: {latitude: coords?.latitude, longitude: coords?.longitude } });
     const { drawPoligonData, layers: drawPoligonLayers } =
     useDrawPoligonLayer();
     const lotsLayers = useLotsLayer({ coordinates, viewMode, queryData, metric });
@@ -131,11 +132,14 @@ const Layers = () => {
         if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL) return;
         console.log('--QUERY--')
         dispatch(setIsLoading(true));
+        const project = window.location.pathname.split("/")[1];
+
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/query`, {
             metric,
             accessibility_info: accessibilityList.map((x: any) => x.value),
             coordinates,
             level: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
+            project
         }, { signal });
         if (!response || !response.data) return;
         dispatch( setIsLoading( false ) );

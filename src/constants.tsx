@@ -3,8 +3,6 @@ import { generateGradientColors } from "./utils";
 import * as d3 from "d3";
 
 export const INITIAL_STATE = {
-    latitude: 24.755,
-    longitude: -107.40527779958091,
     zoom: 13,
     transitionDuration: 100,
     maxPitch: 85,
@@ -12,6 +10,22 @@ export const INITIAL_STATE = {
     minZoom: 12,
     maxZoom: 22,
 };
+
+export const defaultCoords = {
+    latitude: 24.755,
+    longitude: -107.40527779958091,
+}
+
+export const INITIAL_COORDS: any = {
+    "centro": {
+        latitude: 24.8073,
+        longitude: -107.3947,
+    },
+    "primavera": {
+        latitude: 24.755,
+        longitude: -107.40527779958091,
+    }
+}
 
 export const METRIC_DESCRIPTIONS: GenericObject = {
     "poblacion": "Total de habitantes que residen en el área analizada según los últimos datos del censo de INEGI.",

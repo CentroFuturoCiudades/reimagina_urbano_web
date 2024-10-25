@@ -40,7 +40,7 @@ const useLensLayer = ({ coords }: any) => {
         handleHover,
     ]);
 
-    if( viewMode != VIEW_MODES.LENS ){
+    if( viewMode != VIEW_MODES.LENS || !coords.longitude ){
         return {
             layers: [],
             lensData: {},

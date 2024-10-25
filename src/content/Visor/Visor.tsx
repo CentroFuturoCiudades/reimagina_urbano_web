@@ -196,12 +196,12 @@ const Visor = ({ metrics }: { metrics: any }) => {
     }
     const [pyramidData, setPyramidData] = useState<any[]>([]);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const project = window.location.pathname.split("/")[1];
+    const zoneLabel = project == "primavera" ? "Zona Sur": "Centro"
 
     useEffect(() => {
         setPyramidData(getPyramidData(metrics));
     }, [metrics]);
-
-    console.log(metrics);
 
     return (
         <div className="visor tab__main">
@@ -229,7 +229,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                     <AccordionPanel p={0}>
                         <Box className="stat-row header" style={{ margin: 0}}>
                             <Box className="title-box" style={{ margin: 0}}>
-                                <Text className="stat-title" width={"50%"}>{viewMode === VIEW_MODES.FULL ? "Zona Sur" : "Poligono"}</Text>
+                                <Text className="stat-title" width={"50%"}>{viewMode === VIEW_MODES.FULL ? zoneLabel : "Poligono"}</Text>
                                 <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
                             </Box>
                         </Box>
@@ -276,34 +276,19 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             </Text>
                             </ComparativeMetric>
                             <ComparativeMetric metric="viviendas_habitadas" icon={FaHouseUser}>
-                                <Text>
-                                    { metrics?.viviendas_habitadas?.toLocaleString("es-MX", {
-                                        maximumFractionDigits: 0,
-                                    }) || "" }
-                                </Text>
-                                <Text>
-                                    { globalData?.vivpar_hab?.toLocaleString("es-MX", {
-                                        maximumFractionDigits: 0,
-                                    }) || "" }
-                                </Text>
-                            </ComparativeMetric>
-                            <ComparativeMetric metric="viviendas_habitadas" icon={FaHouseUser}>
-                                <GraphPercentWIndicator
-                                    value={ metrics?.vivpar_hab / metrics?.vivtot * 100 || 0}
-                                    compareWith={( globalData?.vivpar_hab / ( globalData?.vivpar_hab + globalData?.vivpar_des ) ) * 100 || 0}
-                                />
-                                <GraphPercent
-                                    value={ globalData?.vivpar_hab / ( globalData?.vivpar_hab + globalData?.vivpar_des ) * 100 || 0}
-                                />
-                            </ComparativeMetric>
-                            <ComparativeMetric metric="viviendas_deshabitadas" icon={BsFillHouseSlashFill}>
-                                <GraphPercentWIndicator
-                                    value={metrics?.viviendas_deshabitadas || 0}
-                                    compareWith={(globalData?.vivpar_des / globalData?.vivpar_hab) * 100 || 0}
-                                />
-                                <GraphPercent
-                                    value={globalData?.vivpar_des / globalData?.vivpar_hab * 100 || 0}
-                                />
+                                <Tooltip content={`
+                                        Viviendas Habitadas: ${ metrics?.viviendas_habitadas },
+                                        Viviendas Deshabitadas:  ${ metrics?.viviendas_deshabitadas }
+                                    `}>
+                                    <GraphPercentWIndicator
+                                        value={ metrics?.viviendas_habitadas / (metrics?.viviendas_habitadas + metrics?.viviendas_deshabitadas )  * 100 || 0 }
+                                        compareWith={( globalData?.vivpar_hab / ( globalData?.vivpar_hab + globalData?.vivpar_des ) ) * 100 || 0}
+                                    />
+                                </Tooltip>
+
+                                    <GraphPercent
+                                        value={ globalData?.vivpar_hab / ( globalData?.vivpar_hab + globalData?.vivpar_des ) * 100 || 0}
+                                    />
                             </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>
@@ -324,7 +309,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                     <AccordionPanel p={0}>
                         <Box className="stat-row header" style={{ margin: 0}}>
                             <Box className="title-box" style={{ margin: 0}}>
-                                <Text className="stat-title" width={"50%"}>{viewMode === VIEW_MODES.FULL ? "Zona Sur" : "Poligono"}</Text>
+                                <Text className="stat-title" width={"50%"}>{viewMode === VIEW_MODES.FULL ? zoneLabel : "Poligono"}</Text>
                                 <Text className="stat-title dark" width={"50%"}>Culiacán</Text>
                             </Box>
                         </Box>

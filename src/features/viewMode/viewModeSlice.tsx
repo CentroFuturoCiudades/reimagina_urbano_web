@@ -1,5 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { POLYGON_MODES, TABS, VIEW_MODES } from '../../constants';
+import { setCoords } from '../lensSettings/lensSettingsSlice';
+
+interface coordsInterface {
+    latitude: number;
+    longitude: number;
+}
 
 interface ViewModeState {
     viewMode: VIEW_MODES;
@@ -8,6 +14,7 @@ interface ViewModeState {
     isLoading: boolean;
     legendLimits: { min: number, max: number } | null;
     activeAmenity?: string;
+    coords?: coordsInterface
 }
 
 const initialState: ViewModeState = {
@@ -41,9 +48,12 @@ const viewModeSlice = createSlice({
         setActiveAmenity: (state, action: PayloadAction< string | undefined >) => {
             state.activeAmenity = action.payload;
         },
+        setCoordsState: (state, action: PayloadAction< coordsInterface >) => {
+            state.coords = action.payload;
+        },
     }
 });
 
-export const { setViewMode, setPoligonMode, setActiveTab, setIsLoading, setLegendLimits, setActiveAmenity } = viewModeSlice.actions;
+export const { setViewMode, setPoligonMode, setActiveTab, setIsLoading, setLegendLimits, setActiveAmenity, setCoordsState } = viewModeSlice.actions;
 
 export default viewModeSlice.reducer;

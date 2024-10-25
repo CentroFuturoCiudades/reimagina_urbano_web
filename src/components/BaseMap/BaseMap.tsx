@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { DeckGL } from "@deck.gl/react";
-import { GeoJsonLayer } from "@deck.gl/layers";
 import { Map } from "react-map-gl";
-import { useFetchGeo } from "../../utils";
-import { INITIAL_STATE } from "../../constants";
+import { INITIAL_COORDS, INITIAL_STATE } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import { debounce } from "lodash";
@@ -12,15 +10,20 @@ import { setViewState } from "../../features/viewState/viewStateSlice";
 import "./BaseMap.scss";
 import _ from "lodash";
 import { Spinner } from "@chakra-ui/react";
+import { setCoordsState } from "../../features/viewMode/viewModeSlice";
+import { zoom } from "d3";
+import axios from "axios";
 
 interface BaseMapProps {
     isSatellite?: boolean;
 }
 
 const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
-    const [localViewState, setLocalViewState] = useState(INITIAL_STATE);
+    const [localViewState, setLocalViewState] = useState<any>(INITIAL_STATE);
 
     const isLoading = useSelector((state: RootState) => state.viewMode.isLoading );
+    const [initialCoords, setInitialCoords] = useState<any>(null);
+
 
     const { layers } = Layers();
 
@@ -30,12 +33,36 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
     const viewState = useSelector((state: RootState) => state.viewState);
 
+    useEffect( ()=> {
+        const project = window.location.pathname.split("/")[1];
+
+
+        axios.get(`${process.env.REACT_APP_API_URL}/coords?project=${project}` )
+        .then( response => {
+            if( response && response.data ){
+                setInitialCoords( response.data );
+                dispatch( setCoordsState( response.data ));
+            }
+        })
+
+    }, [])
+
     useEffect(() => {
-        setLocalViewState({
-            ...localViewState,
-            zoom: viewState.zoom,
-        });
-    }, [viewState]);
+        console.log( initialCoords )
+
+        if( !localViewState.latitude ){
+            setLocalViewState({
+                ...localViewState,
+                ...initialCoords,
+                zoom: viewState.zoom,
+            });
+        } else {
+            setLocalViewState({
+                ...localViewState,
+                zoom: viewState.zoom,
+            });
+        }
+    }, [viewState, initialCoords]);
 
     useEffect(() => {
         dispatch(
@@ -51,6 +78,10 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
         }, 5),
         []
     );
+
+    if( !localViewState.latitude ){
+        return <></>
+    }
 
     return (
         <>
@@ -78,7 +109,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                       console.log('WebGL context restored');
                     });
                   }}
-                initialViewState={INITIAL_STATE}
+                initialViewState={ localViewState }
                 controller={{ dragPan: !isDrag }}
                 layers={layers}
                 viewState={{ ...localViewState }}

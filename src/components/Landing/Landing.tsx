@@ -1,7 +1,9 @@
 import React, { useRef, useState, useEffect, forwardRef } from "react";
-import { Box, Text, Heading, VStack, SimpleGrid, Center, Button } from "@chakra-ui/react";
+import { Box, Text, Heading, VStack, SimpleGrid, Center, Button, position } from "@chakra-ui/react";
 import { MainSidebar, BaseMap } from "../";
 import Toolbar from "../Toolbar";
+import introJs from "intro.js";
+import 'intro.js/introjs.css';
 
 import "./Landing.scss"
 
@@ -228,6 +230,37 @@ const Landing: React.FC = () => {
         };
     }, []);
 
+    const  showHelp = ()=> {
+        const intro = introJs();
+        intro.setOptions({
+            steps: [
+            {
+                intro: "Bienvenido al mapa interactivo de ReImagina Urbano",
+            },
+            {
+                element: "#map-container",
+                intro: 'Para navegar puedes arrastrar el mapa',
+            },
+            {
+                element: ".toolbar-help",
+                intro: 'Puedes cambiar la inclinación del mapa usando Ctrl y arrastrando el mapa al mismo tiempo',
+            },
+            {
+                element: ".toolbar-zoom",
+                intro: 'Puedes hacer zoom dando click aquí o girando la rueda de tu mouse',
+            },
+            {
+                element:".mainSidebar",
+                intro: "En esta sección verás metricas relacionadas al área del mapa."
+            },
+
+            ],
+            showProgress: true,
+            showBullets: true,
+        });
+        intro.start();
+    }
+
 
     return (
         <>
@@ -258,6 +291,13 @@ const Landing: React.FC = () => {
                             justifyContent={"space-between"}
                             id="map"
                         >
+                            <Button style={{ position: "fixed", top: "0", left: "340px" }}
+                                onClick={ ()=> {
+                                    showHelp();
+                                }}
+                            >
+                                Help
+                            </Button>
                             <MainSidebar/>
                             <Toolbar handleActivateLanding={handleActivateLanding}/>
                         </Box>

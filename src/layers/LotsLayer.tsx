@@ -7,6 +7,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 
 const useLotsLayer = ({ coordinates, queryData, metric, viewMode }: any) => {
+
+    const project = window.location.pathname.split("/")[1];
+
     const [polygons, setPolygons] = useState<any>([]);
     const condition = (!coordinates || coordinates.length === 0) && viewMode !== VIEW_MODES.FULL;
     const legendLimits = useSelector(
@@ -49,6 +52,7 @@ const useLotsLayer = ({ coordinates, queryData, metric, viewMode }: any) => {
                 return color ? [color.r, color.g, color.b] : [255, 255, 255];
             }
 
+            if( value == undefined  && viewMode == VIEW_MODES.FULL ) return [255,255,255, 0]
             return [200, 200, 200];
         }
     }, [queryData, legendLimits]);
