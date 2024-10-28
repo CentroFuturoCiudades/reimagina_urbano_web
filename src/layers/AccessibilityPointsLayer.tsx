@@ -2,30 +2,29 @@ import React from 'react';
 import { IconLayer, TextLayer } from 'deck.gl';
 import { fetchPolygonData, useAborterEffect } from "../utils";
 import { GenericObject } from '../types';
-import { amenitiesOptions, VIEW_MODES } from '../constants';
+import { amenitiesOptions, TABS, VIEW_MODES } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAccessibilityList, setAccessibilityPoints } from '../features/accessibilityList/accessibilityListSlice';
 import { RootState } from '../app/store';
 import _ from 'lodash';
 import { Tooltip } from '../components';
 
-interface AccessibilityPointsProps {
-    metric: string;
-    coordinates: any[];
-}
-
-const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPointsProps) => {
+const useAccessibilityPointsLayer = () => {
     const dispatch = useDispatch();
+    const metric = useSelector((state: RootState) => state.queryMetric.queryMetric);
+    const coordinates = useSelector((state: RootState) => state.coordinates.coordinates);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const activeTab = useSelector((state: RootState) => state.viewMode.activeTab);
 
     const [polygons, setPolygons] = React.useState<any>([]);
-    const condition = ( (metric !== "minutes" && metric !== "accessibility_score") || ( (!coordinates || coordinates.length === 0) && viewMode != VIEW_MODES.FULL ));
+    const condition =
+        activeTab === TABS.ACCESIBILIDAD && viewMode === VIEW_MODES.LENS && coordinates && coordinates.length > 0;
     const [hoverInfo, setHoverInfo] = React.useState<any>(null);
     const accessibilityList = useSelector((state: RootState) => state.accessibilityList.accessibilityList);
     const activeAmenity = useSelector((state: RootState) => state.viewMode.activeAmenity );
 
     useAborterEffect(async (signal: any, isMounted: boolean) => {
-        if (condition) return;
+        if (!condition) return;
         const polygons = await fetchPolygonData({ coordinates, layer: "accessibility_points" }, signal);
         const polygonsData = polygons?.features || [];
         const accessibilityListValues = accessibilityList.map( item => {
@@ -42,7 +41,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
         const parsedData = data.map( (item: any) => {
             return item.properties;
         });
-        ( isMounted && viewMode != VIEW_MODES.FULL ) && setPolygons(data);
+        isMounted && setPolygons(data);
         dispatch(setAccessibilityPoints(parsedData));
     }, [coordinates, accessibilityList, metric]);
 
@@ -58,7 +57,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
         }
     }
 
-    if (condition) return [];
+    if (!condition) return [];
 
     return [
         new IconLayer({
@@ -76,6 +75,7 @@ const useAccessibilityPointsLayer = ({ metric , coordinates }: AccessibilityPoin
             },
             getPosition: (d: any) => d.geometry.coordinates,
             getSize: 40,
+            onHover: (info: any) => iconHover(info.x, info.y, info.object),
             iconAtlas: 'images/amenities.png',
             iconMapping: {
                 "recreation": {

@@ -48,7 +48,6 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     }, [])
 
     useEffect(() => {
-        console.log( initialCoords )
 
         if( !localViewState.latitude ){
             setLocalViewState({
@@ -115,7 +114,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                 viewState={{ ...localViewState }}
                 onViewStateChange={handleViewStateChange}
                 getTooltip={({ object }: any): any => {
-                    if (!object || !object.properties.name) return null;
+                    if (!object || !object.properties.amenity) return null;
                     return {
                         html: `<div>
                             <p><b>Nombre:</b> ${_.capitalize(object.properties.name)}</p>

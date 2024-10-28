@@ -1,20 +1,38 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { defaultCoords, INITIAL_STATE, METRICS_MAPPING, POLYGON_MODES, VIEW_MODES } from "../../constants";
+import {
+    defaultCoords,
+    INITIAL_STATE,
+    METRICS_MAPPING,
+    POLYGON_MODES,
+    VIEW_MODES,
+} from "../../constants";
 import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
 import { GenericObject } from "../../types";
-import { useLotsLayer, useLensLayer, useBuildingsLayer, useAccessibilityPointsLayer, useAmenitiesLayer, useSelectLayer } from "../../layers";
+import {
+    useLotsLayer,
+    useLensLayer,
+    useBuildingsLayer,
+    useAccessibilityPointsLayer,
+    useAmenitiesLayer,
+    useSelectLayer,
+} from "../../layers";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
-import { setIsLoading, setPoligonMode } from "../../features/viewMode/viewModeSlice";
+import {
+    setIsLoading,
+    setPoligonMode,
+} from "../../features/viewMode/viewModeSlice";
 import { useAborterEffect } from "../../utils";
 
 const useDrawPoligonLayer = () => {
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const poligonMode = useSelector((state: RootState) => state.viewMode.poligonMode);
+    const poligonMode = useSelector(
+        (state: RootState) => state.viewMode.poligonMode
+    );
 
     const dispatch: AppDispatch = useDispatch();
 
@@ -39,19 +57,19 @@ const useDrawPoligonLayer = () => {
 
     var mode: DrawPolygonMode | ModifyMode;
 
-    switch( poligonMode ){
+    switch (poligonMode) {
         case POLYGON_MODES.EDIT:
-            mode = new ModifyMode()
-        break;
+            mode = new ModifyMode();
+            break;
 
         case POLYGON_MODES.DELETE:
-            setPolygon( {
+            setPolygon({
                 type: "FeatureCollection",
                 features: [],
             });
-            dispatch( setPoligonMode( POLYGON_MODES.VIEW ))
+            dispatch(setPoligonMode(POLYGON_MODES.VIEW));
 
-        break;
+            break;
     }
 
     const drawLayer = new EditableGeoJsonLayer({
@@ -78,92 +96,92 @@ const useDrawPoligonLayer = () => {
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const isLoading = useSelector((state: RootState) => state.viewMode.isLoading );
+    const isLoading = useSelector(
+        (state: RootState) => state.viewMode.isLoading
+    );
     const accessibilityList: GenericObject = useSelector(
         (state: RootState) => state.accessibilityList.accessibilityList
     );
-    const zoom = useSelector((state: RootState) => state.viewState.zoom);
     const metric = useSelector(
         (state: RootState) => state.queryMetric.queryMetric
     );
-    const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
-    const coords = useSelector((state: RootState) => state.viewMode.coords);
+    const coordinates = useSelector(
+        (state: RootState) => state.coordinates.coordinates
+    );
 
     const [queryData, setQueryDataState] = useState<any>({});
     const [queryDataFloors, setQueryDataFloorsState] = useState<any>({});
-    const [coordinates, setCoordinates] = useState<any>(undefined);
 
-    const { layers: selectLayers, selectedPolygons } = useSelectLayer();
-    const { lensData, layers: lensLayers } = useLensLayer({ coords });
-    const { drawPoligonData, layers: drawPoligonLayers } =
-    useDrawPoligonLayer();
-    const lotsLayers = useLotsLayer({ coordinates, viewMode, queryData, metric });
-    const buildingsLayers: any = useBuildingsLayer({ coordinates, queryDataFloors, zoom, viewMode });
-    const accessibilityPointsLayer: any = useAccessibilityPointsLayer({ coordinates, metric });
-    const amenitiesLayers = useAmenitiesLayer({ coordinates, metric });
+    const { layers: selectLayers } = useSelectLayer();
+    const { layers: lensLayers } = useLensLayer();
+    const lotsLayers = useLotsLayer({ queryData });
+    const buildingsLayers: any = useBuildingsLayer({ queryDataFloors });
+    const accessibilityPointsLayer: any = useAccessibilityPointsLayer();
+    const amenitiesLayers = useAmenitiesLayer();
     const id = viewMode === VIEW_MODES.FULL ? "cvegeo" : "lot_id";
 
-    //String values allow the serialization of those properties. Avoids infinite re-rendering
-    const lensDataString = useMemo(() => JSON.stringify(lensData), [lensData]);
-    const drawPoligonDataString = useMemo(
-        () => JSON.stringify(drawPoligonData),
-        [drawPoligonData]
+    useAborterEffect(
+        async (signal: any, isMounted: boolean) => {
+            if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL)
+                return;
+            console.log("--QUERY--");
+            dispatch(setIsLoading(true));
+            const metrics =
+                viewMode === VIEW_MODES.FULL
+                    ? { [metric]: "value" }
+                    : {
+                          [metric]: "value",
+                          num_floors: "num_floors",
+                          max_height: "max_height",
+                      };
+            const response = await axios.post(
+                `${process.env.REACT_APP_API_URL}/query`,
+                {
+                    metric,
+                    accessibility_info: accessibilityList.map(
+                        (x: any) => x.value
+                    ),
+                    coordinates,
+                    metrics,
+                    level: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
+                },
+                { signal }
+            );
+            if (!response || !response.data) return;
+            dispatch(setIsLoading(false));
+
+            if (isMounted) {
+                const queryDataByProductId: GenericObject = {};
+                const queryDataFloorsData: GenericObject = {};
+                const ids: any[] = Array.from(
+                    new Set(response.data.map((x: any) => x[id])).values()
+                );
+                dispatch(setSelectedLots(ids));
+
+                response.data.forEach((data: any) => {
+                    queryDataByProductId[data[id]] = data["value"];
+                    queryDataFloorsData[data[id]] = {
+                        num_floors: data["num_floors"],
+                        max_height: data["max_height"],
+                    };
+                });
+
+                setQueryDataFloorsState(queryDataFloorsData);
+                setQueryDataState(queryDataByProductId);
+                dispatch(setQueryData(response.data));
+            }
+        },
+        [metric, coordinates, accessibilityList]
     );
 
-    useEffect(()=>{
-        setCoordinates(undefined);
-    }, [isDrag, viewMode]);
-
-    useEffect(() => {
-        if (viewMode === VIEW_MODES.FULL) {
-            const coords = selectedPolygons?.map((x: any) => x.geometry.coordinates[0]);
-            setCoordinates(coords);
-        } else if (viewMode === VIEW_MODES.LENS) {
-            if (!isDrag) {
-                setCoordinates([lensData?.geometry.coordinates[0]]);
-            }
-        } else if (viewMode === VIEW_MODES.POLIGON) {
-            setCoordinates([drawPoligonData?.features[0]?.geometry.coordinates[0]]);
-        }
-    }, [viewMode, isDrag, lensDataString, drawPoligonDataString, selectedPolygons]);
-
-    useAborterEffect(async (signal: any, isMounted: boolean) => {
-        if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL) return;
-        console.log('--QUERY--')
-        dispatch(setIsLoading(true));
-        const project = window.location.pathname.split("/")[1];
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}/query`, {
-            metric,
-            accessibility_info: accessibilityList.map((x: any) => x.value),
-            coordinates,
-            metrics: viewMode === VIEW_MODES.FULL ? { [metric]: "value" } : {[metric]: "value", "num_floors": "num_floors", "max_height": "max_height"},
-            level: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
-            project
-        }, { signal });
-        if (!response || !response.data) return;
-        dispatch( setIsLoading( false ) );
-
-        if (isMounted) {
-            const queryDataByProductId: GenericObject = {};
-            const queryDataFloorsData: GenericObject = {};
-            const ids: any[] = Array.from(new Set(response.data.map((x: any) => x[id])).values());
-            dispatch(setSelectedLots(ids));
-
-            response.data.forEach((data: any) => {
-                queryDataByProductId[data[id]] = data["value"];
-                queryDataFloorsData[data[id]] = {
-                    num_floors: data["num_floors"],
-                    max_height: data["max_height"],
-                };
-            });
-
-            setQueryDataFloorsState(queryDataFloorsData);
-            setQueryDataState(queryDataByProductId);
-            dispatch(setQueryData(response.data));
-        }
-    }, [metric, coordinates, accessibilityList]);
-
-    const layers: any[] = [  ...[ queryData && !isLoading && lotsLayers ], ...buildingsLayers, ...amenitiesLayers, ...selectLayers, ...lensLayers, ...drawPoligonLayers, ...accessibilityPointsLayer];
+    const layers: any[] = [
+        ...[queryData && !isLoading && lotsLayers],
+        ...buildingsLayers,
+        ...selectLayers,
+        ...lensLayers,
+        ...amenitiesLayers,
+        ...accessibilityPointsLayer,
+    ];
 
     return { layers };
 };

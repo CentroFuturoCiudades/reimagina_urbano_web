@@ -6,6 +6,7 @@ import selectedLotsReducer from '../features/selectedLots/selectedLotsSlice'
 import lensSettingsReducer from '../features/lensSettings/lensSettingsSlice';
 import queryDataReducer from '../features/queryData/queryDataSlice';
 import viewStateReducer from '../features/viewState/viewStateSlice';
+import coordinatesReducer from '../features/coordinates/coordinatesSlice';
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     lensSettings: lensSettingsReducer,
     queryData: queryDataReducer,
     viewState: viewStateReducer,
+    coordinates: coordinatesReducer,
   }
 });
 

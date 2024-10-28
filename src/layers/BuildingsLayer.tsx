@@ -1,10 +1,10 @@
-import { load } from "@loaders.gl/core";
-import { FlatGeobufLoader } from "@loaders.gl/flatgeobuf";
 import { GenericObject } from '../types';
 import { fetchPolygonData, useAborterEffect } from "../utils";
 import { GeoJsonLayer } from "deck.gl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { VIEW_MODES } from "../constants";
+import { RootState } from "../app/store";
+import { useSelector } from "react-redux";
 
 
 type BuildingFeature = {
@@ -20,13 +20,15 @@ type BuildingFeature = {
 };
 
 interface BuildingsLayerProps {
-    coordinates: any[];
     queryDataFloors: GenericObject;
-    zoom: number;
-    viewMode: any;
 }
 
-const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom, viewMode }: BuildingsLayerProps) => {
+const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
+    const coordinates = useSelector(
+        (state: RootState) => state.coordinates.coordinates
+    );
+    const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const zoom = useSelector((state: RootState) => state.viewState.zoom);
     const [polygons, setPolygons] = useState<any>([]);
     const [polygons2, setPolygons2] = useState<any>([]);
     const isZoomedIn = zoom >= 17;

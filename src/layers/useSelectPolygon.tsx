@@ -1,21 +1,37 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GeoJsonLayer, PickInfo } from "deck.gl";
 import { VIEW_MODES } from "../constants";
 import { useFetchGeo } from "../utils";
+import { setCoordinates } from "../features/coordinates/coordinatesSlice";
 
 const useSelectLayer = () => {
+    const dispatch = useDispatch();
+    const project = window.location.pathname.split("/")[1];
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const [hoveredObject, setHoveredObject] = useState<any>(null);
     const { data: colonias } = useFetchGeo(
         `${process.env.REACT_APP_API_URL}/polygon/colonias`
     );
     const { data: poligono } = useFetchGeo(
-        `${process.env.REACT_APP_API_URL}/polygon/bounds`
+        `${process.env.REACT_APP_API_URL}/polygon/${project}_bounds`
     );
     const [selectedPolygons, setSelectedPolygons] = useState<any[]>([]);
 
-    if (viewMode !== VIEW_MODES.FULL) return { layers: [], selectedPolygons };
+    useEffect(() => {
+        if (viewMode !== VIEW_MODES.FULL) return;
+        const coords =
+            selectedPolygons.length > 0
+                ? selectedPolygons?.map((x: any) => x.geometry.coordinates[0])
+                : poligono
+                ? (poligono as any).features[0].geometry.coordinates[0]
+                : [];
+        dispatch(setCoordinates(coords));
+    }, [selectedPolygons, poligono, viewMode]);
+
+    if (viewMode !== VIEW_MODES.FULL)
+        return { layers: [], selectedPolygons: [] };
 
     const onSelect = (info: PickInfo<unknown>) => {
         if (info.object) {
@@ -28,16 +44,43 @@ const useSelectLayer = () => {
         }
     };
 
+    const mapFillSelection = (d: any): any =>
+        selectedPolygons
+            .map((x: any) => x.properties.OBJECTID_1)
+            .includes(d.properties.OBJECTID_1)
+            ? [0, 120, 0, 255]
+            : hoveredObject &&
+              hoveredObject.properties.OBJECTID_1 === d.properties.OBJECTID_1
+            ? [0, 120, 0, 200]
+            : [0, 120, 0, 100];
+    const mapWidthSelection = (d: any) =>
+        selectedPolygons
+            .map((x: any) => x.properties.OBJECTID_1)
+            .includes(d.properties.OBJECTID_1)
+            ? 15
+            : hoveredObject &&
+              hoveredObject.properties.OBJECTID_1 === d.properties.OBJECTID_1
+            ? 12
+            : 5;
+
     const selectLayer = new GeoJsonLayer({
         id: "select",
         data: colonias,
         filled: true,
         getFillColor: [255, 255, 255, 0],
-        getLineColor: [0, 120, 0, 255],
-        getLineWidth: 10,
+        getLineColor: mapFillSelection,
+        getLineWidth: mapWidthSelection,
         pickable: true,
         highlightColor: [255, 255, 255, 100],
+        highlightLineWidth: 20,
         autoHighlight: true,
+        updateTriggers: {
+            getLineColor: [hoveredObject, selectedPolygons],
+            getLineWidth: [hoveredObject, selectedPolygons],
+        },
+        onHover: (info: PickInfo<unknown>) => {
+            setHoveredObject(info.object);
+        },
         onClick: onSelect,
     });
 
@@ -46,11 +89,18 @@ const useSelectLayer = () => {
         data: poligono,
         filled: true,
         getFillColor: [0, 0, 0, 0],
-        getLineColor: [255, 0, 0, 255],
-        getLineWidth: 10,
+        getLineColor: (d: any) =>
+            selectedPolygons.length > 0 ? [200, 0, 0, 200] : [255, 0, 0, 255],
+        getLineWidth: (d: any) => (selectedPolygons.length > 0 ? 12 : 20),
+        updateTriggers: {
+            getLineColor: [selectedPolygons],
+            getLineWidth: [selectedPolygons],
+        },
     });
 
-    return { layers: [poligonLayer, selectLayer], selectedPolygons };
+    return {
+        layers: [poligonLayer, selectLayer],
+    };
 };
 
 export default useSelectLayer;
