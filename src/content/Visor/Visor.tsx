@@ -31,6 +31,7 @@ import { MdSchool } from "react-icons/md";
 import { BsFillHouseSlashFill } from "react-icons/bs";
 
 
+
 export const ComparativeMetric = ({ name, metric, icon, disabled ,children}: { name?: string, metric?: string, icon?: any, disabled?: boolean , children: React.ReactNode[] | React.ReactNode }) => {
     const dispatch = useDispatch();
     const currentMetric = useSelector((state: RootState) => state.queryMetric.queryMetric);
@@ -265,8 +266,8 @@ const Visor = ({ metrics }: { metrics: any }) => {
 
                                     {/* Sustituir por pyramidData en lugar de testData */}
                             <ComparativeMetric disabled={true} name="Pirámide poblacional" icon={ImManWoman} metric="Pirámide poblacional"> 
-                                <PopulationPyramid data={testData} invertAxes={true} /> 
-                                <PopulationPyramid data={ getPyramidData( globalData )} invertAxes={false} />  
+                                <PopulationPyramid data={testData} invertAxes={true} showLegend={true} /> 
+                                <PopulationPyramid data={ getPyramidData( globalData )} invertAxes={false} showLegend={false} additionalMarginBottom={23} />  
                             </ComparativeMetric> 
                             
 
