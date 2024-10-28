@@ -14,15 +14,18 @@ const useLensLayer = ({ coords }: any) => {
     const zoom = useSelector((state: RootState) => state.viewState.zoom);
 
     const [circleRadius, setBrushingRadius] = useState(400); //radio esta en metros
-    const [circleCoords, setCircleCoords] = useState([
-        coords.longitude,
-        coords.latitude,
-    ]);
+    const [circleCoords, setCircleCoords] = useState(coords);
     const [isDrag, setIsDrag] = useState(false);
     const [data, setData] = useState<any>();
 
     useEffect(() => {
-        if( coords.longitude ){
+        if (coords) {
+            setCircleCoords([coords.longitude, coords.latitude]);
+        }
+    }, [coords]);
+
+    useEffect(() => {
+        if( coords ){
             const temp = turf.circle(circleCoords, circleRadius, {
                 units: "meters",
             });
@@ -42,7 +45,7 @@ const useLensLayer = ({ coords }: any) => {
         handleHover,
     ]);
 
-    if( viewMode != VIEW_MODES.LENS || !coords.longitude ){
+    if( viewMode != VIEW_MODES.LENS || !coords ){
         return {
             layers: [],
             lensData: {},

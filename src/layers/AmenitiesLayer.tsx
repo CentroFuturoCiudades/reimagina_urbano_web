@@ -33,7 +33,6 @@ const useAmenitiesLayer = ({coordinates, metric}: any) => {
             filled: true,
             getFillColor: (d: any) => {
                 const type = amenitiesOptions.find((x) => x.label === d.properties.amenity)?.type;
-                console.log(type);
                 return type ? METRIC_COLOR[type] : [200, 200, 200];
             },
             getLineWidth: 0,

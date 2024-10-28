@@ -143,7 +143,7 @@ export const GraphPercent = ({ value }: { value: number }) => {
             color="var(--primary-dark)"
         >
             <CircularProgressLabel fontSize="18px" display="flex" alignItems="center"  justifyContent="center" textAlign="center">
-                {(value || 0).toFixed(0)}%
+                {(value || 0).toFixed(0)}
             </CircularProgressLabel>
         </CircularProgress>
     );

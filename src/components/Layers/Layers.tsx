@@ -94,7 +94,7 @@ const Layers = () => {
     const [coordinates, setCoordinates] = useState<any>(undefined);
 
     const { layers: selectLayers, selectedPolygons } = useSelectLayer();
-    const { lensData, layers: lensLayers } = useLensLayer({ coords: {latitude: coords?.latitude, longitude: coords?.longitude } });
+    const { lensData, layers: lensLayers } = useLensLayer({ coords });
     const { drawPoligonData, layers: drawPoligonLayers } =
     useDrawPoligonLayer();
     const lotsLayers = useLotsLayer({ coordinates, viewMode, queryData, metric });
@@ -120,7 +120,6 @@ const Layers = () => {
             setCoordinates(coords);
         } else if (viewMode === VIEW_MODES.LENS) {
             if (!isDrag) {
-                console.log(lensData?.geometry.coordinates[0]);
                 setCoordinates([lensData?.geometry.coordinates[0]]);
             }
         } else if (viewMode === VIEW_MODES.POLIGON) {
@@ -133,7 +132,6 @@ const Layers = () => {
         console.log('--QUERY--')
         dispatch(setIsLoading(true));
         const project = window.location.pathname.split("/")[1];
-
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/query`, {
             metric,
             accessibility_info: accessibilityList.map((x: any) => x.value),

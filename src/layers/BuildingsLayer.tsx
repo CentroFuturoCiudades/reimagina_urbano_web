@@ -30,8 +30,9 @@ const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom, viewMode }: Bui
     const [polygons, setPolygons] = useState<any>([]);
     const [polygons2, setPolygons2] = useState<any>([]);
     const isZoomedIn = zoom >= 17;
+    const condition = isZoomedIn && coordinates && coordinates.length !== 0 && viewMode === VIEW_MODES.LENS;
     useAborterEffect(async (signal: any, isMounted: boolean) => {
-        if (!isZoomedIn || !coordinates || coordinates.length === 0) return;
+        if (!condition) return;
         const polygons = await fetchPolygonData(
             {
                 coordinates,
@@ -52,7 +53,7 @@ const useBuildingsLayer = ({ coordinates, queryDataFloors, zoom, viewMode }: Bui
         isMounted && setPolygons2(polygons2);
     }, [coordinates, queryDataFloors, isZoomedIn]);
     
-    if (!isZoomedIn || !coordinates || coordinates.length === 0) return [];
+    if (!condition) return [];
 
     function getMaxHeight(buildingId: string): number {
         return queryDataFloors[buildingId]?.max_height*3 || 3;
