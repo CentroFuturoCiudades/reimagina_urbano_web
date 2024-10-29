@@ -105,8 +105,6 @@ const AccessibilityPointsTreemap = ()=> {
 
         const items = Object.keys( accessibilityTree );
 
-        console.log( accessibilityTree )
-
         const iconMap: any = {
             "education": <FaSchool></FaSchool>,
             "health": <FaHospital />,

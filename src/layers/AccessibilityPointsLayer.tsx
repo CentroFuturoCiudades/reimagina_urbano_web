@@ -18,7 +18,7 @@ const useAccessibilityPointsLayer = () => {
 
     const [polygons, setPolygons] = React.useState<any>([]);
     const condition =
-        activeTab === TABS.ACCESIBILIDAD && viewMode === VIEW_MODES.LENS && coordinates && coordinates.length > 0;
+        activeTab === TABS.ACCESIBILIDAD && coordinates && coordinates.length > 0;
     const [hoverInfo, setHoverInfo] = React.useState<any>(null);
     const accessibilityList = useSelector((state: RootState) => state.accessibilityList.accessibilityList);
     const activeAmenity = useSelector((state: RootState) => state.viewMode.activeAmenity );
@@ -74,7 +74,7 @@ const useAccessibilityPointsLayer = () => {
                 return  iconName
             },
             getPosition: (d: any) => d.geometry.coordinates,
-            getSize: 40,
+            getSize: 34,
             onHover: (info: any) => iconHover(info.x, info.y, info.object),
             iconAtlas: 'images/amenities.png',
             iconMapping: {

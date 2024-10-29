@@ -25,7 +25,7 @@ const useSelectLayer = () => {
             selectedPolygons.length > 0
                 ? selectedPolygons?.map((x: any) => x.geometry.coordinates[0])
                 : poligono
-                ? (poligono as any).features[0].geometry.coordinates[0]
+                ? (poligono as any).features[0].geometry.coordinates
                 : [];
         dispatch(setCoordinates(coords));
     }, [selectedPolygons, poligono, viewMode]);
