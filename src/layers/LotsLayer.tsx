@@ -16,22 +16,21 @@ const useLotsLayer = ({ queryData }: any) => {
     );
     const [polygons, setPolygons] = useState<any>([]);
     const condition =
-        (!coordinates || coordinates.length === 0) &&
-        viewMode !== VIEW_MODES.FULL;
+        (coordinates && coordinates.length > 0);
     const legendLimits = useSelector(
         (state: RootState) => state.viewMode.legendLimits
     );
     const [quantiles, _] = getQuantiles(queryData, metric);
-    const id = viewMode === VIEW_MODES.FULL ? "cvegeo" : "lot_id";
+    const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
 
     useAborterEffect(
         async (signal: any, isMounted: boolean) => {
             setPolygons([]);
-            if (condition) return;
+            if (!condition) return;
             const polygons = await fetchPolygonData(
                 {
                     coordinates,
-                    layer: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
+                    layer: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
                 },
                 signal
             );
@@ -66,7 +65,7 @@ const useLotsLayer = ({ queryData }: any) => {
         return [200, 200, 200];
     };
 
-    if (condition) return [];
+    if (!condition) return [];
 
     return [
         new GeoJsonLayer({

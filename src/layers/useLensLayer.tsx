@@ -14,8 +14,9 @@ const useLensLayer = () => {
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const zoom = useSelector((state: RootState) => state.viewState.zoom);
     const coords = useSelector((state: RootState) => state.viewMode.coords);
-
-    const [circleRadius, setBrushingRadius] = useState(400); //radio esta en metros
+    const lensRadius = useSelector(
+        (state: RootState) => state.viewMode.lensRadius
+    );
     const [circleCoords, setCircleCoords] = useState(coords);
     const [polygon, setPolygon] = useState<any>();
 
@@ -27,13 +28,13 @@ const useLensLayer = () => {
         if (!circleCoords) return;
         const temp = turf.circle(
             [circleCoords.longitude, circleCoords.latitude],
-            circleRadius,
+            lensRadius,
             {
                 units: "meters",
             }
         );
         setPolygon(temp);
-    }, [circleCoords, circleRadius]);
+    }, [circleCoords, lensRadius]);
 
     useEffect(() => {
         if (viewMode !== VIEW_MODES.LENS || isDrag) return;
@@ -81,7 +82,24 @@ const useLensLayer = () => {
         },
     });
 
-    return { layers: [lensLayer] };
+    const centerPointLayer = new GeoJsonLayer({
+        id: "center-point-layer",
+        data: circleCoords ? [{
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: [circleCoords.longitude, circleCoords.latitude],
+            },
+        }] : [],
+        filled: true,
+        getLineColor: [150, 150, 150, 255],
+        getLineWidth: 5,
+        getFillColor: [200, 200, 200, 200],
+        getRadius: 15,
+        pickable: false,
+    });
+
+    return { layers: [lensLayer, centerPointLayer] };
 };
 
 export default useLensLayer;

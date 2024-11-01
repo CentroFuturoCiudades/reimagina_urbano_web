@@ -57,27 +57,28 @@
     border-radius: 8px;
     padding: 2px;
     z-index: 1;
+}
 
-    button {
-        padding: 4px !important;
-        margin: 2px !important;
-        border-color: var(--primary-dark);
-        background-color: var(--primary-dark);
-        border-radius: 8px;
-        &:hover {
-            background-color: var(--primary-dark3);
-        }
+.toolbar-edit__div {
+    position: absolute;
+    top: 0px;
+    left: calc(50dvw + 240px);
+    opacity: 0.95 !important;
+}
 
-        &.active {
-            background-color: var(--primary-dark2) !important;
-        }
+.toolbar-edit__button {
+    background-color: var(--primary-dark) !important;
+    width: 120px !important;
+    height: 30px !important;
+    &:hover {
+        background-color: var(--primary-dark3) !important;
     }
 }
 
 .toolbar-zoom {
     position: absolute;
     top: 0px;
-    right: 100px;
+    left: 415px;
     background-color: var(--primary-dark);
     opacity: 0.95;
     border-radius: 8px;
@@ -111,7 +112,7 @@
 .toolbar-help {
     position: absolute;
     top: 0px;
-    right: 200px;
+    left: 515px;
     background-color: var(--primary-dark);
     opacity: 0.95;
     border-radius: 8px;
@@ -135,25 +136,16 @@
     }
 }
 
-.toolbar-close {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    background-color: var(--primary-dark);
+.button-small {
+    margin-top: 8px !important;
+    margin-left: 10px !important;
+    background-color: var(--primary-dark) !important;
+    color: white !important;
+    height: 30px !important;
+    width: 30px !important;
     opacity: 0.95;
-    border-radius: 8px;
-    padding: 1.5px;
-    z-index: 1;
-    height: 30px;
 
-    button {
-        margin: 1.5px !important;
-        background-color: var(--primary-dark);
-        color: white;
-        font-size: 15px;
-
-        &:hover {
-            background-color: var(--primary-dark3);
-        }
+    &:hover {
+        background-color: var(--primary-dark3) !important;
     }
 }

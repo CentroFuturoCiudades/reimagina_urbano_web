@@ -1,82 +1,82 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import { useEffect, useMemo, useState } from "react";
-import { GeoJsonLayer, PickInfo } from "deck.gl";
+import { GeoJsonLayer, PickInfo, RGBAColor } from "deck.gl";
 import { VIEW_MODES } from "../constants";
 import { useFetchGeo } from "../utils";
 import { setCoordinates } from "../features/coordinates/coordinatesSlice";
+import {PathStyleExtension} from '@deck.gl/extensions';
+import { setColonias, toggleSelectedColonias } from "../features/viewMode/viewModeSlice";
 
 const useSelectLayer = () => {
     const dispatch = useDispatch();
-    const project = window.location.pathname.split("/")[1];
+    const project = useSelector((state: RootState) => state.viewMode.project);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const [hoveredObject, setHoveredObject] = useState<any>(null);
     const { data: colonias } = useFetchGeo(
         `${process.env.REACT_APP_API_URL}/polygon/colonias`
-    );
+    ) as any;
     const { data: poligono } = useFetchGeo(
-        `${process.env.REACT_APP_API_URL}/polygon/${project}_bounds`
-    );
-    const [selectedPolygons, setSelectedPolygons] = useState<any[]>([]);
+        `${process.env.REACT_APP_API_URL}/polygon/${project}_bounds`, undefined, undefined, [project]
+    ) as any;
+    const selectedColonias = useSelector((state: RootState) => state.viewMode.selectedColonias);
 
     useEffect(() => {
-        if (viewMode !== VIEW_MODES.FULL) return;
-        const coords =
-            selectedPolygons.length > 0
-                ? selectedPolygons?.map((x: any) => x.geometry.coordinates[0])
-                : poligono
-                ? (poligono as any).features[0].geometry.coordinates
-                : [];
-        dispatch(setCoordinates(coords));
-    }, [selectedPolygons, poligono, viewMode]);
+        if (colonias) {
+            dispatch(setColonias(colonias?.features));
+        }
+    }, [colonias]);
 
-    if (viewMode !== VIEW_MODES.FULL)
-        return { layers: [], selectedPolygons: [] };
+    useEffect(() => {
+        if (viewMode === VIEW_MODES.FULL) {
+            dispatch(setCoordinates(poligono?.features[0].geometry.coordinates));
+        } else if (viewMode === VIEW_MODES.POLIGON) {
+            const coords = selectedColonias && selectedColonias.length > 0 ? colonias.features
+                .filter((x: any) => selectedColonias.includes(x.properties.OBJECTID_1))
+                .map((x: any) => x.geometry.coordinates[0]) : [];
+            dispatch(setCoordinates(coords));
+        }
+    }, [selectedColonias, poligono, viewMode]);
 
-    const onSelect = (info: PickInfo<unknown>) => {
+    const onSelect = (info: PickInfo<any>) => {
         if (info.object) {
-            setSelectedPolygons((prev: any) => {
-                if (prev.includes(info.object)) {
-                    return prev.filter((x: any) => x !== info.object);
-                }
-                return [...prev, info.object];
-            });
+            dispatch(toggleSelectedColonias(info.object.properties.OBJECTID_1));
         }
     };
 
     const mapFillSelection = (d: any): any =>
-        selectedPolygons
-            .map((x: any) => x.properties.OBJECTID_1)
+        selectedColonias
             .includes(d.properties.OBJECTID_1)
-            ? [0, 120, 0, 255]
+            ? [140, 100, 65]
             : hoveredObject &&
               hoveredObject.properties.OBJECTID_1 === d.properties.OBJECTID_1
-            ? [0, 120, 0, 200]
-            : [0, 120, 0, 100];
+            ? [115, 80, 60] : [90, 60, 50];
     const mapWidthSelection = (d: any) =>
-        selectedPolygons
-            .map((x: any) => x.properties.OBJECTID_1)
+        selectedColonias
             .includes(d.properties.OBJECTID_1)
-            ? 15
+            ? 18
             : hoveredObject &&
               hoveredObject.properties.OBJECTID_1 === d.properties.OBJECTID_1
-            ? 12
-            : 5;
+            ? 15
+            : 8;
+    
+    const mapFillColor = (d: any): RGBAColor =>
+        hoveredObject && hoveredObject.properties.OBJECTID_1 === d.properties.OBJECTID_1
+            ? [255, 255, 255, 100]
+            : [255, 255, 255, 0];
 
     const selectLayer = new GeoJsonLayer({
         id: "select",
         data: colonias,
         filled: true,
-        getFillColor: [255, 255, 255, 0],
+        getFillColor: mapFillColor,
         getLineColor: mapFillSelection,
         getLineWidth: mapWidthSelection,
         pickable: true,
-        highlightColor: [255, 255, 255, 100],
-        highlightLineWidth: 20,
-        autoHighlight: true,
         updateTriggers: {
-            getLineColor: [hoveredObject, selectedPolygons],
-            getLineWidth: [hoveredObject, selectedPolygons],
+            getLineColor: [hoveredObject, selectedColonias],
+            getLineWidth: [hoveredObject, selectedColonias],
+            getFillColor: [hoveredObject, selectedColonias],
         },
         onHover: (info: PickInfo<unknown>) => {
             setHoveredObject(info.object);
@@ -89,17 +89,20 @@ const useSelectLayer = () => {
         data: poligono,
         filled: true,
         getFillColor: [0, 0, 0, 0],
-        getLineColor: (d: any) =>
-            selectedPolygons.length > 0 ? [200, 0, 0, 200] : [255, 0, 0, 255],
-        getLineWidth: (d: any) => (selectedPolygons.length > 0 ? 12 : 20),
+        getLineColor: [255, 0, 0, 255],
+        getLineWidth: 20,
+        getDashArray: [10, 5],
+        dashJustified: true,
+        dashGapPickable: false,
         updateTriggers: {
-            getLineColor: [selectedPolygons],
-            getLineWidth: [selectedPolygons],
+            getLineColor: [selectedColonias],
+            getLineWidth: [selectedColonias],
         },
+        extensions: [new PathStyleExtension({dash: true})]
     });
 
     return {
-        layers: [poligonLayer, selectLayer],
+        layers: [poligonLayer, viewMode === VIEW_MODES.POLIGON && selectLayer],
     };
 };
 

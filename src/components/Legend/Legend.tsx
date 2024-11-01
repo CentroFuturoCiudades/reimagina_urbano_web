@@ -61,7 +61,6 @@ const Legend = () => {
                             setActive( i );
                             dispatch( setLegendLimits( { min: quantileValues[0], max: quantileValues[1]} ) );
                         }
-                        console.log(  );
                     }}
                     >
                     <div

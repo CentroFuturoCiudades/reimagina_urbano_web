@@ -239,7 +239,6 @@ export const fetchPolygonData = async ({
     coordinates,
     layer,
 }, signal) => {
-    console.log('--POLYGON--', layer);
     const url = `${process.env.REACT_APP_API_URL}/polygon`;
     try {
         const response = await fetch(url, {

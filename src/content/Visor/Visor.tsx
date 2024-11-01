@@ -22,9 +22,11 @@ import "./Visor.scss";
 import { RootState } from "../../app/store";
 import PopulationPyramid from "../../components/PopulationPyramid";
 import {
+    formatNumber,
     mappingGradoEscolaridad,
     METRIC_DESCRIPTIONS,
     METRICS_MAPPING,
+    REGIONS,
     VIEW_COLORS_RGBA,
     VIEW_MODES,
 } from "../../constants";
@@ -63,13 +65,6 @@ export const ComparativeMetric = ({
     const title = metric
         ? name || METRICS_MAPPING[metric]?.title || metric
         : name || "";
-
-    // Métricas sin hover
-    const metricsWithoutIcon = [
-        "viviendas_habitadas",
-        "viviendas_auto",
-        "viviendas_pc",
-    ];
 
     return (
         <Box
@@ -237,18 +232,20 @@ export const GraphPercentWIndicator = ({
 
 const Visor = ({ metrics }: { metrics: any }) => {
     const dispatch = useDispatch();
-    const globalData = useSelector((state: RootState) => state.queryMetric.globalData);
+    const globalData = useSelector(
+        (state: RootState) => state.queryMetric.globalData
+    );
     const [pyramidData, setPyramidData] = useState<any[]>([]);
     const [globalPyramidData, setGlobalPyramidData] = useState<any[]>([]);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const project = window.location.pathname.split("/")[1];
-    const zoneLabel = project == "primavera" ? "Zona Sur" : "Centro";
+    const project = useSelector((state: RootState) => state.viewMode.project);
+    const zoneLabel = project === "culiacan_sur" ? "Zona Sur" : "Centro";
 
     useEffect(() => {
         const pyramidData = getPyramidData(metrics).map((entry) => ({
-            per_male: entry.male / metrics.poblacion * 100,
-            per_female: entry.female / metrics.poblacion * 100,
-            per_total: entry.total / metrics.poblacion * 100,
+            per_male: (entry.male / metrics.poblacion) * 100,
+            per_female: (entry.female / metrics.poblacion) * 100,
+            per_total: (entry.total / metrics.poblacion) * 100,
             ...entry,
         }));
         setPyramidData(pyramidData);
@@ -256,13 +253,20 @@ const Visor = ({ metrics }: { metrics: any }) => {
 
     useEffect(() => {
         const pyramidData = getPyramidData(globalData).map((entry) => ({
-            per_male: entry.male / globalData.poblacion * 100,
-            per_female: entry.female / globalData.poblacion * 100,
-            per_total: entry.total / globalData.poblacion * 100,
+            per_male: (entry.male / globalData.poblacion) * 100,
+            per_female: (entry.female / globalData.poblacion) * 100,
+            per_total: (entry.total / globalData.poblacion) * 100,
             ...entry,
         }));
         setGlobalPyramidData(pyramidData);
     }, [globalData]);
+
+    
+    const names = {
+        [VIEW_MODES.FULL]: REGIONS.find((x) => x.key === project)?.name,
+        [VIEW_MODES.POLIGON]: "Colonias",
+        [VIEW_MODES.LENS]: "Radio de 500m",
+    }
 
     return (
         <div className="visor tab__main">
@@ -307,9 +311,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                         <Box className="stat-row header" style={{ margin: 0 }}>
                             <Box className="title-box" style={{ margin: 0 }}>
                                 <Text className="stat-title" width={"50%"}>
-                                    {viewMode === VIEW_MODES.FULL
-                                        ? zoneLabel
-                                        : "Poligono"}
+                                    {names[viewMode]}
                                 </Text>
                                 <Text className="stat-title dark" width={"50%"}>
                                     Culiacán
@@ -381,7 +383,8 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                         ] || ""}
                                     </Text>
                                     {metrics?.grado_escuela !== undefined &&
-                                        globalData?.grado_escuela !== undefined && (
+                                        globalData?.grado_escuela !==
+                                            undefined && (
                                             <>
                                                 {metrics?.grado_escuela >
                                                 globalData?.grado_escuela ? (
@@ -415,35 +418,41 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 icon={FaHouseUser}
                             >
                                 <Tooltip
-                                    content={`
-                                        Viviendas Habitadas: ${metrics?.viviendas_habitadas},
-                                        Viviendas Deshabitadas:  ${metrics?.viviendas_deshabitadas}
+                                    hasArrow
+                                    placement="right"
+                                    label={`
+                                        Viviendas Habitadas: ${formatNumber(metrics?.viviendas_habitadas)}
                                     `}
                                 >
-                                    <GraphPercentWIndicator
-                                        value={
-                                            (metrics?.viviendas_habitadas /
-                                                (metrics?.viviendas_habitadas +
-                                                    metrics?.viviendas_deshabitadas)) *
-                                                100 || 0
-                                        }
-                                        compareWith={
-                                            (globalData?.viviendas_habitadas /
-                                                (globalData?.viviendas_habitadas +
-                                                    globalData?.viviendas_deshabitadas)) *
-                                                100 || 0
-                                        }
-                                    />
+                                    <Box>
+                                        <GraphPercentWIndicator
+                                            value={
+                                                metrics?.viviendas_habitadas_percent ||
+                                                0
+                                            }
+                                            compareWith={
+                                                globalData?.viviendas_habitadas_percent ||
+                                                0
+                                            }
+                                        />
+                                    </Box>
                                 </Tooltip>
-
-                                <GraphPercent
-                                    value={
-                                        (globalData?.viviendas_habitadas /
-                                            (globalData?.viviendas_habitadas +
-                                                globalData?.viviendas_deshabitadas)) *
-                                            100 || 0
-                                    }
-                                />
+                                <Tooltip
+                                    hasArrow
+                                    placement="right"
+                                    label={`
+                                        Viviendas Habitadas: ${formatNumber(globalData?.viviendas_habitadas)}
+                                    `}
+                                >
+                                    <Box>
+                                        <GraphPercent
+                                            value={
+                                                globalData?.viviendas_habitadas_percent ||
+                                                0
+                                            }
+                                        />
+                                    </Box>
+                                </Tooltip>
                             </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>
@@ -479,9 +488,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                         <Box className="stat-row header" style={{ margin: 0 }}>
                             <Box className="title-box" style={{ margin: 0 }}>
                                 <Text className="stat-title" width={"50%"}>
-                                    {viewMode === VIEW_MODES.FULL
-                                        ? zoneLabel
-                                        : "Poligono"}
+                                    {names[viewMode]}
                                 </Text>
                                 <Text className="stat-title dark" width={"50%"}>
                                     Culiacán
@@ -514,7 +521,9 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             >
                                 <GraphPercentWIndicator
                                     value={metrics?.viviendas_auto || 0}
-                                    compareWith={globalData?.viviendas_auto || 0}
+                                    compareWith={
+                                        globalData?.viviendas_auto || 0
+                                    }
                                 />
                                 <GraphPercent
                                     value={globalData?.viviendas_auto || 0}
@@ -540,7 +549,9 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             >
                                 <GraphPercentWIndicator
                                     value={metrics?.viviendas_tinaco || 0}
-                                    compareWith={globalData?.viviendas_tinaco || 0}
+                                    compareWith={
+                                        globalData?.viviendas_tinaco || 0
+                                    }
                                 />
                                 <GraphPercent
                                     value={globalData?.viviendas_tinaco || 0}

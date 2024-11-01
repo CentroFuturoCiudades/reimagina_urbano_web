@@ -118,22 +118,24 @@ const Layers = () => {
     const buildingsLayers: any = useBuildingsLayer({ queryDataFloors });
     const accessibilityPointsLayer: any = useAccessibilityPointsLayer();
     const amenitiesLayers = useAmenitiesLayer();
-    const id = viewMode === VIEW_MODES.FULL ? "cvegeo" : "lot_id";
+    const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
+    const condition = metric && coordinates && coordinates.length > 0;
 
     useAborterEffect(
         async (signal: any, isMounted: boolean) => {
-            if ((!metric || !coordinates) && viewMode !== VIEW_MODES.FULL)
+            if (!condition) {
+                dispatch(setSelectedLots([]));
+                dispatch(setQueryData([]));
                 return;
-            console.log("--QUERY--");
+            }
             dispatch(setIsLoading(true));
             const metrics =
-                viewMode === VIEW_MODES.FULL
-                    ? { [metric]: "value" }
-                    : {
-                          [metric]: "value",
-                          num_floors: "num_floors",
-                          max_height: "max_height",
-                      };
+                viewMode === VIEW_MODES.LENS
+                    ? {
+                        [metric]: "value",
+                        num_floors: "num_floors",
+                        max_height: "max_height",
+                    } : { [metric]: "value" };
             const response = await axios.post(
                 `${process.env.REACT_APP_API_URL}/query`,
                 {
@@ -143,7 +145,7 @@ const Layers = () => {
                     ),
                     coordinates,
                     metrics,
-                    level: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
+                    level: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
                 },
                 { signal }
             );

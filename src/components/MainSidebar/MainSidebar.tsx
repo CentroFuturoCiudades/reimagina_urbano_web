@@ -51,16 +51,19 @@ const MainSidebar = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (selectedLots.length === 0) return;
+            if (!(selectedLots && selectedLots.length > 0)) {
+                setMetrics({});
+                return;
+            }
             const lots =
                 selectedLots &&
-                selectedLots.length &&
+                selectedLots.length > 0 &&
                 selectedLots.filter((x) => x !== undefined);
             const response = await axios.post(
                 `${process.env.REACT_APP_API_URL}/predios`,
                 {
                     lots,
-                    type: viewMode === VIEW_MODES.FULL ? "blocks" : "lots",
+                    type: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
                     accessibility_info: accessibilityList.map(
                         (x: any) => x.value
                     ),

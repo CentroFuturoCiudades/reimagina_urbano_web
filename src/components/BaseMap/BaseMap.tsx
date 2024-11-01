@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { DeckGL } from "@deck.gl/react";
 import { Map } from "react-map-gl";
-import { INITIAL_COORDS, INITIAL_STATE } from "../../constants";
+import { formatNumber, INITIAL_COORDS, INITIAL_STATE } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import { debounce } from "lodash";
@@ -9,8 +9,8 @@ import { Layers, Legend } from "../index";
 import { setViewState } from "../../features/viewState/viewStateSlice";
 import "./BaseMap.scss";
 import _ from "lodash";
-import { Spinner } from "@chakra-ui/react";
-import { setCoordsState } from "../../features/viewMode/viewModeSlice";
+import { border, Spinner } from "@chakra-ui/react";
+import { setCoordsState, setProject, setProjectCoords } from "../../features/viewMode/viewModeSlice";
 import { zoom } from "d3";
 import axios from "axios";
 
@@ -22,8 +22,8 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     const [localViewState, setLocalViewState] = useState<any>(INITIAL_STATE);
 
     const isLoading = useSelector((state: RootState) => state.viewMode.isLoading );
-    const [initialCoords, setInitialCoords] = useState<any>(null);
-
+    const projectCoords = useSelector((state: RootState) => state.viewMode.projectCoords);
+    const coords = useSelector((state: RootState) => state.viewMode.coords);
 
     const { layers } = Layers();
 
@@ -32,27 +32,25 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
 
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
     const viewState = useSelector((state: RootState) => state.viewState);
+    const project = useSelector((state: RootState) => state.viewMode.project);
 
-    useEffect( ()=> {
-        const project = window.location.pathname.split("/")[1];
-
-
-        axios.get(`${process.env.REACT_APP_API_URL}/coords?project=${project}` )
-        .then( response => {
-            if( response && response.data ){
-                setInitialCoords( response.data );
-                dispatch( setCoordsState( response.data ));
+    useEffect(()=> {
+        const fetchData = async () => {
+            const {data} = await axios.get(`${process.env.REACT_APP_API_URL}/coords?project=${project}` )
+            if(data){
+                dispatch(setProjectCoords(data));
+                dispatch(setCoordsState(data));
             }
-        })
-
-    }, [])
+        }
+        fetchData();
+    }, [project])
 
     useEffect(() => {
 
         if( !localViewState.latitude ){
             setLocalViewState({
                 ...localViewState,
-                ...initialCoords,
+                ...projectCoords,
                 zoom: viewState.zoom,
             });
         } else {
@@ -61,7 +59,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                 zoom: viewState.zoom,
             });
         }
-    }, [viewState, initialCoords]);
+    }, [viewState, projectCoords]);
 
     useEffect(() => {
         dispatch(
@@ -117,13 +115,24 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                     if (!object || !object.properties.amenity) return null;
                     return {
                         html: `<div>
-                            <p><b>Nombre:</b> ${_.capitalize(object.properties.name)}</p>
-                            <p><b>Categoría:</b> ${object.properties.amenity}</p>
-                            ${object.properties.visits_category ? `<p><b>Visitas (estimadas por datos celular):</b> ${object.properties.visits_category}</p>` : ''}
-                            ${object.properties.opportunities_ratio ? `<p><b>Población potencialmente atendida:</b> ${Math.round(100 / object.properties.opportunities_ratio).toLocaleString()}%</p>` : ''}
-                            ${object.properties.attraction ? `<p><b>Capacidad estimada:</b> ${Math.round(object.properties.attraction).toLocaleString()}</p>` : ''}
-                            ${object.properties.pob_reach ? `<p><b>Población Alcance:</b> ${Math.round(object.properties.pob_reach).toLocaleString()}</p>` : ''}
-                        </div>`
+                            <p style="font-size:18px"><b>${object.properties.amenity}</b></p>
+                            <p style="font-size:16px">${_.capitalize(object.properties.name)}</p>
+                            ${object.properties.visits_category ? `<p style="font-size:12px">Visitas (estimadas por datos celular):</p><p style="font-size:14px"><b>${object.properties.visits_category}</b></p>` : ''}
+                            ${object.properties.opportunities_ratio ? 
+                                `<p style="font-size:12px">Uso Potencial del Equipamiento</p><p style="font-size:14px"><b>${formatNumber(100 / object.properties.opportunities_ratio)}%</b></p>` : ''}
+                            ${object.properties.attraction ?
+                                `<p style="font-size:12px">Demanda estimada</p><p style="font-size:14px"><b>${formatNumber(object.properties.attraction)} visitas</b></p>` : ''}
+                            ${object.properties.pob_reach ? 
+                                `<p style="font-size:12px">Alcance potencial a pie</p><p style="font-size:14px"><b>${formatNumber(object.properties.pob_reach)} habitantes</b></p>` : ''}
+                        </div>`,
+                        style: {
+                            backgroundColor: "white",
+                            color: "#333",
+                            borderRadius: "10px",
+                            borderWidth: "1px",
+                            padding: "8px",
+                            boxShadow: "0 0 1px rgba(0,0,0,0.1)",
+                        },
                 };
                 }}
             >

@@ -17,11 +17,11 @@ export const defaultCoords = {
 }
 
 export const INITIAL_COORDS: any = {
-    "centro": {
+    "culiacan_centro": {
         latitude: 24.8073,
         longitude: -107.3947,
     },
-    "primavera": {
+    "culiacan_sur": {
         latitude: 24.755,
         longitude: -107.40527779958091,
     }
@@ -40,7 +40,7 @@ export const METRIC_DESCRIPTIONS: GenericObject = {
     "Pirámide poblacional": "Distribución de la población por grupos de edad y género, representada en una pirámide para observar la estructura demográfica.",
     "services_equipment": "Infraestructura y servicios urbanos disponibles en la zona, como escuelas, hospitales, transporte, parques y centros comunitarios.",
     "Total de equipamientos dentro del área": "Número total de instalaciones y servicios públicos disponibles, tales como escuelas, hospitales y espacios recreativos.",
-    "Tipos de equipamientos": "Clasificación de los diferentes tipos de instalaciones urbanas, como centros educativos, de salud, deportivos, culturales, etc.",
+    "Tipo de equipamientos": "Clasificación de los diferentes tipos de instalaciones urbanas, como centros educativos, de salud, deportivos, culturales, etc.",
     "Radio de cobertura": "Área geográfica en la que los servicios o equipamientos alcanzan a beneficiar a la población.",
     "minutes": "Tiempo promedio que tarda la población en acceder a servicios o equipamientos esenciales.",
     "density": "Relación entre el número de habitantes o viviendas y el área de la zona analizada, normalmente expresada en habitantes o viviendas por kilómetro cuadrado.",
@@ -50,6 +50,19 @@ export const METRIC_DESCRIPTIONS: GenericObject = {
     "subutilizacion_type": "Clasificación de los diferentes tipos de espacios que están subutilizados, como terrenos baldíos, edificios vacíos, o espacios infrautilizados en equipamientos públicos.",
     "Pendiente": "Diferencia de altitud en el terreno de la zona, relevante para evaluar accesibilidad y movilidad.",
 };
+
+export const formatNumber = (value: number, type: string | undefined = undefined, precision: number = 0) => {
+    if (value === null || value === undefined) return "N/A";
+    if (type === "percentage") {
+        return `${(value * 100).toLocaleString("es-MX", { maximumFractionDigits: precision })}%`;
+    } else if (type === "minutes") {
+        return `${value.toLocaleString("es-MX", { maximumFractionDigits: precision })} min`;
+    } else if (type === "area") {
+        return `${value.toLocaleString("es-MX", { maximumFractionDigits: precision })} m²`;
+    } else {
+        return value.toLocaleString("es-MX", { maximumFractionDigits: precision });
+    }
+}
 
 export const getQuantiles = (data: any, metric: string): [any, string[]] => {
     if (!data) return [null, []];
@@ -87,7 +100,7 @@ export const BLOB_URL = "https://reimaginaurbanostorage.blob.core.windows.net";
 export interface MetricInterface {
     query: string;
     title: string;
-    ranges: number[];
+    ranges?: number[];
     type: "number" | "percentage" | "minutes" | "area";
     startColor?: string;
     endColor?: string;
@@ -105,7 +118,7 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     "accessibility_score":{
         query: "accessibility_score",
         title: "Puntuaje de Accesibilidad (0 a 100)",
-        ranges: [0, 20, 30, 40, 50, 80],
+        // ranges: [0, 20, 30, 40, 50, 80],
         type: "number",
     },
     "minutes": {
@@ -118,7 +131,7 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     },
     "slope": {
         query: "mean_slope",
-        title: "Pendiente",
+        title: "Pendiente promedio",
         ranges: [0, 10, 20, 30, 40, 50],
         type: "number"
     },
@@ -129,6 +142,10 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     "subutilizacion": { query: "AVG(LEAST( ( 1 - (l.units_estimate * 100.0 / NULLIF(l.max_home_units, 0))), 100))", title: "Subutilización", ranges: [ 0,40,70,90,100], type:"percentage" },
     "subutilizacion_type": { query: "1", title: "Tipos de Espacio Subutilizado", ranges: [ 1,2,3,4], type:"number" }
 }
+export const REGIONS = [
+    { name: "Zona Sur", key: "culiacan_sur" },
+    { name: "Zona Centro", key: "culiacan_centro" },
+];
 export const amenitiesOptions = [
     // Salud
     { value: 'Hospital_general', label: 'Hospital general', type: 'health' },

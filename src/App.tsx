@@ -5,13 +5,6 @@ import "./App.css";
 import { Landing } from "./components";
 
 function App() {
-    const project = window.location.pathname.split("/")[1];
-
-    // if project is undefined, redirect to /primavera
-    if (project === "") {
-        window.location.href = "/primavera";
-    }
-
     return (
         <div style={{ width: "100dvw", height: "100dvh" }}>
             <Landing />
