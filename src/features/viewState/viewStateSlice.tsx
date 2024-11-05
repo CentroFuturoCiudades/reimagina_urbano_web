@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { INITIAL_COORDS, INITIAL_STATE } from "../../constants";
-import { MapViewState } from "@deck.gl/core";
 
 export interface ViewStateState {
-    viewState: MapViewState;
+    viewState: any;
 }
 
 const initialState: ViewStateState = {
@@ -21,7 +20,7 @@ const viewStateSlice = createSlice({
         setZoom: (state, action: PayloadAction<number>) => {
             state.viewState.zoom = action.payload;
         },
-        setViewState: (state, action: PayloadAction<MapViewState>) => {
+        setViewState: (state, action: PayloadAction<any>) => {
             state.viewState = action.payload;
         },
     },
