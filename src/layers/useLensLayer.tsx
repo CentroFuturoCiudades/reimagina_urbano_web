@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
 import { useCallback, useEffect, useState } from "react";
 import * as turf from "@turf/turf";
-import { GeoJsonLayer, PickInfo } from "deck.gl";
+import { GeoJsonLayer } from "@deck.gl/layers";
 import { debounce } from "lodash";
 import { VIEW_MODES, ZOOM_SHOW_DETAILS } from "../constants";
 import { setDrag } from "../features/lensSettings/lensSettingsSlice";
@@ -12,10 +12,10 @@ const useLensLayer = () => {
     const dispatch: AppDispatch = useDispatch();
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const zoom = useSelector((state: RootState) => state.viewState.zoom);
+    const viewState = useSelector((state: RootState) => state.viewState.viewState);
     const coords = useSelector((state: RootState) => state.viewMode.coords);
-    const lensRadius = useSelector(
-        (state: RootState) => state.viewMode.lensRadius
+    const radius = useSelector(
+        (state: RootState) => state.lensSettings.radius
     );
     const [circleCoords, setCircleCoords] = useState(coords);
     const [polygon, setPolygon] = useState<any>();
@@ -28,13 +28,13 @@ const useLensLayer = () => {
         if (!circleCoords) return;
         const temp = turf.circle(
             [circleCoords.longitude, circleCoords.latitude],
-            lensRadius,
+            radius,
             {
                 units: "meters",
             }
         );
         setPolygon(temp);
-    }, [circleCoords, lensRadius]);
+    }, [circleCoords, radius]);
 
     useEffect(() => {
         if (viewMode !== VIEW_MODES.LENS || isDrag) return;
@@ -42,7 +42,7 @@ const useLensLayer = () => {
         dispatch(setCoordinates(coords));
     }, [polygon, viewMode, isDrag]);
 
-    const handleHover = useCallback((info: PickInfo<unknown>) => {
+    const handleHover = useCallback((info: any) => {
         if (info && info.coordinate) {
             setCircleCoords({
                 latitude: info.coordinate[1],
@@ -65,7 +65,7 @@ const useLensLayer = () => {
         getFillColor: [255, 255, 255, 0],
         getLineColor: [0, 120, 0, 255],
         getLineWidth: 10,
-        pickable: zoom < ZOOM_SHOW_DETAILS,
+        pickable: viewState.zoom < ZOOM_SHOW_DETAILS,
         onDragStart: () => {
             dispatch(setDrag(true));
         },
@@ -84,13 +84,7 @@ const useLensLayer = () => {
 
     const centerPointLayer = new GeoJsonLayer({
         id: "center-point-layer",
-        data: circleCoords ? [{
-            type: "Feature",
-            geometry: {
-                type: "Point",
-                coordinates: [circleCoords.longitude, circleCoords.latitude],
-            },
-        }] : [],
+        data: circleCoords ? turf.point([circleCoords.longitude, circleCoords.latitude]) : undefined,
         filled: true,
         getLineColor: [150, 150, 150, 255],
         getLineWidth: 5,

@@ -1,22 +1,17 @@
-import React, { useEffect, useState } from "react";
-import {
-    Tabs,
-    Tab,
-    TabList,
-    TabPanels,
-    TabPanel,
-    Button,
-} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
 import "./MainSidebar.scss";
 import { TABS, VIEW_MODES } from "../../constants";
 import axios from "axios";
 import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import { setGlobalData, setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
+import {
+    setGlobalData,
+    setQueryMetric,
+} from "../../features/queryMetric/queryMetricSlice";
 import { Accesibilidad, Potencial } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
-import { FaChevronUp } from "react-icons/fa";
 import { GenericObject } from "../../types";
 
 const MainSidebar = () => {
@@ -47,7 +42,7 @@ const MainSidebar = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -74,7 +69,7 @@ const MainSidebar = () => {
             }
         };
         fetchData();
-    }, [selectedLots, accessibilityList]);
+    }, [selectedLots, accessibilityList, dispatch, viewMode]);
 
     return (
         <>
@@ -132,7 +127,7 @@ const MainSidebar = () => {
                         <Accesibilidad metrics={metrics}></Accesibilidad>
                     </TabPanel>
                     <TabPanel>
-                        <Potencial metrics={metrics}></Potencial>
+                        <Potencial />
                     </TabPanel>
                 </TabPanels>
             </Tabs>

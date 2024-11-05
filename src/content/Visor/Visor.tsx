@@ -1,21 +1,5 @@
-import { ReactElement, useEffect, useState } from "react";
-import {
-    Accordion,
-    AccordionItem,
-    AccordionButton,
-    AccordionPanel,
-    AccordionIcon,
-    Box,
-    Text,
-    CircularProgress,
-    CircularProgressLabel,
-    VStack,
-    Icon,
-    Link,
-    Tooltip,
-} from "@chakra-ui/react";
-
-import React from "react";
+import { useEffect, useState } from "react";
+import { Accordion, Box, Text, VStack, Tooltip } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import "./Visor.scss";
@@ -24,101 +8,18 @@ import PopulationPyramid from "../../components/PopulationPyramid";
 import {
     formatNumber,
     mappingGradoEscolaridad,
-    METRIC_DESCRIPTIONS,
-    METRICS_MAPPING,
     REGIONS,
-    VIEW_COLORS_RGBA,
     VIEW_MODES,
 } from "../../constants";
-import { GenericObject } from "../../types";
-import {
-    IoCaretUp,
-    IoCaretDown,
-    IoWater,
-    IoHappy,
-    IoHappyOutline,
-} from "react-icons/io5";
+import { IoWater, IoHappyOutline } from "react-icons/io5";
 import { FaPerson, FaHouseUser, FaComputer } from "react-icons/fa6";
 import { ImManWoman } from "react-icons/im";
-import { FaCar, FaInfoCircle } from "react-icons/fa";
+import { FaCar } from "react-icons/fa";
 import { MdSchool } from "react-icons/md";
-import { BsFillHouseSlashFill } from "react-icons/bs";
-
-export const ComparativeMetric = ({
-    name,
-    metric,
-    icon,
-    disabled,
-    children,
-}: {
-    name?: string;
-    metric?: string;
-    icon?: any;
-    disabled?: boolean;
-    children: React.ReactNode[] | React.ReactNode;
-}) => {
-    const dispatch = useDispatch();
-    const currentMetric = useSelector(
-        (state: RootState) => state.queryMetric.queryMetric
-    );
-    const isCurrent = currentMetric === metric;
-    const title = metric
-        ? name || METRICS_MAPPING[metric]?.title || metric
-        : name || "";
-
-    return (
-        <Box
-            className="stat-row"
-            style={{
-                cursor: metric && !disabled ? "pointer" : "default",
-            }}
-            onClick={() => {
-                if (metric && !disabled) dispatch(setQueryMetric(metric));
-            }}
-        >
-            <Box
-                className={`stat-title-box${
-                    metric && !disabled ? " regular" : ""
-                }${isCurrent ? " active" : ""}`}
-            >
-                <Tooltip
-                    hasArrow
-                    label={METRIC_DESCRIPTIONS[metric || ""]}
-                    fontSize="md"
-                    placement="right"
-                >
-                    <Text
-                        className="stat-title"
-                        style={{ color: isCurrent ? "white" : "#383b46" }}
-                    >
-                        {icon && (
-                            <span>
-                                <Icon
-                                    as={icon}
-                                    mr="2"
-                                    color={isCurrent ? "white" : "#383b46"}
-                                />
-                            </span>
-                        )}
-                        {title}
-                    </Text>
-                </Tooltip>
-            </Box>
-            {Array.isArray(children) ? (
-                <Box className="stat-value">
-                    <Box>{children[0]}</Box>
-                    {children.length > 1 && (
-                        <Box className="dark">{children[1]}</Box>
-                    )}
-                </Box>
-            ) : (
-                <Box className="stat-value full">
-                    <Box>{children}</Box>
-                </Box>
-            )}
-        </Box>
-    );
-};
+import { AccordionContent, ComparativeTitles } from "../AccordionContent";
+import { CustomGauge } from "../../components/CustomGauge";
+import { ComparativeMetric } from "../../components/ComparativeMetric";
+import { Caret, GraphPercent } from "../../components/GraphPercent";
 
 const getPyramidData = (metrics: any) => {
     return metrics
@@ -175,61 +76,6 @@ const getPyramidData = (metrics: any) => {
         : [];
 };
 
-export const GraphPercent = ({ value }: { value: number }) => {
-    return (
-        <CircularProgress
-            size="100px"
-            value={value}
-            color="var(--primary-dark)"
-        >
-            <CircularProgressLabel
-                fontSize="18px"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                textAlign="center"
-            >
-                {(value || 0).toFixed(0)}
-            </CircularProgressLabel>
-        </CircularProgress>
-    );
-};
-
-export const GraphPercentWIndicator = ({
-    value,
-    compareWith,
-}: {
-    value: number;
-    compareWith: number;
-}) => {
-    const isHigher = value > compareWith;
-    const ArrowIcon = isHigher ? IoCaretUp : IoCaretDown;
-    const indicatorColor = isHigher ? "green" : "red";
-
-    return (
-        <CircularProgress
-            size="100px"
-            value={value}
-            color="var(--primary-dark)"
-        >
-            <CircularProgressLabel
-                fontSize="18px"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                textAlign="center"
-            >
-                {(value || 0).toFixed(0)}%{" "}
-                {compareWith !== undefined && (
-                    <ArrowIcon
-                        style={{ marginLeft: "4px", color: indicatorColor }}
-                    />
-                )}
-            </CircularProgressLabel>
-        </CircularProgress>
-    );
-};
-
 const Visor = ({ metrics }: { metrics: any }) => {
     const dispatch = useDispatch();
     const globalData = useSelector(
@@ -239,7 +85,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
     const [globalPyramidData, setGlobalPyramidData] = useState<any[]>([]);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const project = useSelector((state: RootState) => state.viewMode.project);
-    const zoneLabel = project === "culiacan_sur" ? "Zona Sur" : "Centro";
+    const radius = useSelector((state: RootState) => state.lensSettings.radius);
 
     useEffect(() => {
         const pyramidData = getPyramidData(metrics).map((entry) => ({
@@ -261,12 +107,11 @@ const Visor = ({ metrics }: { metrics: any }) => {
         setGlobalPyramidData(pyramidData);
     }, [globalData]);
 
-    
     const names = {
         [VIEW_MODES.FULL]: REGIONS.find((x) => x.key === project)?.name,
         [VIEW_MODES.POLIGON]: "Colonias",
-        [VIEW_MODES.LENS]: "Radio de 500m",
-    }
+        [VIEW_MODES.LENS]: `Radio de ${radius}m`,
+    };
 
     return (
         <div className="visor tab__main">
@@ -281,285 +126,186 @@ const Visor = ({ metrics }: { metrics: any }) => {
                     }
                 }}
             >
-                <AccordionItem style={{ borderWidth: "0px" }}>
-                    <AccordionButton className="accordion-header">
-                        <Box
-                            flex="1"
-                            textAlign="left"
-                            display="flex"
-                            alignItems="center"
-                        >
-                            Perfil sociodemográfico
-                            <Tooltip
-                                label="Información sobre las características demográficas de la población, incluyendo edad, género, estado civil, tamaño del hogar, migración, y etnicidad, que permite analizar la composición y estructura de la población en un área específica."
-                                fontSize="md"
-                            >
-                                <span
-                                    style={{
-                                        marginLeft: "5px",
-                                        color: "white",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    <FaInfoCircle />
-                                </span>
-                            </Tooltip>
-                        </Box>
-                        <AccordionIcon />
-                    </AccordionButton>
-                    <AccordionPanel p={0}>
-                        <Box className="stat-row header" style={{ margin: 0 }}>
-                            <Box className="title-box" style={{ margin: 0 }}>
-                                <Text className="stat-title" width={"50%"}>
-                                    {names[viewMode]}
-                                </Text>
-                                <Text className="stat-title dark" width={"50%"}>
-                                    Culiacán
+                <AccordionContent
+                    title="Perfil sociodemográfico"
+                    description="Información sobre las características demográficas de la población, incluyendo edad, género, estado civil, tamaño del hogar, migración, y etnicidad, que permite analizar la composición y estructura de la población en un área específica."
+                >
+                    <ComparativeTitles
+                        title={names[viewMode]}
+                        titleCompare="Culiacán"
+                    />
+                    <VStack
+                        spacing={0}
+                        className="accordion-body"
+                        style={{ padding: "0.4rem" }}
+                    >
+                        <ComparativeMetric metric="poblacion" icon={FaPerson}>
+                            {metrics?.poblacion && (
+                                <Box>
+                                    {metrics.poblacion.toLocaleString("es-MX", {
+                                        maximumFractionDigits: 0,
+                                    }) || ""}
+                                    <Text fontSize="sm" textAlign={"center"}>
+                                        habitantes
+                                    </Text>
+                                </Box>
+                            )}
+                            <Box>
+                                {globalData?.poblacion?.toLocaleString(
+                                    "es-MX",
+                                    {
+                                        maximumFractionDigits: 0,
+                                    }
+                                )}
+                                <Text fontSize="sm" textAlign={"center"}>
+                                    habitantes
                                 </Text>
                             </Box>
-                        </Box>
-                        <VStack
-                            spacing={0}
-                            className="accordion-body"
-                            style={{ padding: "0.4rem" }}
+                        </ComparativeMetric>
+
+                        {/* Sustituir por pyramidData en lugar de testData */}
+                        <ComparativeMetric
+                            disabled={true}
+                            name="Pirámide poblacional"
+                            icon={ImManWoman}
+                            metric="Pirámide poblacional"
                         >
-                            <ComparativeMetric
-                                metric="poblacion"
-                                icon={FaPerson}
-                            >
-                                <Box>
-                                    {metrics?.poblacion?.toLocaleString(
-                                        "es-MX",
-                                        {
-                                            maximumFractionDigits: 0,
-                                        }
-                                    ) || ""}
-                                    <Text fontSize="sm" textAlign={"center"}>
-                                        habitantes
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    {globalData?.poblacion?.toLocaleString(
-                                        "es-MX",
-                                        {
-                                            maximumFractionDigits: 0,
-                                        }
-                                    )}
-                                    <Text fontSize="sm" textAlign={"center"}>
-                                        habitantes
-                                    </Text>
-                                </Box>
-                            </ComparativeMetric>
+                            <PopulationPyramid
+                                data={pyramidData}
+                                invertAxes={true}
+                                showLegend={false}
+                                additionalMarginBottom={23}
+                            />
+                            <PopulationPyramid
+                                data={globalPyramidData}
+                                invertAxes={false}
+                                showLegend={false}
+                                additionalMarginBottom={23}
+                            />
+                        </ComparativeMetric>
 
-                            {/* Sustituir por pyramidData en lugar de testData */}
-                            <ComparativeMetric
-                                disabled={true}
-                                name="Pirámide poblacional"
-                                icon={ImManWoman}
-                                metric="Pirámide poblacional"
-                            >
-                                <PopulationPyramid
-                                    data={pyramidData}
-                                    invertAxes={true}
-                                    showLegend={false}
-                                    additionalMarginBottom={23}
-                                />
-                                <PopulationPyramid
-                                    data={globalPyramidData}
-                                    invertAxes={false}
-                                    showLegend={false}
-                                    additionalMarginBottom={23}
-                                />
-                            </ComparativeMetric>
-
-                            <ComparativeMetric
-                                metric="grado_escuela"
-                                icon={MdSchool}
-                            >
-                                <Box display="flex" textAlign="center">
-                                    <Text fontSize="md" justifyContent="center">
-                                        {mappingGradoEscolaridad[
-                                            metrics?.grado_escuela?.toFixed(0)
-                                        ] || ""}
-                                    </Text>
-                                    {metrics?.grado_escuela !== undefined &&
-                                        globalData?.grado_escuela !==
-                                            undefined && (
-                                            <>
-                                                {metrics?.grado_escuela >
-                                                globalData?.grado_escuela ? (
-                                                    <IoCaretUp
-                                                        style={{
-                                                            marginLeft: "4px",
-                                                            color: "green",
-                                                        }}
-                                                    />
-                                                ) : metrics?.grado_escuela <
-                                                  globalData?.grado_escuela ? (
-                                                    <IoCaretDown
-                                                        style={{
-                                                            marginLeft: "4px",
-                                                            color: "red",
-                                                        }}
-                                                    />
-                                                ) : null}
-                                            </>
-                                        )}
-                                </Box>
-
-                                <Text fontSize="md" textAlign="center">
+                        <ComparativeMetric
+                            metric="grado_escuela"
+                            icon={MdSchool}
+                        >
+                            <Box display="flex" textAlign="center">
+                                <Text fontSize="md" justifyContent="center">
                                     {mappingGradoEscolaridad[
-                                        globalData?.grado_escuela?.toFixed(0)
+                                        metrics?.grado_escuela?.toFixed(0)
                                     ] || ""}
                                 </Text>
-                            </ComparativeMetric>
-                            <ComparativeMetric
-                                metric="viviendas_habitadas"
-                                icon={FaHouseUser}
-                            >
-                                <Tooltip
-                                    hasArrow
-                                    placement="right"
-                                    label={`
-                                        Viviendas Habitadas: ${formatNumber(metrics?.viviendas_habitadas)}
-                                    `}
-                                >
-                                    <Box>
-                                        <GraphPercentWIndicator
-                                            value={
-                                                metrics?.viviendas_habitadas_percent ||
-                                                0
-                                            }
-                                            compareWith={
-                                                globalData?.viviendas_habitadas_percent ||
-                                                0
-                                            }
-                                        />
-                                    </Box>
-                                </Tooltip>
-                                <Tooltip
-                                    hasArrow
-                                    placement="right"
-                                    label={`
-                                        Viviendas Habitadas: ${formatNumber(globalData?.viviendas_habitadas)}
-                                    `}
-                                >
-                                    <Box>
-                                        <GraphPercent
-                                            value={
-                                                globalData?.viviendas_habitadas_percent ||
-                                                0
-                                            }
-                                        />
-                                    </Box>
-                                </Tooltip>
-                            </ComparativeMetric>
-                        </VStack>
-                    </AccordionPanel>
-                </AccordionItem>
-
-                <AccordionItem style={{ borderWidth: "0px" }}>
-                    <AccordionButton className="accordion-header">
-                        <Box
-                            flex="1"
-                            textAlign="left"
-                            display="flex"
-                            alignItems="center"
-                        >
-                            Perfil socioeconómico
-                            <Tooltip
-                                label="Datos sobre los niveles de ingresos, empleo, acceso a servicios básicos, vivienda, y nivel educativo, que permiten evaluar la calidad de vida y el bienestar económico de la población."
-                                fontSize="md"
-                            >
-                                <span
-                                    style={{
-                                        marginLeft: "5px",
-                                        color: "white",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    <FaInfoCircle />
-                                </span>
-                            </Tooltip>
-                        </Box>
-                        <AccordionIcon />
-                    </AccordionButton>
-                    <AccordionPanel p={0}>
-                        <Box className="stat-row header" style={{ margin: 0 }}>
-                            <Box className="title-box" style={{ margin: 0 }}>
-                                <Text className="stat-title" width={"50%"}>
-                                    {names[viewMode]}
-                                </Text>
-                                <Text className="stat-title dark" width={"50%"}>
-                                    Culiacán
-                                </Text>
+                                <Caret
+                                    value={metrics?.grado_escuela}
+                                    compareWith={globalData?.grado_escuela}
+                                />
                             </Box>
-                        </Box>
-                        <VStack
-                            spacing={0}
-                            className="accordion-body"
-                            style={{ padding: "0.4rem" }}
+
+                            <Text fontSize="md" textAlign="center">
+                                {mappingGradoEscolaridad[
+                                    globalData?.grado_escuela?.toFixed(0)
+                                ] || ""}
+                            </Text>
+                        </ComparativeMetric>
+                        <ComparativeMetric
+                            metric="viviendas_habitadas"
+                            icon={FaHouseUser}
                         >
-                            <ComparativeMetric
-                                metric="indice_bienestar"
-                                icon={IoHappyOutline}
+                            <CustomGauge
+                                value={metrics?.viviendas_habitadas_percent}
+                                globalValue={
+                                    globalData?.viviendas_habitadas_percent
+                                }
+                                description={`
+                                        Viviendas Habitadas: ${formatNumber(
+                                            metrics?.viviendas_habitadas
+                                        )}
+                                    `}
+                            />
+                            <Tooltip
+                                hasArrow
+                                placement="right"
+                                label={`
+                                        Viviendas Habitadas: ${formatNumber(
+                                            globalData?.viviendas_habitadas
+                                        )}
+                                    `}
                             >
-                                <GraphPercentWIndicator
-                                    value={metrics?.indice_bienestar || 0}
-                                    compareWith={
-                                        globalData?.indice_bienestar || 0
-                                    }
-                                />
-                                <GraphPercent
-                                    value={globalData?.indice_bienestar}
-                                />
-                            </ComparativeMetric>
+                                <Box>
+                                    <GraphPercent
+                                        value={
+                                            globalData?.viviendas_habitadas_percent ||
+                                            0
+                                        }
+                                    />
+                                </Box>
+                            </Tooltip>
+                        </ComparativeMetric>
+                    </VStack>
+                </AccordionContent>
 
-                            <ComparativeMetric
-                                metric="viviendas_auto"
-                                icon={FaCar}
-                            >
-                                <GraphPercentWIndicator
-                                    value={metrics?.viviendas_auto || 0}
-                                    compareWith={
-                                        globalData?.viviendas_auto || 0
-                                    }
-                                />
-                                <GraphPercent
-                                    value={globalData?.viviendas_auto || 0}
-                                />
-                            </ComparativeMetric>
+                <AccordionContent
+                    title="Perfil socioeconómico"
+                    description="Datos sobre los niveles de ingresos, empleo, acceso a servicios básicos, vivienda, y nivel educativo, que permiten evaluar la calidad de vida y el bienestar económico de la población."
+                >
+                    <ComparativeTitles
+                        title={names[viewMode]}
+                        titleCompare="Culiacán"
+                    />
+                    <VStack
+                        spacing={0}
+                        className="accordion-body"
+                        style={{ padding: "0.4rem" }}
+                    >
+                        <ComparativeMetric
+                            metric="indice_bienestar"
+                            icon={IoHappyOutline}
+                        >
+                            <CustomGauge
+                                value={metrics?.indice_bienestar}
+                                globalValue={globalData?.indice_bienestar}
+                            />
+                            <GraphPercent
+                                value={globalData?.indice_bienestar}
+                            />
+                        </ComparativeMetric>
 
-                            <ComparativeMetric
-                                metric="viviendas_pc"
-                                icon={FaComputer}
-                            >
-                                <GraphPercentWIndicator
-                                    value={metrics?.viviendas_pc || 0}
-                                    compareWith={globalData?.viviendas_pc || 0}
-                                />
-                                <GraphPercent
-                                    value={globalData?.viviendas_pc || 0}
-                                />
-                            </ComparativeMetric>
+                        <ComparativeMetric metric="viviendas_auto" icon={FaCar}>
+                            <CustomGauge
+                                value={metrics?.viviendas_auto}
+                                globalValue={globalData?.viviendas_auto}
+                            />
+                            <GraphPercent
+                                value={globalData?.viviendas_auto || 0}
+                            />
+                        </ComparativeMetric>
 
-                            <ComparativeMetric
-                                metric="viviendas_tinaco"
-                                icon={IoWater}
-                            >
-                                <GraphPercentWIndicator
-                                    value={metrics?.viviendas_tinaco || 0}
-                                    compareWith={
-                                        globalData?.viviendas_tinaco || 0
-                                    }
-                                />
-                                <GraphPercent
-                                    value={globalData?.viviendas_tinaco || 0}
-                                />
-                            </ComparativeMetric>
-                        </VStack>
-                    </AccordionPanel>
-                </AccordionItem>
+                        <ComparativeMetric
+                            metric="viviendas_pc"
+                            icon={FaComputer}
+                        >
+                            <CustomGauge
+                                value={metrics?.viviendas_pc}
+                                globalValue={globalData?.viviendas_pc}
+                            />
+                            <GraphPercent
+                                value={globalData?.viviendas_pc || 0}
+                            />
+                        </ComparativeMetric>
+
+                        <ComparativeMetric
+                            metric="viviendas_tinaco"
+                            icon={IoWater}
+                        >
+                            <CustomGauge
+                                value={metrics?.viviendas_tinaco}
+                                globalValue={globalData?.viviendas_tinaco}
+                            />
+                            <GraphPercent
+                                value={globalData?.viviendas_tinaco || 0}
+                            />
+                        </ComparativeMetric>
+                    </VStack>
+                </AccordionContent>
             </Accordion>
         </div>
     );

@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { GenericObject } from "../types";
 import { fetchPolygonData, useAborterEffect } from "../utils";
-import { GeoJsonLayer } from "deck.gl";
+import { GeoJsonLayer } from "@deck.gl/layers";
 import { useState } from "react";
 import { RootState } from "../app/store";
 import { amenitiesOptions, TABS, VIEW_MODES } from "../constants";
@@ -23,6 +23,9 @@ const useAmenitiesLayer = () => {
     );
     const activeTab = useSelector(
         (state: RootState) => state.viewMode.activeTab
+    );
+    const accessibilityList = useSelector(
+        (state: RootState) => state.accessibilityList.accessibilityList
     );
     const [polygons, setPolygons] = useState<any>([]);
     const condition =
@@ -47,6 +50,9 @@ const useAmenitiesLayer = () => {
             data: polygons,
             filled: true,
             getFillColor: (d: any) => {
+                if (accessibilityList.length > 0 && !accessibilityList.map(x => x.label).includes(d.properties.amenity)) {
+                    return [100, 100, 100];
+                }
                 const type = amenitiesOptions.find(
                     (x) => x.label === d.properties.amenity
                 )?.type;
@@ -54,6 +60,9 @@ const useAmenitiesLayer = () => {
             },
             getLineWidth: 0,
             pickable: true,
+            updateTriggers: {
+                getFillColor: [accessibilityList],
+            }
         }),
     ];
 };

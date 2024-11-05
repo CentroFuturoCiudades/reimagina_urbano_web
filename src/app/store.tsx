@@ -18,7 +18,10 @@ const store = configureStore({
     queryData: queryDataReducer,
     viewState: viewStateReducer,
     coordinates: coordinatesReducer,
-  }
+  },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    serializableCheck: false,
+  }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

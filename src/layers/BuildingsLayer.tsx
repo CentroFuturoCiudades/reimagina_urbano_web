@@ -1,8 +1,8 @@
 import { GenericObject } from '../types';
 import { fetchPolygonData, useAborterEffect } from "../utils";
-import { GeoJsonLayer } from "deck.gl";
+import { GeoJsonLayer } from "@deck.gl/layers";
 import { useState } from "react";
-import { VIEW_MODES } from "../constants";
+import { VIEW_MODES, ZOOM_SHOW_DETAILS } from "../constants";
 import { RootState } from "../app/store";
 import { useSelector } from "react-redux";
 
@@ -28,10 +28,10 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
         (state: RootState) => state.coordinates.coordinates
     );
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const zoom = useSelector((state: RootState) => state.viewState.zoom);
+    const viewState = useSelector((state: RootState) => state.viewState.viewState);
     const [polygons, setPolygons] = useState<any>([]);
     const [polygons2, setPolygons2] = useState<any>([]);
-    const isZoomedIn = zoom >= 17;
+    const isZoomedIn = viewState.zoom >= ZOOM_SHOW_DETAILS;
     const condition = isZoomedIn && coordinates && coordinates.length !== 0 && viewMode === VIEW_MODES.LENS;
     useAborterEffect(async (signal: any, isMounted: boolean) => {
         if (!condition) return;

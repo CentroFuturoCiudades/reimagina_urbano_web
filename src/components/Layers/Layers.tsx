@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import {
-    defaultCoords,
     INITIAL_STATE,
     METRICS_MAPPING,
     POLYGON_MODES,
@@ -72,25 +71,25 @@ const useDrawPoligonLayer = () => {
             break;
     }
 
-    const drawLayer = new EditableGeoJsonLayer({
-        id: "editable-layer",
-        data: polygon,
-        mode:
-            polygon.features.length === 0
-                ? new DrawPolygonMode()
-                : new DrawPolygonMode(),
-        selectedFeatureIndexes: [0],
-        onEdit: handleEdit,
-        pickable: true,
-        getTentativeFillColor: [255, 255, 255, 50],
-        getFillColor: [0, 0, 0, 0],
-        getTentativeLineColor: [0, 100, 0, 200],
-        getTentativeLineWidth: 4,
-        getLineColor: [0, 100, 0, 200],
-        getLineWidth: 4,
-    });
+    // const drawLayer = new EditableGeoJsonLayer({
+    //     id: "editable-layer",
+    //     data: polygon,
+    //     mode:
+    //         polygon.features.length === 0
+    //             ? new DrawPolygonMode()
+    //             : new DrawPolygonMode(),
+    //     selectedFeatureIndexes: [0],
+    //     onEdit: handleEdit,
+    //     pickable: true,
+    //     getTentativeFillColor: [255, 255, 255, 50],
+    //     getFillColor: [0, 0, 0, 0],
+    //     getTentativeLineColor: [0, 100, 0, 200],
+    //     getTentativeLineWidth: 4,
+    //     getLineColor: [0, 100, 0, 200],
+    //     getLineWidth: 4,
+    // });
 
-    return { drawPoligonData: polygon, layers: [drawLayer] };
+    return { drawPoligonData: polygon, layers: [] };
 };
 
 const Layers = () => {
@@ -179,9 +178,9 @@ const Layers = () => {
     const layers: any[] = [
         ...[queryData && !isLoading && lotsLayers],
         ...buildingsLayers,
+        ...amenitiesLayers,
         ...selectLayers,
         ...lensLayers,
-        ...amenitiesLayers,
         ...accessibilityPointsLayer,
     ];
 

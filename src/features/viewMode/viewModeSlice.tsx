@@ -1,7 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { POLYGON_MODES, TABS, VIEW_MODES } from '../../constants';
-import { setCoords } from '../lensSettings/lensSettingsSlice';
-import { set } from 'lodash';
 
 interface coordsInterface {
     latitude: number;
@@ -20,7 +18,6 @@ interface ViewModeState {
     colonias?: any[];
     selectedColonias: any[];
     project: string;
-    lensRadius: number;
 }
 
 const initialState: ViewModeState = {
@@ -33,8 +30,7 @@ const initialState: ViewModeState = {
     activeAmenity: undefined,
     colonias: [],
     selectedColonias: [],
-    project: 'culiacan_sur',
-    lensRadius: 500,
+    project: window.location.hash.replace("#", ""),
 };
 
 const viewModeSlice = createSlice({
@@ -83,12 +79,9 @@ const viewModeSlice = createSlice({
             state.project = action.payload;
             window.location.href = "#" + state.project;
         },
-        setLensRadius: (state, action: PayloadAction< number >) => {
-            state.lensRadius = action.payload;
-        },
     }
 });
 
-export const { setViewMode, setPoligonMode, setActiveTab, setIsLoading, setLegendLimits, setActiveAmenity, setCoordsState, setColonias, toggleSelectedColonias, clearSelectedColonias, setProject, setProjectCoords, setLensRadius } = viewModeSlice.actions;
+export const { setViewMode, setPoligonMode, setActiveTab, setIsLoading, setLegendLimits, setActiveAmenity, setCoordsState, setColonias, toggleSelectedColonias, clearSelectedColonias, setProject, setProjectCoords } = viewModeSlice.actions;
 
 export default viewModeSlice.reducer;

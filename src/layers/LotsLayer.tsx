@@ -1,4 +1,4 @@
-import { GeoJsonLayer, RGBAColor } from "deck.gl";
+import { GeoJsonLayer } from "@deck.gl/layers";
 import { fetchPolygonData, useAborterEffect } from "../utils";
 import { getQuantiles, VIEW_MODES } from "../constants";
 import { useEffect, useMemo, useState } from "react";
@@ -43,7 +43,7 @@ const useLotsLayer = ({ queryData }: any) => {
         setPolygons(polygons.filter((x: any) => true));
     }, [queryData, legendLimits]);
 
-    const getFillColor = (d: any): RGBAColor => {
+    const getFillColor = (d: any): any => {
         if (!quantiles) return [200, 200, 200];
         const value = queryData[d.properties[id]];
 

@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface LensSettingsState {
-    brushingRadius: number;
+    radius: number;
     coords: [number, number];
     isDrag: boolean;
 }
 
 const initialState: LensSettingsState = {
-    brushingRadius: 400,
+    radius: 400,
     coords: [-107.39367959923534, 24.753450686162093],
     isDrag: false
 };
@@ -16,8 +16,8 @@ const lensSettingsSlice = createSlice({
     name: 'lensSettings',
     initialState,
     reducers: {
-        setBrushingRadius: (state, action: PayloadAction< number >) => {
-            state.brushingRadius = action.payload;
+        setRadius: (state, action: PayloadAction< number >) => {
+            state.radius = action.payload;
         },
         setCoords: (state, action: PayloadAction< [number, number] >) => {
             state.coords = action.payload;
@@ -28,6 +28,6 @@ const lensSettingsSlice = createSlice({
     }
 });
 
-export const { setBrushingRadius, setCoords, setDrag } = lensSettingsSlice.actions;
+export const { setRadius, setCoords, setDrag } = lensSettingsSlice.actions;
 
 export default lensSettingsSlice.reducer;

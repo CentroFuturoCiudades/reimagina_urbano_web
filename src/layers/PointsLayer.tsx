@@ -1,4 +1,4 @@
-import { GeoJsonLayer } from "deck.gl";
+import { GeoJsonLayer } from "@deck.gl/layers";
 import { fetchPolygonData } from "../utils";
 
 const PointsLayer = async ({ coordinates, getFillColor }: any) => {
