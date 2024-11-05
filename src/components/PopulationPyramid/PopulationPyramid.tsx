@@ -4,13 +4,11 @@ import {
     Bar,
     XAxis,
     YAxis,
-    CartesianGrid,
     Tooltip,
     Legend,
     ResponsiveContainer,
 } from "recharts";
 import "./PopulationPyramid.scss";
-import { LegendProps } from "recharts";
 
 interface PopulationPyramidProps {
     data: { age: string; male: number; female: number; total: number }[];
@@ -83,21 +81,23 @@ const PopulationPyramid: React.FC<PopulationPyramidProps> = ({
                     <p style={{ fontWeight: "bold", fontSize: "1em" }}>
                         {`Edades de ${payload.age}`}
                     </p>
-                    <p style={{ fontWeight: '500' }}>
-                      <b>Total: </b>
-                      {`${formatNumber(payload.per_total)}% (${formatNumber(payload.total)})`}
+                    <p style={{ fontWeight: "500" }}>
+                        <b>Total: </b>
+                        {`${formatNumber(payload.per_total)}% (${formatNumber(
+                            payload.total
+                        )})`}
                     </p>
-                    <p style={{ color: "#8884d8", fontWeight: '500' }}>
+                    <p style={{ color: "#8884d8", fontWeight: "500" }}>
                         <b>Hombres: </b>
-                        {`${formatNumber(payload.per_male)}% (${
-                            formatNumber(payload.male)
-                        })`}
+                        {`${formatNumber(payload.per_male)}% (${formatNumber(
+                            payload.male
+                        )})`}
                     </p>
-                    <p style={{ color: "#ff7f7f", fontWeight: '500' }}>
+                    <p style={{ color: "#ff7f7f", fontWeight: "500" }}>
                         <b>Mujeres: </b>
-                        {`${formatNumber(payload.per_female)}% (${
-                            formatNumber(payload.female)
-                        })`}
+                        {`${formatNumber(payload.per_female)}% (${formatNumber(
+                            payload.female
+                        )})`}
                     </p>
                 </div>
             );

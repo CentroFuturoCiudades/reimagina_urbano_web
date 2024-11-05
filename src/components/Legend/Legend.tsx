@@ -1,4 +1,4 @@
-import React, { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./Legend.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,10 +33,10 @@ const Legend = () => {
         return formattedValue;
     };
 
-    useEffect( ()=> {
-        setActive( -1 );
-        dispatch( setLegendLimits(null) );
-    }, [ metric ])
+    useEffect(() => {
+        setActive(-1);
+        dispatch(setLegendLimits(null));
+    }, [metric, dispatch]);
 
     if (!Object.keys(queryData).length) {
         return <></>;
@@ -48,27 +48,35 @@ const Legend = () => {
                 <b>{title}</b>
             </h4>
             {colors.map((color, i) => (
-                <div key={i}
-                    className={`legend__label ${ active == i? "legend__label--active":""}`}
-                    onClick={()=>{
-                        if( active == i ){
-                            setActive( -1 );
-                            dispatch( setLegendLimits(null) );
+                <div
+                    key={i}
+                    className={`legend__label ${
+                        active === i ? "legend__label--active" : ""
+                    }`}
+                    onClick={() => {
+                        if (active === i) {
+                            setActive(-1);
+                            dispatch(setLegendLimits(null));
                         } else {
+                            const quantileValues =
+                                quantiles.invertExtent(color);
 
-                            const quantileValues = quantiles.invertExtent( color )
-
-                            setActive( i );
-                            dispatch( setLegendLimits( { min: quantileValues[0], max: quantileValues[1]} ) );
+                            setActive(i);
+                            dispatch(
+                                setLegendLimits({
+                                    min: quantileValues[0],
+                                    max: quantileValues[1],
+                                })
+                            );
                         }
                     }}
-                    >
+                >
                     <div
                         className="legend__icon"
                         style={{ background: color }}
                     />
                     <span>
-                        { quantiles
+                        {quantiles
                             .invertExtent(color)
                             .map((d: any) => formatValue(d.toFixed(0)))
                             .join(" - ")}

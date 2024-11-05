@@ -4,7 +4,7 @@ import { fetchPolygonData, useAborterEffect } from "../utils";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { useState } from "react";
 import { RootState } from "../app/store";
-import { amenitiesOptions, TABS, VIEW_MODES } from "../constants";
+import { amenitiesOptions, TABS } from "../constants";
 
 const METRIC_COLOR: GenericObject = {
     health: [149, 136, 196, 255],
@@ -29,7 +29,9 @@ const useAmenitiesLayer = () => {
     );
     const [polygons, setPolygons] = useState<any>([]);
     const condition =
-        activeTab === TABS.ACCESIBILIDAD && coordinates && coordinates.length > 0;
+        activeTab === TABS.ACCESIBILIDAD &&
+        coordinates &&
+        coordinates.length > 0;
 
     useAborterEffect(
         async (signal: any, isMounted: boolean) => {
@@ -50,7 +52,12 @@ const useAmenitiesLayer = () => {
             data: polygons,
             filled: true,
             getFillColor: (d: any) => {
-                if (accessibilityList.length > 0 && !accessibilityList.map(x => x.label).includes(d.properties.amenity)) {
+                if (
+                    accessibilityList.length > 0 &&
+                    !accessibilityList
+                        .map((x) => x.label)
+                        .includes(d.properties.amenity)
+                ) {
                     return [100, 100, 100];
                 }
                 const type = amenitiesOptions.find(
@@ -62,7 +69,7 @@ const useAmenitiesLayer = () => {
             pickable: true,
             updateTriggers: {
                 getFillColor: [accessibilityList],
-            }
+            },
         }),
     ];
 };

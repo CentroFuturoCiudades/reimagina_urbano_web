@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { GeoJsonLayer, TextLayer } from "@deck.gl/layers";
 import { VIEW_MODES } from "../constants";
 import { fetchGeo, useFetchGeo } from "../utils";
@@ -43,7 +43,7 @@ const useSelectLayer = () => {
         if (colonias) {
             dispatch(setColonias(colonias?.features));
         }
-    }, [colonias]);
+    }, [colonias, dispatch]);
 
     useEffect(() => {
         if (viewMode === VIEW_MODES.FULL) {
@@ -61,7 +61,7 @@ const useSelectLayer = () => {
                     : [];
             dispatch(setCoordinates(coords));
         }
-    }, [selectedColonias, poligono, viewMode]);
+    }, [selectedColonias, poligono, viewMode, dispatch, colonias]);
 
     const onSelect = (info: any) => {
         if (info.object) {

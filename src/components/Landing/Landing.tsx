@@ -52,7 +52,7 @@ const Landing: React.FC = () => {
             dispatch(setProject("culiacan_sur"));
             setActivateLanding(false);
         }
-    }, [calculatedOpacity]);
+    }, [calculatedOpacity, dispatch]);
 
     useEffect(() => {
         const scrollContainer = scrollContainerRef.current;

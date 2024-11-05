@@ -14,7 +14,6 @@ import {
     Text,
     useBoolean,
 } from "@chakra-ui/react";
-import { FaCaretDown, FaCaretUp, FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
 import {
     clearSelectedColonias,
@@ -57,7 +56,11 @@ export const ColoniasSelect = () => {
                 >
                     <Button
                         rightIcon={
-                            isFocused ? <IoCaretUpSharp size="10px" /> : <IoCaretDownSharp size="10px" />
+                            isFocused ? (
+                                <IoCaretUpSharp size="10px" />
+                            ) : (
+                                <IoCaretDownSharp size="10px" />
+                            )
                         }
                         onClick={setIsFocused.toggle}
                         w="100%"

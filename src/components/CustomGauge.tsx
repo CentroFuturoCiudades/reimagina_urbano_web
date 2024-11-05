@@ -26,6 +26,7 @@ export const CustomGauge = ({
         },
     ];
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const chartData = useMemo(() => data.slice(), [value, globalValue]);
 
     const RADIAN = Math.PI / 180;
@@ -81,6 +82,7 @@ export const CustomGauge = ({
 
     const chartHighlightData = useMemo(
         () => highlightData.slice(),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [value, globalValue]
     );
 

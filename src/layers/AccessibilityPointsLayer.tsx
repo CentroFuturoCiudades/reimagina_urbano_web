@@ -1,21 +1,14 @@
 import React from "react";
 import { IconLayer, TextLayer } from "@deck.gl/layers";
 import { fetchPolygonData, useAborterEffect } from "../utils";
-import { GenericObject } from "../types";
 import {
     ACCESSIBILITY_POINTS_COLORS,
     amenitiesOptions,
     TABS,
-    VIEW_MODES,
 } from "../constants";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    setAccessibilityList,
-    setAccessibilityPoints,
-} from "../features/accessibilityList/accessibilityListSlice";
+import { setAccessibilityPoints } from "../features/accessibilityList/accessibilityListSlice";
 import { RootState } from "../app/store";
-import _, { get } from "lodash";
-import { Tooltip } from "../components";
 import type {
     PointFeature,
     ClusterFeature,
@@ -87,11 +80,11 @@ const useAccessibilityPointsLayer = () => {
     if (!condition) return [];
 
     const mappingColors: any = {
-        education: [184, 138, 138, 255],   // Darkened by 10%
-        health: [112, 99, 159, 255],       // Darkened by 10%
-        recreation: [211, 164, 59, 255],   // Darkened by 10%
-        park: [113, 148, 127, 255],        // Darkened by 10%
-        other: [115, 115, 115, 255],       // Darkened by 10%
+        education: [184, 138, 138, 255], // Darkened by 10%
+        health: [112, 99, 159, 255], // Darkened by 10%
+        recreation: [211, 164, 59, 255], // Darkened by 10%
+        park: [113, 148, 127, 255], // Darkened by 10%
+        other: [115, 115, 115, 255], // Darkened by 10%
     };
 
     const layersAmenities = Object.keys(ACCESSIBILITY_POINTS_COLORS).map(
@@ -111,7 +104,11 @@ const useAccessibilityPointsLayer = () => {
                 iconAtlas: "location-icon-atlas.png",
                 pickable: true,
                 getColor: (d) => {
-                    if (activeAmenity !== "" && (d.properties.cluster || d.properties.properties.amenity !== activeAmenity)) {
+                    if (
+                        activeAmenity !== "" &&
+                        (d.properties.cluster ||
+                            d.properties.properties.amenity !== activeAmenity)
+                    ) {
                         return [255, 255, 255, 100];
                     }
                     return mappingColors[amenity_type];
@@ -197,7 +194,8 @@ export class IconClusterLayer<
 
     renderLayers() {
         const { data } = this.state;
-        const { iconAtlas, iconMapping, sizeScale, getColor, updateTriggers } = this.props;
+        const { iconAtlas, iconMapping, sizeScale, getColor, updateTriggers } =
+            this.props;
 
         // Icon Layer for clusters
         const iconLayer = new IconLayer<
@@ -215,7 +213,7 @@ export class IconClusterLayer<
                 updateTriggers,
                 getPosition: (d) => d.geometry.coordinates as [number, number],
                 getIcon: (d) => "marker-1",
-                getSize: (d) => d.properties.cluster ? 1.4 : 1,
+                getSize: (d) => (d.properties.cluster ? 1.4 : 1),
             }
         );
 
@@ -226,8 +224,8 @@ export class IconClusterLayer<
             getPosition: (d) => d.geometry.coordinates as [number, number],
             getText: (d) =>
                 d.properties.cluster ? `${d.properties.point_count}` : "",
-            getSize: (d) => d.properties.cluster ? 14 : 10,
-            getPixelOffset: (d) => d.properties.cluster ? [0, -18] : [0, -14],
+            getSize: (d) => (d.properties.cluster ? 14 : 10),
+            getPixelOffset: (d) => (d.properties.cluster ? [0, -18] : [0, -14]),
             getColor: [255, 255, 255, 255],
             fontWeight: "bold",
             fontFamily: "Arial",

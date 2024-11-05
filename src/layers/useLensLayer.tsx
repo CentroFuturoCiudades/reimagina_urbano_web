@@ -12,11 +12,11 @@ const useLensLayer = () => {
     const dispatch: AppDispatch = useDispatch();
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const viewState = useSelector((state: RootState) => state.viewState.viewState);
-    const coords = useSelector((state: RootState) => state.viewMode.coords);
-    const radius = useSelector(
-        (state: RootState) => state.lensSettings.radius
+    const viewState = useSelector(
+        (state: RootState) => state.viewState.viewState
     );
+    const coords = useSelector((state: RootState) => state.viewMode.coords);
+    const radius = useSelector((state: RootState) => state.lensSettings.radius);
     const [circleCoords, setCircleCoords] = useState(coords);
     const [polygon, setPolygon] = useState<any>();
 
@@ -40,7 +40,7 @@ const useLensLayer = () => {
         if (viewMode !== VIEW_MODES.LENS || isDrag) return;
         const coords = [polygon?.geometry.coordinates[0]];
         dispatch(setCoordinates(coords));
-    }, [polygon, viewMode, isDrag]);
+    }, [polygon, viewMode, isDrag, dispatch]);
 
     const handleHover = useCallback((info: any) => {
         if (info && info.coordinate) {
@@ -52,6 +52,7 @@ const useLensLayer = () => {
             setCircleCoords(undefined);
         }
     }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const debouncedHover = useCallback(debounce(handleHover, 100), [
         handleHover,
     ]);
@@ -84,7 +85,9 @@ const useLensLayer = () => {
 
     const centerPointLayer = new GeoJsonLayer({
         id: "center-point-layer",
-        data: circleCoords ? turf.point([circleCoords.longitude, circleCoords.latitude]) : undefined,
+        data: circleCoords
+            ? turf.point([circleCoords.longitude, circleCoords.latitude])
+            : undefined,
         filled: true,
         getLineColor: [150, 150, 150, 255],
         getLineWidth: 5,

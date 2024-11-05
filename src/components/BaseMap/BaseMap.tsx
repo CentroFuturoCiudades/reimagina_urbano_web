@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DeckGL from "@deck.gl/react";
-import { Map } from "react-map-gl";
+import Map from "react-map-gl";
 import { formatNumber, INITIAL_COORDS, INITIAL_STATE } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
@@ -10,7 +10,7 @@ import { Spinner } from "@chakra-ui/react";
 import { setCoordsState } from "../../features/viewMode/viewModeSlice";
 import axios from "axios";
 import { setViewState } from "../../features/viewState/viewStateSlice";
-import _, { throttle } from "lodash";
+import _ from "lodash";
 
 interface BaseMapProps {
     isSatellite?: boolean;
@@ -164,7 +164,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
         if (localViewState) {
             dispatch(setViewState(localViewState));
         }
-    }, [localViewState]);
+    }, [localViewState, dispatch]);
 
     if (!localViewState?.latitude) {
         return null;
@@ -190,7 +190,6 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                 viewState={{...viewState}}
                 onViewStateChange={(e: any) => {
                     setLocalViewState(e.viewState);
-                    console.log(e);
                     if (!e.interactionState.isZooming && !e.interactionState.isPanning) {
                         if (e.oldViewState.zoom.toFixed(0) !== e.viewState.zoom.toFixed(0)) {
                             dispatch(setViewState({...e.viewState}));
@@ -201,6 +200,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
             >
                 <Map
                     reuseMaps
+                    {...viewState}
                     mapStyle={
                         isSatellite
                             ? "mapbox://styles/mapbox/satellite-v9"

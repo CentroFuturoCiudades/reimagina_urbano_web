@@ -1,15 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import {
-    INITIAL_STATE,
-    METRICS_MAPPING,
-    POLYGON_MODES,
-    VIEW_MODES,
-} from "../../constants";
-import { DrawPolygonMode, ModifyMode } from "@nebula.gl/edit-modes";
+import { VIEW_MODES } from "../../constants";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
-import { EditableGeoJsonLayer } from "@nebula.gl/layers";
 import axios from "axios";
 import { GenericObject } from "../../types";
 import {
@@ -21,76 +14,8 @@ import {
     useSelectLayer,
 } from "../../layers";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
-import {
-    setIsLoading,
-    setPoligonMode,
-} from "../../features/viewMode/viewModeSlice";
+import { setIsLoading } from "../../features/viewMode/viewModeSlice";
 import { useAborterEffect } from "../../utils";
-
-const useDrawPoligonLayer = () => {
-    const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const poligonMode = useSelector(
-        (state: RootState) => state.viewMode.poligonMode
-    );
-
-    const dispatch: AppDispatch = useDispatch();
-
-    const [polygon, setPolygon] = useState<any>({
-        type: "FeatureCollection",
-        features: [],
-    });
-
-    const handleEdit = ({ updatedData, editType, editContext }: any) => {
-        const selectedArea = updatedData.features[0];
-        if (selectedArea) {
-            setPolygon({
-                type: "FeatureCollection",
-                features: updatedData.features,
-            });
-        }
-    };
-
-    if (viewMode !== VIEW_MODES.POLIGON) {
-        return { drawPoligonData: polygon, layers: [] };
-    }
-
-    var mode: DrawPolygonMode | ModifyMode;
-
-    switch (poligonMode) {
-        case POLYGON_MODES.EDIT:
-            mode = new ModifyMode();
-            break;
-
-        case POLYGON_MODES.DELETE:
-            setPolygon({
-                type: "FeatureCollection",
-                features: [],
-            });
-            dispatch(setPoligonMode(POLYGON_MODES.VIEW));
-
-            break;
-    }
-
-    // const drawLayer = new EditableGeoJsonLayer({
-    //     id: "editable-layer",
-    //     data: polygon,
-    //     mode:
-    //         polygon.features.length === 0
-    //             ? new DrawPolygonMode()
-    //             : new DrawPolygonMode(),
-    //     selectedFeatureIndexes: [0],
-    //     onEdit: handleEdit,
-    //     pickable: true,
-    //     getTentativeFillColor: [255, 255, 255, 50],
-    //     getFillColor: [0, 0, 0, 0],
-    //     getTentativeLineColor: [0, 100, 0, 200],
-    //     getTentativeLineWidth: 4,
-    //     getLineColor: [0, 100, 0, 200],
-    //     getLineWidth: 4,
-    // });
-
-    return { drawPoligonData: polygon, layers: [] };
-};
 
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -131,10 +56,11 @@ const Layers = () => {
             const metrics =
                 viewMode === VIEW_MODES.LENS
                     ? {
-                        [metric]: "value",
-                        num_floors: "num_floors",
-                        max_height: "max_height",
-                    } : { [metric]: "value" };
+                          [metric]: "value",
+                          num_floors: "num_floors",
+                          max_height: "max_height",
+                      }
+                    : { [metric]: "value" };
             const response = await axios.post(
                 `${process.env.REACT_APP_API_URL}/query`,
                 {

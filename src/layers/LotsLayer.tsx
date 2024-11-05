@@ -1,7 +1,7 @@
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { fetchPolygonData, useAborterEffect } from "../utils";
 import { getQuantiles, VIEW_MODES } from "../constants";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
@@ -15,12 +15,11 @@ const useLotsLayer = ({ queryData }: any) => {
         (state: RootState) => state.queryMetric.queryMetric
     );
     const [polygons, setPolygons] = useState<any>([]);
-    const condition =
-        (coordinates && coordinates.length > 0);
+    const condition = coordinates && coordinates.length > 0;
     const legendLimits = useSelector(
         (state: RootState) => state.viewMode.legendLimits
     );
-    const [quantiles, _] = getQuantiles(queryData, metric);
+    const [quantiles] = getQuantiles(queryData, metric);
     const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
 
     useAborterEffect(
@@ -38,10 +37,6 @@ const useLotsLayer = ({ queryData }: any) => {
         },
         [coordinates]
     );
-
-    useEffect(() => {
-        setPolygons(polygons.filter((x: any) => true));
-    }, [queryData, legendLimits]);
 
     const getFillColor = (d: any): any => {
         if (!quantiles) return [200, 200, 200];

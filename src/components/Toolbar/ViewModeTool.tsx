@@ -24,7 +24,10 @@ export const ViewModeTool = () => {
                         onClick={() => dispatch(setViewMode(VIEW_MODES.FULL))}
                         className={viewMode === VIEW_MODES.FULL ? "active" : ""}
                     >
-                        <img src="https://sinaloa.travel/images/destinos/culiacan/Culiacan-map.png" />
+                        <img
+                            src="https://sinaloa.travel/images/destinos/culiacan/Culiacan-map.png"
+                            alt="Region"
+                        />
                     </Button>
                 </Tooltip>
                 <Tooltip
@@ -44,7 +47,10 @@ export const ViewModeTool = () => {
                             viewMode === VIEW_MODES.POLIGON ? "active" : ""
                         }
                     >
-                        <img src="https://cdn-icons-png.flaticon.com/512/7168/7168063.png" />
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/7168/7168063.png"
+                            alt="Colonias"
+                        />
                     </Button>
                 </Tooltip>
                 <Tooltip
@@ -60,7 +66,10 @@ export const ViewModeTool = () => {
                         onClick={() => dispatch(setViewMode(VIEW_MODES.LENS))}
                         className={viewMode === VIEW_MODES.LENS ? "active" : ""}
                     >
-                        <img src="https://icones.pro/wp-content/uploads/2021/06/icone-loupe-noir.png" />
+                        <img
+                            src="https://icones.pro/wp-content/uploads/2021/06/icone-loupe-noir.png"
+                            alt="Explorar"
+                        />
                     </Button>
                 </Tooltip>
             </Flex>
