@@ -184,6 +184,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
                     <div className="loading-text">Cargando...</div>
                 </div>
             )}
+            {/* @ts-ignore */}
             <DeckGL
                 controller={{ dragPan: !isDrag }}
                 layers={layers}
