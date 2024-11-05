@@ -9,16 +9,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { setAccessibilityPoints } from "../features/accessibilityList/accessibilityListSlice";
 import { RootState } from "../app/store";
-import type {
-    PointFeature,
-    ClusterFeature,
-    ClusterProperties,
-} from "supercluster";
-import {
-    type UpdateParameters,
-    type PickingInfo,
-    CompositeLayer,
-} from "@deck.gl/core";
+import type { PointFeature, ClusterFeature } from "supercluster";
+import { CompositeLayer } from "@deck.gl/core";
 import { IconLayerProps } from "@deck.gl/layers";
 import Supercluster from "supercluster";
 
@@ -103,7 +95,7 @@ const useAccessibilityPointsLayer = () => {
                 iconMapping: "location-icon-mapping.json",
                 iconAtlas: "location-icon-atlas.png",
                 pickable: true,
-                getColor: (d) => {
+                getColor: (d: any) => {
                     if (
                         activeAmenity !== "" &&
                         (d.properties.cluster ||
@@ -116,17 +108,12 @@ const useAccessibilityPointsLayer = () => {
                 updateTriggers: {
                     getColor: [activeAmenity],
                 },
-            });
+            } as any);
         }
     );
 
     return [layersAmenities];
 };
-
-export type IconClusterLayerPickingInfo<DataT> = PickingInfo<
-    DataT | (DataT & ClusterProperties),
-    { objects?: DataT[] }
->;
 
 export class IconClusterLayer<
     DataT extends { [key: string]: any } = any,
@@ -138,11 +125,11 @@ export class IconClusterLayer<
         z: number;
     };
 
-    shouldUpdateState({ changeFlags }: UpdateParameters<this>) {
+    shouldUpdateState({ changeFlags }: any) {
         return changeFlags.somethingChanged;
     }
 
-    updateState({ props, oldProps, changeFlags }: UpdateParameters<this>) {
+    updateState({ props, oldProps, changeFlags }: any) {
         const rebuildIndex =
             changeFlags.dataChanged || props.sizeScale !== oldProps.sizeScale;
 
@@ -172,13 +159,7 @@ export class IconClusterLayer<
         }
     }
 
-    getPickingInfo({
-        info,
-        mode,
-    }: {
-        info: PickingInfo<PointFeature<DataT> | ClusterFeature<DataT>>;
-        mode: string;
-    }): IconClusterLayerPickingInfo<DataT> {
+    getPickingInfo({ info, mode }: { info: any; mode: string }): any {
         const pickedObject = info.object?.properties;
         if (pickedObject) {
             let objects: DataT[] | undefined;
@@ -195,7 +176,7 @@ export class IconClusterLayer<
     renderLayers() {
         const { data } = this.state;
         const { iconAtlas, iconMapping, sizeScale, getColor, updateTriggers } =
-            this.props;
+            this.props as any;
 
         // Icon Layer for clusters
         const iconLayer = new IconLayer<
@@ -203,7 +184,7 @@ export class IconClusterLayer<
         >(
             this.getSubLayerProps({
                 id: "icon",
-            }),
+            }) as any,
             {
                 data,
                 iconAtlas,
@@ -211,9 +192,10 @@ export class IconClusterLayer<
                 sizeScale,
                 getColor: getColor as any,
                 updateTriggers,
-                getPosition: (d) => d.geometry.coordinates as [number, number],
+                getPosition: (d: any) =>
+                    d.geometry.coordinates as [number, number],
                 getIcon: (d) => "marker-1",
-                getSize: (d) => (d.properties.cluster ? 1.4 : 1),
+                getSize: (d: any) => (d.properties.cluster ? 1.4 : 1),
             }
         );
 
@@ -221,11 +203,12 @@ export class IconClusterLayer<
         const textLayer = new TextLayer({
             id: "text-layer",
             data,
-            getPosition: (d) => d.geometry.coordinates as [number, number],
-            getText: (d) =>
+            getPosition: (d: any) => d.geometry.coordinates as [number, number],
+            getText: (d: any) =>
                 d.properties.cluster ? `${d.properties.point_count}` : "",
-            getSize: (d) => (d.properties.cluster ? 14 : 10),
-            getPixelOffset: (d) => (d.properties.cluster ? [0, -18] : [0, -14]),
+            getSize: (d: any) => (d.properties.cluster ? 14 : 10),
+            getPixelOffset: (d: any) =>
+                d.properties.cluster ? [0, -18] : [0, -14],
             getColor: [255, 255, 255, 255],
             fontWeight: "bold",
             fontFamily: "Arial",
