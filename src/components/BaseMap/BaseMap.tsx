@@ -9,7 +9,6 @@ import "./BaseMap.scss";
 import { Spinner } from "@chakra-ui/react";
 import { setCoordsState } from "../../features/viewMode/viewModeSlice";
 import axios from "axios";
-import { FlyToInterpolator, ViewStateChangeParameters } from "@deck.gl/core";
 import { setViewState } from "../../features/viewState/viewStateSlice";
 import _, { throttle } from "lodash";
 
