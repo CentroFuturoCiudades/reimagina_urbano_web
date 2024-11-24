@@ -40,7 +40,7 @@ export const METRIC_DESCRIPTIONS: GenericObject = {
     "Radio de cobertura": "Área geográfica en la que los servicios o equipamientos alcanzan a beneficiar a la población.",
     "minutes": "Tiempo promedio que tarda la población en acceder a servicios o equipamientos esenciales.",
     "density": "Relación entre el número de habitantes o viviendas y el área de la zona analizada, normalmente expresada en habitantes o viviendas por kilómetro cuadrado.",
-    "max_height": "Altura máxima permitida para los edificios en la zona, según las regulaciones de uso de suelo.",
+    "max_num_levels": "Altura máxima permitida para los edificios en la zona, según las regulaciones de uso de suelo.",
     "potencial": "Comparación entre el uso actual del suelo y el potencial que podría alcanzarse bajo diferentes condiciones o normativas.",
     "subutilizacion": "Porcentaje de áreas, edificaciones o servicios que no están siendo utilizados a su máxima capacidad.",
     "subutilizacion_type": "Clasificación de los diferentes tipos de espacios que están subutilizados, como terrenos baldíos, edificios vacíos, o espacios infrautilizados en equipamientos públicos.",
@@ -114,8 +114,26 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     "accessibility_score":{
         query: "accessibility_score",
         title: "Puntuaje de Accesibilidad (0 a 100)",
-        ranges: [0, 20, 30, 40, 50, 80],
+        ranges: [0, 10, 20, 40, 50, 80],
         type: "number",
+    },
+    // "area": {
+    //     "query": "area",
+    //     "title": "Área",
+    //     "ranges": [0, 5000, 10000, 20000, 50000, 100000],
+    //     type: "area"
+    // },
+    "cos": {
+        query: "cos",
+        title: "COS actual",
+        ranges: [0, 0.25, 0.5, 0.75, 1],
+        type: "number"
+    },
+    "max_cos": {
+        query: "max_cos",
+        title: "COS máximo permitido",
+        ranges: [0, 0.25, 0.5, 0.75, 1],
+        type: "number"
     },
     "minutes": {
         query: "minutes",
@@ -132,11 +150,13 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
         type: "number"
     },
     //METRICAS POTENCIAL
-    "density": { query: "AVG(l.home_density)", title: "Densidad", ranges: [ 0, 1500, 2500, 5000, 25000 ], type:"number" },
-    "max_height": { query: "AVG(l.max_height)", title: "Alturas Máximas", ranges: [ 0, 3, 4, 5, 6 ], type:"number" },
-    "potencial": { query: "AVG(l.potential_new_units)", title: "Actual vs. Potencial", ranges: [0, 5, 50, 100, 1000], type:"number" },
+    "density": { query: "AVG(l.density)", title: "Densidad Actual", ranges: [ 0, 40, 70, 120, 40000 ], type:"number" },
+    "max_num_levels": { query: "AVG(l.max_num_levels)", title: "Número maximo de niveles permitidos", type:"number", ranges: [ 0, 3, 5, 8, 12 ] },
+    "home_units": { query: "AVG(l.home_units)", title: "Número de viviendas actuales", type:"number"},
+    "max_home_units": { query: "AVG(l.max_home_units)", title: "Máximo de Viviendas permitidas", type:"number"},//, ranges: [0, 10, 25, 50, 100, 200] },
     "subutilizacion": { query: "AVG(LEAST( ( 1 - (l.units_estimate * 100.0 / NULLIF(l.max_home_units, 0))), 100))", title: "Subutilización", ranges: [ 0,40,70,90,100], type:"percentage" },
-    "subutilizacion_type": { query: "1", title: "Tipos de Espacio Subutilizado", ranges: [ 1,2,3,4], type:"number" }
+    "subutilizacion_type": { query: "1", title: "Tipos de Espacio Subutilizado", ranges: [ 1,2,3,4], type:"number" },
+    "num_levels": { query: "num_levels", title: "Número de Niveles", ranges: [ 0, 0.5, 1, 1.5, 3, 10 ], type:"number" },
 }
 export const REGIONS = [
     { name: "Zona Sur", key: "culiacan_sur" },

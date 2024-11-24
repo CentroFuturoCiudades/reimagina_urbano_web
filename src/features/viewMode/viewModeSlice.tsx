@@ -18,6 +18,7 @@ interface ViewModeState {
     colonias?: any[];
     selectedColonias: any[];
     project: string;
+    isSatellite: boolean;
 }
 
 const initialState: ViewModeState = {
@@ -31,6 +32,7 @@ const initialState: ViewModeState = {
     colonias: [],
     selectedColonias: [],
     project: window.location.hash.replace("#", ""),
+    isSatellite: false,
 };
 
 const viewModeSlice = createSlice({
@@ -79,9 +81,12 @@ const viewModeSlice = createSlice({
             state.project = action.payload;
             window.location.href = "#" + state.project;
         },
+        setSatellite: (state, action: PayloadAction< boolean >) => {
+            state.isSatellite = action.payload;
+        }
     }
 });
 
-export const { setViewMode, setPoligonMode, setActiveTab, setIsLoading, setLegendLimits, setActiveAmenity, setCoordsState, setColonias, toggleSelectedColonias, clearSelectedColonias, setProject, setProjectCoords } = viewModeSlice.actions;
+export const { setViewMode, setPoligonMode, setActiveTab, setIsLoading, setLegendLimits, setActiveAmenity, setCoordsState, setColonias, toggleSelectedColonias, clearSelectedColonias, setProject, setProjectCoords, setSatellite } = viewModeSlice.actions;
 
 export default viewModeSlice.reducer;

@@ -70,6 +70,7 @@ const useLotsLayer = ({ queryData }: any) => {
             getFillColor: getFillColor,
             getLineWidth: 0,
             pickable: true,
+            opacity: 0.8,
             updateTriggers: {
                 getFillColor: [quantiles, queryData, legendLimits],
             },

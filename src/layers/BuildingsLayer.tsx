@@ -27,6 +27,9 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
     const coordinates = useSelector(
         (state: RootState) => state.coordinates.coordinates
     );
+    const queryMetric = useSelector(
+        (state: RootState) => state.queryMetric.queryMetric
+    );
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const viewState = useSelector((state: RootState) => state.viewState.viewState);
     const [polygons, setPolygons] = useState<any>([]);
@@ -57,15 +60,29 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
     
     if (!condition) return [];
 
-    function getMaxHeight(buildingId: string): number {
-        return queryDataFloors[buildingId]?.max_height*3 || 3;
-    }
-
     function getFloors(buildingId: string): number {
-        return queryDataFloors[buildingId]?.num_floors*3 || 3;
+        return queryDataFloors[buildingId]?.num_levels * 5;
     }
 
-    return [
+    const idealBuildings = [
+        new GeoJsonLayer({
+            id: "buildings-max-height-layer",
+            data: polygons2,
+            filled: true,
+            // getFillColor: [255, 255, 255, 100],
+            getFillColor: [200, 200, 140],
+            getLineWidth: 0,
+            pickable: true,
+            extruded: true,
+            wireframe: true,
+            opacity: 0.3,
+            getElevation: (d: unknown) => {
+                const feature = d as BuildingFeature;
+                return feature.properties.max_num_levels * 5;
+            },
+        })
+    ]
+    const actualBuildings = [
         new GeoJsonLayer({
             id: "buildings-floors-layer",
             data: polygons,
@@ -74,25 +91,16 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
             getLineWidth: 0,
             pickable: true,
             extruded: true,
+            opacity: 0.6,
             getElevation: (d: unknown) => {
                 const feature = d as BuildingFeature;
                 return getFloors(feature.properties.lot_id);
             },
         }),
-        new GeoJsonLayer({
-            id: "buildings-max-height-layer",
-            data: polygons2,
-            filled: true,
-            getFillColor: [255, 255, 255, 100],
-            getLineWidth: 0,
-            pickable: true,
-            extruded: true,
-            wireframe: true,
-            getElevation: (d: unknown) => {
-                const feature = d as BuildingFeature;
-                return getMaxHeight(feature.properties.lot_id);
-            },
-        }),
+    ]
+
+    return [
+        ...(queryMetric === "max_num_levels" ? idealBuildings : actualBuildings)
     ];
 };
 

@@ -57,10 +57,12 @@ const Layers = () => {
                 viewMode === VIEW_MODES.LENS
                     ? {
                           [metric]: "value",
-                          num_floors: "num_floors",
-                          max_height: "max_height",
                       }
                     : { [metric]: "value" };
+            if (metric !== "num_levels")
+                metrics["num_levels"] = "num_levels";
+            if (metric !== "max_num_levels")
+                metrics["max_num_levels"] = "max_num_levels";
             const response = await axios.post(
                 `${process.env.REACT_APP_API_URL}/query`,
                 {
@@ -88,8 +90,8 @@ const Layers = () => {
                 response.data.forEach((data: any) => {
                     queryDataByProductId[data[id]] = data["value"];
                     queryDataFloorsData[data[id]] = {
-                        num_floors: data["num_floors"],
-                        max_height: data["max_height"],
+                        num_levels: data["num_levels"],
+                        max_num_levels: data["max_num_levels"],
                     };
                 });
 

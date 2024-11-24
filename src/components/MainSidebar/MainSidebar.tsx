@@ -127,7 +127,7 @@ const MainSidebar = () => {
                         <Accesibilidad metrics={metrics}></Accesibilidad>
                     </TabPanel>
                     <TabPanel>
-                        <Potencial />
+                        <Potencial metrics={metrics} />
                     </TabPanel>
                 </TabPanels>
             </Tabs>

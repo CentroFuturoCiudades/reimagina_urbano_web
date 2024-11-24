@@ -12,10 +12,6 @@ import axios from "axios";
 import { setViewState } from "../../features/viewState/viewStateSlice";
 import _ from "lodash";
 
-interface BaseMapProps {
-    isSatellite?: boolean;
-}
-
 const getTooltip = ({ object }: any): any => {
     if (!object) return null;
     if (object.properties && object.properties.NOM_COL) {
@@ -127,7 +123,7 @@ const getTooltip = ({ object }: any): any => {
     };
 };
 
-const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
+const BaseMap = () => {
     const dispatch: AppDispatch = useDispatch();
     const isLoading = useSelector(
         (state: RootState) => state.viewMode.isLoading
@@ -137,6 +133,7 @@ const BaseMap: React.FC<BaseMapProps> = ({ isSatellite }: BaseMapProps) => {
     );
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
     const project = useSelector((state: RootState) => state.viewMode.project);
+    const isSatellite = useSelector((state: RootState) => state.viewMode.isSatellite);
     const [localViewState, setLocalViewState] = useState<any>(viewState);
 
     const { layers } = Layers();
