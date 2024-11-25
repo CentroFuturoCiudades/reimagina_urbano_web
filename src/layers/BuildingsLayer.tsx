@@ -2,9 +2,10 @@ import { GenericObject } from '../types';
 import { fetchPolygonData, useAborterEffect } from "../utils";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { useState } from "react";
-import { VIEW_MODES, ZOOM_SHOW_DETAILS } from "../constants";
+import { VIEW_MODES, ZOOM_LOTS, ZOOM_SHOW_DETAILS } from "../constants";
 import { RootState } from "../app/store";
 import { useSelector } from "react-redux";
+import * as turf from "@turf/turf";
 
 
 type BuildingFeature = {
@@ -34,13 +35,22 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
     const viewState = useSelector((state: RootState) => state.viewState.viewState);
     const [polygons, setPolygons] = useState<any>([]);
     const [polygons2, setPolygons2] = useState<any>([]);
-    const isZoomedIn = viewState.zoom >= ZOOM_SHOW_DETAILS;
-    const condition = isZoomedIn && coordinates && coordinates.length !== 0 && viewMode === VIEW_MODES.LENS;
+    const isZoomedIn = viewState.zoom >= ZOOM_LOTS;
+    const condition = isZoomedIn && viewState.latitude && viewState.longitude;
     useAborterEffect(async (signal: any, isMounted: boolean) => {
         if (!condition) return;
+        const circlePolygon = turf.circle(
+            [viewState.longitude + (0.0008 * (18 - viewState.zoom)), viewState.latitude],
+            Math.abs(20 - viewState.zoom) * 200,
+            {
+                units: "meters",
+            }
+        );
+        console.log(circlePolygon);
+        if (!circlePolygon) return;
         const polygons = await fetchPolygonData(
             {
-                coordinates,
+                coordinates: [circlePolygon.geometry.coordinates[0]],
                 layer: "landuse_building",
             },
             signal
@@ -48,7 +58,7 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
 
         const polygons2 = await fetchPolygonData(
             {
-                coordinates,
+                coordinates: [circlePolygon.geometry.coordinates[0]],
                 layer: "ideal_buildings",
             },
             signal
@@ -56,7 +66,7 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
 
         isMounted && setPolygons(polygons);
         isMounted && setPolygons2(polygons2);
-    }, [coordinates, queryDataFloors, isZoomedIn]);
+    }, [queryDataFloors, isZoomedIn, viewState.latitude, viewState.longitude, viewState.zoom]);
     
     if (!condition) return [];
 

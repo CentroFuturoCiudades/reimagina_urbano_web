@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { VIEW_MODES } from "../../constants";
+import { VIEW_MODES, ZOOM_LOTS } from "../../constants";
 import { setSelectedLots } from "../../features/selectedLots/selectedLotsSlice";
 import axios from "axios";
 import { GenericObject } from "../../types";
@@ -16,6 +16,7 @@ import {
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 import { setIsLoading } from "../../features/viewMode/viewModeSlice";
 import { useAborterEffect } from "../../utils";
+import * as turf from "@turf/turf";
 
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -29,9 +30,9 @@ const Layers = () => {
     const metric = useSelector(
         (state: RootState) => state.queryMetric.queryMetric
     );
-    const coordinates = useSelector(
-        (state: RootState) => state.coordinates.coordinates
-    );
+    // const coordinates = useSelector(
+    //     (state: RootState) => state.coordinates.coordinates
+    // );
 
     const [queryData, setQueryDataState] = useState<any>({});
     const [queryDataFloors, setQueryDataFloorsState] = useState<any>({});
@@ -42,8 +43,10 @@ const Layers = () => {
     const buildingsLayers: any = useBuildingsLayer({ queryDataFloors });
     const accessibilityPointsLayer: any = useAccessibilityPointsLayer();
     const amenitiesLayers = useAmenitiesLayer();
-    const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
-    const condition = metric && coordinates && coordinates.length > 0;
+    const viewState = useSelector((state: RootState) => state.viewState.viewState);
+    const id = viewState.zoom >= 16 ? "lot_id" : "cvegeo";
+    const level = viewState.zoom >= ZOOM_LOTS ? "lots" : "blocks";
+    const condition = metric && viewState.latitude && viewState.longitude;
 
     useAborterEffect(
         async (signal: any, isMounted: boolean) => {
@@ -63,6 +66,14 @@ const Layers = () => {
                 metrics["num_levels"] = "num_levels";
             if (metric !== "max_num_levels")
                 metrics["max_num_levels"] = "max_num_levels";
+            const circlePolygon = turf.circle(
+                [viewState.longitude + (0.0008 * (18 - viewState.zoom)), viewState.latitude],
+                Math.abs(20 - viewState.zoom) * 200,
+                {
+                    units: "meters",
+                }
+            );
+            if (!circlePolygon) return;
             const response = await axios.post(
                 `${process.env.REACT_APP_API_URL}/query`,
                 {
@@ -70,9 +81,9 @@ const Layers = () => {
                     accessibility_info: accessibilityList.map(
                         (x: any) => x.value
                     ),
-                    coordinates,
+                    coordinates: [circlePolygon.geometry.coordinates[0]],
                     metrics,
-                    level: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
+                    level: level,
                 },
                 { signal }
             );
@@ -100,7 +111,7 @@ const Layers = () => {
                 dispatch(setQueryData(response.data));
             }
         },
-        [metric, coordinates, accessibilityList]
+        [metric, accessibilityList, level, viewState.zoom, viewState.latitude, viewState.longitude]
     );
 
     const layers: any[] = [

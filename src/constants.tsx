@@ -162,6 +162,7 @@ export const REGIONS = [
     { name: "Zona Sur", key: "culiacan_sur" },
     { name: "Zona Centro", key: "culiacan_centro" },
 ];
+export const ZOOM_LOTS = 17;
 export const amenitiesOptions = [
     // Salud
     { value: 'Hospital_general', label: 'Hospital general', type: 'health' },

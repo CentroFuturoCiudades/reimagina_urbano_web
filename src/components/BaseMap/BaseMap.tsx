@@ -10,7 +10,7 @@ import { Spinner } from "@chakra-ui/react";
 import { setCoordsState } from "../../features/viewMode/viewModeSlice";
 import axios from "axios";
 import { setViewState } from "../../features/viewState/viewStateSlice";
-import _ from "lodash";
+import _, { debounce } from "lodash";
 
 const getTooltip = ({ object }: any): any => {
     if (!object) return null;
@@ -135,6 +135,7 @@ const BaseMap = () => {
     const project = useSelector((state: RootState) => state.viewMode.project);
     const isSatellite = useSelector((state: RootState) => state.viewMode.isSatellite);
     const [localViewState, setLocalViewState] = useState<any>(viewState);
+    console.log("viewState", viewState);
 
     const { layers } = Layers();
 
@@ -158,10 +159,29 @@ const BaseMap = () => {
 
 
     useEffect(() => {
+        // Create a debounced version of the dispatch call
+        const debouncedSetViewState = debounce((state) => {
+            dispatch(setViewState({...state}));
+        }, 500); // Adjust debounce delay as needed
+    
         if (localViewState) {
-            dispatch(setViewState(localViewState));
+            debouncedSetViewState(localViewState);
         }
+    
+        // Cleanup the debounced function on unmount
+        return () => {
+            debouncedSetViewState.cancel();
+        };
     }, [localViewState, dispatch]);
+
+    // useEffect(() => {
+    //     if (localViewState) {
+    //         if (localViewState.zoom.toFixed(1) !== viewState.zoom.toFixed(1)) {
+    //             dispatch(setViewState(localViewState));
+    //         }
+    //     }
+    // }
+    // , [localViewState, dispatch]);
 
     if (!localViewState?.latitude) {
         return null;
@@ -185,14 +205,14 @@ const BaseMap = () => {
             <DeckGL
                 controller={{ dragPan: !isDrag }}
                 layers={layers}
-                viewState={{...viewState}}
+                viewState={{...localViewState}}
                 onViewStateChange={(e: any) => {
                     setLocalViewState(e.viewState);
-                    if (!e.interactionState.isZooming && !e.interactionState.isPanning) {
-                        if (e.oldViewState.zoom.toFixed(0) !== e.viewState.zoom.toFixed(0)) {
-                            dispatch(setViewState({...e.viewState}));
-                        }
-                    }
+                    // if (!e.interactionState.isZooming && !e.interactionState.isPanning) {
+                        // if (e.oldViewState.zoom.toFixed(1) !== e.viewState.zoom.toFixed(1)) {
+                            // dispatch(setViewState({...e.viewState}));
+                        // }
+                    // }
                 }}
                 getTooltip={getTooltip}
             >

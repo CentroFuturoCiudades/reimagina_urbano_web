@@ -1,41 +1,56 @@
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { fetchPolygonData, useAborterEffect } from "../utils";
-import { getQuantiles, VIEW_MODES } from "../constants";
+import { getQuantiles, VIEW_MODES, ZOOM_LOTS } from "../constants";
 import { useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
+import * as turf from "@turf/turf";
 
 const useLotsLayer = ({ queryData }: any) => {
-    const coordinates = useSelector(
-        (state: RootState) => state.coordinates.coordinates
-    );
+    // const coordinates = useSelector(
+    //     (state: RootState) => state.coordinates.coordinates
+    // );
+    const viewState = useSelector((state: RootState) => state.viewState.viewState);
+    // console.log("coordinates", coordinates);
+    // console.log(viewState);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const metric = useSelector(
         (state: RootState) => state.queryMetric.queryMetric
     );
     const [polygons, setPolygons] = useState<any>([]);
-    const condition = coordinates && coordinates.length > 0;
+    // const condition = coordinates && coordinates.length > 0;
+    const condition = viewState.zoom >= 10;
     const legendLimits = useSelector(
         (state: RootState) => state.viewMode.legendLimits
     );
     const [quantiles] = getQuantiles(queryData, metric);
-    const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
+    const level = viewState.zoom >= ZOOM_LOTS ? "lots" : "blocks";
+    const id = viewState.zoom >= ZOOM_LOTS ? "lot_id" : "cvegeo";
 
     useAborterEffect(
         async (signal: any, isMounted: boolean) => {
             setPolygons([]);
             if (!condition) return;
+            if (!viewState || !viewState.latitude || !viewState.longitude) return;
+            const circlePolygon = turf.circle(
+                [viewState.longitude + (0.0008 * (18 - viewState.zoom)), viewState.latitude],
+                Math.abs(20 - viewState.zoom) * 200,
+                {
+                    units: "meters",
+                }
+            );
+            if (!circlePolygon) return;
             const polygons = await fetchPolygonData(
                 {
-                    coordinates,
-                    layer: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
+                    coordinates: [circlePolygon.geometry.coordinates[0]],
+                    layer: level,
                 },
                 signal
             );
             isMounted && setPolygons(polygons?.features || []);
         },
-        [coordinates]
+        [viewState.latitude, viewState.longitude, level, viewState.zoom]
     );
 
     const getFillColor = (d: any): any => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
 import "./MainSidebar.scss";
-import { TABS, VIEW_MODES } from "../../constants";
+import { TABS, VIEW_MODES, ZOOM_LOTS } from "../../constants";
 import axios from "axios";
 import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
@@ -23,7 +23,9 @@ const MainSidebar = () => {
     const accessibilityList: GenericObject = useSelector(
         (state: RootState) => state.accessibilityList.accessibilityList
     );
-    const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    // const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const viewState = useSelector((state: RootState) => state.viewState.viewState);
+    const level = viewState.zoom >= ZOOM_LOTS ? "lots" : "blocks";
 
     const dispatch: AppDispatch = useDispatch();
 
@@ -44,32 +46,32 @@ const MainSidebar = () => {
         fetchData();
     }, [dispatch]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!(selectedLots && selectedLots.length > 0)) {
-                setMetrics({});
-                return;
-            }
-            const lots =
-                selectedLots &&
-                selectedLots.length > 0 &&
-                selectedLots.filter((x) => x !== undefined);
-            const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/predios`,
-                {
-                    lots,
-                    type: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
-                    accessibility_info: accessibilityList.map(
-                        (x: any) => x.value
-                    ),
-                }
-            );
-            if (response && response.data) {
-                setMetrics(response.data);
-            }
-        };
-        fetchData();
-    }, [selectedLots, accessibilityList, dispatch, viewMode]);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         if (!(selectedLots && selectedLots.length > 0)) {
+    //             setMetrics({});
+    //             return;
+    //         }
+    //         const lots =
+    //             selectedLots &&
+    //             selectedLots.length > 0 &&
+    //             selectedLots.filter((x) => x !== undefined);
+    //         const response = await axios.post(
+    //             `${process.env.REACT_APP_API_URL}/predios`,
+    //             {
+    //                 lots,
+    //                 type: level,
+    //                 accessibility_info: accessibilityList.map(
+    //                     (x: any) => x.value
+    //                 ),
+    //             }
+    //         );
+    //         if (response && response.data) {
+    //             setMetrics(response.data);
+    //         }
+    //     };
+    //     fetchData();
+    // }, [selectedLots, accessibilityList, dispatch, viewState.zoom]);
 
     return (
         <>
