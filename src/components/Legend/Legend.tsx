@@ -29,6 +29,8 @@ const Legend = () => {
             return `${formattedValue} min`;
         } else if (type === "area") {
             return `${formattedValue} m²`;
+        } else if (type === "float") {
+            return Number(value).toLocaleString("es-MX", { maximumFractionDigits: 2 });
         }
         return formattedValue;
     };
@@ -78,7 +80,7 @@ const Legend = () => {
                     <span>
                         {quantiles
                             .invertExtent(color)
-                            .map((d: any) => formatValue(d.toFixed(0)))
+                            .map((d: any) => formatValue(d))
                             .join(" - ")}
                     </span>
                 </div>

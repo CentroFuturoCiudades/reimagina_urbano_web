@@ -39,39 +39,34 @@ const Potencial = ({metrics}: {metrics: any}) => {
 
                             <ComparativeMetric
                                 metric="cos"
-                                name="COS actual"
                                 icon={FaPeopleGroup}
                             >
-                                <Text>{formatNumber(metrics.cos)} ha</Text>
+                                <Text>{formatNumber(metrics.cos, undefined, 2)}</Text>
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="max_cos"
-                                name="COS máximo permitido"
                                 icon={FaPeopleGroup}
                             >
-                                <Text>{formatNumber(metrics.max_cos)} ha</Text>
+                                <Text>{formatNumber(metrics.max_cos, undefined, 2)}</Text>
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="cus"
-                                name="CUS actual"
                                 icon={FaPeopleGroup}
                             >
-                                <Text>{formatNumber(metrics.cus)} ha</Text>
+                                <Text>{formatNumber(metrics.cus, undefined, 2)}</Text>
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="max_cus"
-                                name="CUS máximo permitido"
                                 icon={FaPeopleGroup}
                             >
-                                <Text>{formatNumber(metrics.max_cus)} ha</Text>
+                                <Text>{formatNumber(metrics.max_cus, undefined, 2)}</Text>
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="num_levels"
-                                name="Número de niveles actuales"
                                 icon={FaPeopleGroup}
                             >
                                 <Text>{formatNumber(metrics.num_levels, undefined, 1)} pisos</Text>
@@ -79,7 +74,6 @@ const Potencial = ({metrics}: {metrics: any}) => {
 
                             <ComparativeMetric
                                 metric="max_num_levels"
-                                name="Número de niveles máximos permitidos"
                                 icon={FaPeopleGroup}
                             >
                                 <Text>{formatNumber(metrics.max_num_levels)} pisos</Text>
@@ -95,7 +89,6 @@ const Potencial = ({metrics}: {metrics: any}) => {
 
                             <ComparativeMetric
                                 metric="max_density"
-                                name="Densidad máxima permitida"
                                 icon={FaPeopleGroup}
                             >
                                 <Text>{formatNumber(metrics.max_density)} viv/ha</Text>
@@ -103,7 +96,6 @@ const Potencial = ({metrics}: {metrics: any}) => {
 
                             <ComparativeMetric
                                 metric="home_units"
-                                name="Viviendas actuales"
                                 icon={FaPeopleGroup}
                             >
                                 <Text>{formatNumber(metrics.home_units)} viviendas</Text>
@@ -121,13 +113,6 @@ const Potencial = ({metrics}: {metrics: any}) => {
                                 icon={FaPeopleGroup}
                             >
                                 <GraphPercent value={metrics.subutilizacion} />
-                            </ComparativeMetric>
-
-                            <ComparativeMetric
-                                metric="subutilizacion_type"
-                                icon={FaPeopleGroup}
-                            >
-                                <Text>{Math.trunc(0)} %</Text>
                             </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>

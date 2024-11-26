@@ -55,6 +55,8 @@ export const formatNumber = (value: number, type: string | undefined = undefined
         return `${value.toLocaleString("es-MX", { maximumFractionDigits: precision })} min`;
     } else if (type === "area") {
         return `${value.toLocaleString("es-MX", { maximumFractionDigits: precision })} m²`;
+    } else if (type === "float") {
+        return value.toLocaleString("es-MX", { maximumFractionDigits: 2 });
     } else {
         return value.toLocaleString("es-MX", { maximumFractionDigits: precision });
     }
@@ -97,7 +99,7 @@ export interface MetricInterface {
     query: string;
     title: string;
     ranges?: number[];
-    type: "number" | "percentage" | "minutes" | "area";
+    type: "number" | "percentage" | "minutes" | "area" | "float";
     startColor?: string;
     endColor?: string;
 }
@@ -127,13 +129,13 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
         query: "cos",
         title: "COS actual",
         ranges: [0, 0.25, 0.5, 0.75, 1],
-        type: "number"
+        type: "float"
     },
     "max_cos": {
         query: "max_cos",
         title: "COS máximo permitido",
         ranges: [0, 0.25, 0.5, 0.75, 1],
-        type: "number"
+        type: "float"
     },
     "minutes": {
         query: "minutes",
@@ -149,14 +151,27 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
         ranges: [0, 10, 20, 30, 40, 50],
         type: "number"
     },
+    "cus": {
+        query: "cus",
+        title: "CUS actual",
+        ranges: [0, 0.5, 1, 1.5, 2],
+        type: "float"
+    },
+    "max_cus": {
+        query: "max_cus",
+        title: "CUS máximo permitido",
+        ranges: [0, 3, 4, 5, 6],
+        type: "float"
+    },
     //METRICAS POTENCIAL
-    "density": { query: "AVG(l.density)", title: "Densidad Actual", ranges: [ 0, 40, 70, 120, 40000 ], type:"number" },
-    "max_num_levels": { query: "AVG(l.max_num_levels)", title: "Número maximo de niveles permitidos", type:"number", ranges: [ 0, 3, 5, 8, 12 ] },
-    "home_units": { query: "AVG(l.home_units)", title: "Número de viviendas actuales", type:"number"},
-    "max_home_units": { query: "AVG(l.max_home_units)", title: "Máximo de Viviendas permitidas", type:"number"},//, ranges: [0, 10, 25, 50, 100, 200] },
+    "density": { query: "AVG(l.density)", title: "Densidad Actual", ranges: [ 0, 10, 20, 30, 40, 80 ], type:"number" },
+    "max_density": { query: "AVG(l.density)", title: "Densidad máxima permitida", ranges: [100, 125, 150, 200, 250, 300], type:"number" },
+    "max_num_levels": { query: "AVG(l.max_num_levels)", title: "Número de niveles máximos permitidos", type:"number", ranges: [ 0, 3, 5, 8, 15 ] },
+    "home_units": { query: "AVG(l.home_units)", title: "Número de viviendas actuales", type:"number", ranges: [0, 10, 20, 40, 60, 80] },
+    "max_home_units": { query: "AVG(l.max_home_units)", title: "Máximo de Viviendas permitidas", type:"number", ranges: [0, 25, 50, 100, 150, 200] },
     "subutilizacion": { query: "AVG(LEAST( ( 1 - (l.units_estimate * 100.0 / NULLIF(l.max_home_units, 0))), 100))", title: "Subutilización", ranges: [ 0,40,70,90,100], type:"percentage" },
     "subutilizacion_type": { query: "1", title: "Tipos de Espacio Subutilizado", ranges: [ 1,2,3,4], type:"number" },
-    "num_levels": { query: "num_levels", title: "Número de Niveles", ranges: [ 0, 0.5, 1, 1.5, 3, 10 ], type:"number" },
+    "num_levels": { query: "num_levels", title: "Número de niveles actuales", ranges: [ 0, 0.5, 1, 1.5, 3, 10 ], type:"number" },
 }
 export const REGIONS = [
     { name: "Zona Sur", key: "culiacan_sur" },
