@@ -15,7 +15,7 @@ export const GraphPercent = ({ value }: { value: number }) => {
                 justifyContent="center"
                 textAlign="center"
             >
-                {(value || 0).toFixed(0)}
+                {(value || 0).toFixed(0)}%
             </CircularProgressLabel>
         </CircularProgress>
     );

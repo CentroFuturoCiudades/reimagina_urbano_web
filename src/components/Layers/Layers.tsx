@@ -15,7 +15,75 @@ import {
 } from "../../layers";
 import { setQueryData } from "../../features/queryData/queryDataSlice";
 import { setIsLoading } from "../../features/viewMode/viewModeSlice";
-import { useAborterEffect } from "../../utils";
+import { fetchPolygonData, useAborterEffect } from "../../utils";
+import { IconLayer } from "@deck.gl/layers";
+
+const useExtraLayers = () => {
+    const condition = useSelector(
+        (state: RootState) => state.viewMode.project === "culiacan_sur"
+    );
+    const coordinates = useSelector(
+        (state: RootState) => state.coordinates.coordinates
+    );
+    const [polygons, setPolygons] = useState<any>([]);
+    useAborterEffect(async (signal: any, isMounted: boolean) => {
+        if (!condition) return;
+        const polygons = await fetchPolygonData(
+            { coordinates, layer: "accessibility_points" },
+            signal
+        );
+        const data = polygons?.features || [];
+        const filteredData = data.filter(
+            (item: any) =>
+                item.properties.amenity === "Capilla" ||
+                item.properties.amenity === "Comedor"
+        );
+        isMounted && setPolygons(filteredData);
+    }, []);
+    if (!condition) return [];
+    console.log(polygons);
+    const layer = new IconLayer({
+        iconMapping: {
+            marker: {
+                x: 0,
+                y: 0,
+                width: 512,
+                height: 512,
+                mask: true,
+            },
+        },
+        getColor: [50, 50, 50],
+        iconAtlas:
+            "https://images.vexels.com/content/155419/preview/thick-christian-cross-icon-032999.png",
+        getPosition: (d: any) => d.geometry.coordinates,
+        getIcon: (d: any) => "marker",
+        data: polygons.filter(
+            (item: any) => item.properties.amenity === "Capilla"
+        ),
+        sizeScale: 20,
+    });
+    const layer2 = new IconLayer({
+        iconMapping: {
+            marker: {
+                x: 0,
+                y: 0,
+                width: 512,
+                height: 512,
+                mask: true,
+            },
+        },
+        getColor: [50, 50, 50],
+        iconAtlas:
+            "https://cdn-icons-png.flaticon.com/512/7033/7033682.png",
+        getPosition: (d: any) => d.geometry.coordinates,
+        getIcon: (d: any) => "marker",
+        data: polygons.filter(
+            (item: any) => item.properties.amenity === "Comedor"
+        ),
+        sizeScale: 30,
+    });
+    return [layer, layer2];
+};
 
 const Layers = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -42,6 +110,7 @@ const Layers = () => {
     const buildingsLayers: any = useBuildingsLayer({ queryDataFloors });
     const accessibilityPointsLayer: any = useAccessibilityPointsLayer();
     const amenitiesLayers = useAmenitiesLayer();
+    const extraLayers = useExtraLayers();
     const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
     const condition = metric && coordinates && coordinates.length > 0;
 
@@ -59,8 +128,7 @@ const Layers = () => {
                           [metric]: "value",
                       }
                     : { [metric]: "value" };
-            if (metric !== "num_levels")
-                metrics["num_levels"] = "num_levels";
+            if (metric !== "num_levels") metrics["num_levels"] = "num_levels";
             if (metric !== "max_num_levels")
                 metrics["max_num_levels"] = "max_num_levels";
             const response = await axios.post(
@@ -110,6 +178,7 @@ const Layers = () => {
         ...selectLayers,
         ...lensLayers,
         ...accessibilityPointsLayer,
+        ...extraLayers,
     ];
 
     return { layers };

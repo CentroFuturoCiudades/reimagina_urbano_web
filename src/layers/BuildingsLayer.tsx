@@ -61,7 +61,7 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
     if (!condition) return [];
 
     function getFloors(buildingId: string): number {
-        return queryDataFloors[buildingId]?.num_levels * 5;
+        return (queryDataFloors[buildingId]?.num_levels || 1) * 3.5;
     }
 
     const idealBuildings = [
@@ -78,7 +78,7 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
             opacity: 0.3,
             getElevation: (d: unknown) => {
                 const feature = d as BuildingFeature;
-                return feature.properties.max_num_levels * 5;
+                return (feature.properties.max_num_levels || 1) * 3.5;
             },
         })
     ]

@@ -49,15 +49,15 @@ const useLotsLayer = ({ queryData }: any) => {
             return [200, 200, 200];
         }
 
-        if (value > 0) {
-            const colorString = quantiles(value);
-            const color = d3.color(colorString)?.rgb();
-            return color ? [color.r, color.g, color.b] : [255, 255, 255];
-        }
+        // if (value > 0) {
+        const colorString = quantiles(value);
+        const color = d3.color(colorString)?.rgb();
+        return color ? [color.r, color.g, color.b] : [255, 255, 255];
+        // }
 
-        if (value === undefined && viewMode === VIEW_MODES.FULL)
-            return [255, 255, 255, 0];
-        return [200, 200, 200];
+        // if (value === undefined && viewMode === VIEW_MODES.FULL)
+        //     return [255, 255, 255, 0];
+        // return [200, 200, 200];
     };
 
     if (!condition) return [];
