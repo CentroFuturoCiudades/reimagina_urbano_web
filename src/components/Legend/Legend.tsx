@@ -8,6 +8,7 @@ import { setLegendLimits } from "../../features/viewMode/viewModeSlice";
 
 const Legend = () => {
     const dispatch: AppDispatch = useDispatch();
+    const project = useSelector((state: RootState) => state.viewMode.project);
 
     const queryData = useSelector(
         (state: RootState) => state.queryData.queryData
@@ -30,7 +31,9 @@ const Legend = () => {
         } else if (type === "area") {
             return `${formattedValue} m²`;
         } else if (type === "float") {
-            return Number(value).toLocaleString("es-MX", { maximumFractionDigits: 2 });
+            return Number(value).toLocaleString("es-MX", {
+                maximumFractionDigits: 2,
+            });
         }
         return formattedValue;
     };
@@ -85,6 +88,28 @@ const Legend = () => {
                     </span>
                 </div>
             ))}
+            {project === "culiacan_sur" && (
+                <>
+                    <div className="legend__label">
+                        <img
+                            src="https://images.vexels.com/content/155419/preview/thick-christian-cross-icon-032999.png"
+                            alt="Capilla"
+                            width="20px"
+                            height="20px"
+                        />
+                        <span>Capillas</span>
+                    </div>
+                    <div className="legend__label">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/7033/7033682.png"
+                            alt="Capilla"
+                            width="20px"
+                            height="20px"
+                        />
+                        <span>Comedores</span>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

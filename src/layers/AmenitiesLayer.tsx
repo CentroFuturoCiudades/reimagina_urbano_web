@@ -58,7 +58,7 @@ const useAmenitiesLayer = () => {
                         .map((x) => x.label)
                         .includes(d.properties.amenity)
                 ) {
-                    return [100, 100, 100];
+                    return [200, 200, 200];
                 }
                 const type = amenitiesOptions.find(
                     (x) => x.label === d.properties.amenity
