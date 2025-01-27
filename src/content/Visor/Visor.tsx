@@ -207,7 +207,7 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             </Text>
                         </ComparativeMetric>
                         <ComparativeMetric
-                            metric="viviendas_habitadas"
+                            metric="viviendas_habitadas_percent"
                             icon={FaHouseUser}
                         >
                             <CustomGauge
@@ -263,9 +263,11 @@ const Visor = ({ metrics }: { metrics: any }) => {
                             <CustomGauge
                                 value={metrics?.indice_bienestar}
                                 globalValue={globalData?.indice_bienestar}
+                                percentage={false}
                             />
                             <GraphPercent
                                 value={globalData?.indice_bienestar}
+                                percentage={false}
                             />
                         </ComparativeMetric>
 

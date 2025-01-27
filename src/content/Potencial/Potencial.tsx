@@ -33,7 +33,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
             <Accordion allowToggle defaultIndex={[0]}>
                 <AccordionItem style={{ borderWidth: "0px" }}>
                     <AccordionHeader
-                        title="Condición actual"
+                        title="Condición observada"
                         description="Descripción de cómo se emplea el suelo en un área determinada, dividiéndose en categorías como residencial, comercial, industrial, recreativo, agrícola, o de conservación, y evaluando su adecuación según las necesidades urbanas o las regulaciones vigentes."
                     />
                     <AccordionPanel p={0}>
@@ -208,18 +208,18 @@ const Potencial = ({ metrics }: { metrics: any }) => {
 
                             <ComparativeMetric
                                 metric="density"
-                                name="Densidad actual"
+                                name="Densidad observada"
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
                                     <Text>
-                                        {formatNumber(metrics.density)} viv/ha
+                                        {formatNumber(metrics.density)} viv/hec
                                     </Text>
                                 </Box>
                                 <Box>
                                     <Text>
                                         {formatNumber(globalData.density)}{" "}
-                                        viv/ha
+                                        viv/hec
                                     </Text>
                                 </Box>
                             </ComparativeMetric>
@@ -231,13 +231,13 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 <Box>
                                     <Text>
                                         {formatNumber(metrics.max_density)}{" "}
-                                        viv/ha
+                                        viv/hec
                                     </Text>
                                 </Box>
                                 <Box>
                                     <Text>
                                         {formatNumber(globalData.max_density)}{" "}
-                                        viv/ha
+                                        viv/hec
                                     </Text>
                                 </Box>
                             </ComparativeMetric>

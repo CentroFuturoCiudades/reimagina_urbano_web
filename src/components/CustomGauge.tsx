@@ -3,15 +3,19 @@ import { Pie, PieChart, ResponsiveContainer } from "recharts";
 import { formatNumber } from "../constants";
 import { Tooltip } from "@chakra-ui/react";
 
+interface CustomGaugeProps {
+    value: number;
+    globalValue: number;
+    description?: string;
+    percentage?: boolean;
+}
+
 export const CustomGauge = ({
     value,
     globalValue,
     description,
-}: {
-    value: number;
-    globalValue: number;
-    description?: string;
-}) => {
+    percentage = true,
+}: CustomGaugeProps) => {
     const isHigher = value > globalValue;
     const data = [
         {
@@ -131,7 +135,7 @@ export const CustomGauge = ({
                             textAnchor="middle"
                             fill={isHigher ? "green" : "red"}
                         >
-                            {formatNumber(value)}%
+                            {formatNumber(value)}{percentage ? "%" : ""}
                         </text>
                         <text
                             x={ex}

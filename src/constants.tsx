@@ -29,9 +29,9 @@ export const METRIC_DESCRIPTIONS: GenericObject = {
     "viviendas_habitadas": "Viviendas Particulares Habitadas",
     "viviendas_deshabitadas": " Porcentaje de viviendas que no están ocupadas en el área, con base en datos del censo de INEGI.",
     "indice_bienestar": "Medición que clasifica áreas según el nivel de bienestar económico de sus habitantes, considerando factores como ingresos, acceso a servicios y calidad de vida.",
-    "viviendas_auto": "Porcentaje de Viviendas con Vehículo Privado",
-    "viviendas_pc": "Porcentaje de Viviendas con PC",
-    "viviendas_tinaco": "Porcentaje de viviendas que disponen de servicios básicos de bienestar como tinacos.",
+    "viviendas_auto": "Porcentaje de viviendas que cuentan con al menos un vehículo privado en el hogar.",
+    "viviendas_pc": "Porcentaje de viviendas que cuentan con una computadora personal en el hogar.",
+    "viviendas_tinaco": "Porcentaje de viviendas que cuentan con un tinaco en el hogar.",
     "accessibility_score": "Puntuaje de Accesibilidad (0 a 100)",
     "Pirámide poblacional": "Distribución de la población por grupos de edad y género, representada en una pirámide para observar la estructura demográfica.",
     "services_equipment": "Infraestructura y servicios urbanos disponibles en la zona, como escuelas, hospitales, transporte, parques y centros comunitarios.",
@@ -105,17 +105,17 @@ export interface MetricInterface {
 }
 
 export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
-    "poblacion": { query: "pobtot", title: "Población Total", ranges: [0, 65, 80, 100, 130, 800], type: "number" },
-    "viviendas_habitadas": { query: "vivpar_hab", title: "Viviendas Particulares Habitadas", ranges: [0, 25, 50, 100, 150, 200], type: "number" },
-    "viviendas_deshabitadas": { query: "GREATEST(vivpar_des * 1.0 / NULLIF(vivpar_hab, 0) * 100, 0)", title: "Porcentaje de Viviendas Particulares Deshabitadas", ranges: [0, 10, 20, 30, 40, 100], type: "percentage" }, // rango de 0-89
-    "grado_escuela": { query: "graproes", title: "Grado Promedio de Escolaridad", ranges: [6, 9, 10, 12, 16, 18], type: "number" },
-    "indice_bienestar": { query: "puntuaje_hogar_digno * 1000", title: "Índice de Bienestar", ranges: [60, 70, 80, 90, 100], type: "percentage" },
-    "viviendas_tinaco": { query: "LEAST(vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Tinaco", ranges: [0, 15, 30, 60, 90, 100], type: "percentage" },
-    "viviendas_pc": { query: "LEAST(vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con PC", ranges: [0, 35, 50, 60, 80, 100], type: "percentage" },
-    "viviendas_auto":{ query: "LEAST(vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de Viviendas con Vehiculo Privado", ranges: [40, 50, 60, 70, 80, 100], type: "percentage" },
+    "poblacion": { query: "pobtot", title: "Población total", ranges: [0, 65, 80, 100, 130, 800], type: "number" },
+    "viviendas_habitadas_percent": { query: "vivpar_hab", title: "Porcentaje de viviendas particulares habitadas", ranges: [0, 60, 70, 80, 90, 100], type: "percentage" },
+    "viviendas_deshabitadas": { query: "GREATEST(vivpar_des * 1.0 / NULLIF(vivpar_hab, 0) * 100, 0)", title: "Porcentaje de viviendas particulares deshabitadas", ranges: [0, 10, 20, 30, 40, 100], type: "percentage" }, // rango de 0-89
+    "grado_escuela": { query: "graproes", title: "Grado promedio de escolaridad", ranges: [6, 9, 10, 12, 16, 18], type: "number" },
+    "indice_bienestar": { query: "puntuaje_hogar_digno * 1000", title: "Índice de bienestar", ranges: [60, 70, 80, 90, 100], type: "percentage" },
+    "viviendas_tinaco": { query: "LEAST(vph_tinaco * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de viviendas con tinaco", ranges: [0, 15, 30, 60, 90, 100], type: "percentage" },
+    "viviendas_pc": { query: "LEAST(vph_pc * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de viviendas con PC", ranges: [0, 35, 50, 60, 80, 100], type: "percentage" },
+    "viviendas_auto":{ query: "LEAST(vph_autom * 1.0 / NULLIF(vivpar_hab, 0) * 100, 100)", title: "Porcentaje de viviendas con vehiculo privado", ranges: [40, 50, 60, 70, 80, 100], type: "percentage" },
     "accessibility_score":{
         query: "accessibility_score",
-        title: "Puntuaje de Accesibilidad (0 a 100)",
+        title: "Puntuaje de accesibilidad (0 a 100)",
         ranges: [0, 5, 10, 15, 20, 25],
         type: "number",
     },
@@ -127,7 +127,7 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     // },
     "cos": {
         query: "cos",
-        title: "COS actual",
+        title: "COS observado",
         ranges: [0, 0.25, 0.5, 0.75, 1],
         type: "float"
     },
@@ -153,7 +153,7 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     },
     "cus": {
         query: "cus",
-        title: "CUS actual",
+        title: "CUS observado",
         ranges: [0, 0.5, 1, 1.5, 2],
         type: "float"
     },
@@ -164,14 +164,14 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
         type: "float"
     },
     //METRICAS POTENCIAL
-    "density": { query: "AVG(l.density)", title: "Densidad Actual", ranges: [ 0, 10, 20, 30, 40, 80 ], type:"number" },
+    "density": { query: "AVG(l.density)", title: "Densidad observada", ranges: [ 0, 10, 20, 30, 40, 80 ], type:"number" },
     "max_density": { query: "AVG(l.density)", title: "Densidad máxima permitida", ranges: [100, 125, 150, 200, 250, 300], type:"number" },
     "max_num_levels": { query: "AVG(l.max_num_levels)", title: "Número de niveles máximos permitidos", type:"number", ranges: [ 0, 3, 5, 8, 15 ] },
     "home_units": { query: "AVG(l.home_units)", title: "Número de viviendas actuales", type:"number", ranges: [0, 10, 20, 40, 60, 80] },
     "max_home_units": { query: "AVG(l.max_home_units)", title: "Máximo de Viviendas permitidas", type:"number", ranges: [0, 25, 50, 100, 150, 200] },
     "subutilizacion": { query: "AVG(LEAST( ( 1 - (l.units_estimate * 100.0 / NULLIF(l.max_home_units, 0))), 100))", title: "Subutilización", ranges: [ 0,40,70,90,100], type:"percentage" },
-    "subutilizacion_type": { query: "1", title: "Tipos de Espacio Subutilizado", ranges: [ 1,2,3,4], type:"number" },
-    "num_levels": { query: "num_levels", title: "Número de niveles actuales", ranges: [ 0, 0.5, 1, 1.5, 3, 10 ], type:"number" },
+    "subutilizacion_type": { query: "1", title: "Tipos de espacio subutilizado", ranges: [ 1,2,3,4], type:"number" },
+    "num_levels": { query: "num_levels", title: "Número de niveles observados", ranges: [ 0, 0.5, 1, 1.5, 3, 10 ], type:"number" },
 }
 export const REGIONS = [
     { name: "Zona Sur", key: "culiacan_sur" },

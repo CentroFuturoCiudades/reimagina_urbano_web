@@ -1,7 +1,15 @@
 import { CircularProgress, CircularProgressLabel } from "@chakra-ui/react";
 import { IoCaretDown, IoCaretUp } from "react-icons/io5";
 
-export const GraphPercent = ({ value }: { value: number }) => {
+interface GraphPercentProps {
+    value: number;
+    percentage?: boolean;
+}
+
+export const GraphPercent = ({
+    value,
+    percentage = true,
+}: GraphPercentProps) => {
     return (
         <CircularProgress
             size="100px"
@@ -15,7 +23,8 @@ export const GraphPercent = ({ value }: { value: number }) => {
                 justifyContent="center"
                 textAlign="center"
             >
-                {(value || 0).toFixed(0)}%
+                {(value || 0).toFixed(0)}
+                {percentage ? "%" : ""}
             </CircularProgressLabel>
         </CircularProgress>
     );

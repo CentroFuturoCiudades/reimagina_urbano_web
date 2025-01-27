@@ -74,6 +74,7 @@ const Accesibilidad = ({ metrics }: any) => {
                             >
                                 <GraphPercent
                                     value={metrics?.accessibility_score || 0}
+                                    percentage={false}
                                 />
                             </ComparativeMetric>
 
