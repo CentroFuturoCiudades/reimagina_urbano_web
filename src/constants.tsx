@@ -116,7 +116,7 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
     "accessibility_score":{
         query: "accessibility_score",
         title: "Puntuaje de Accesibilidad (0 a 100)",
-        ranges: [0, 10, 20, 40, 50, 80],
+        ranges: [0, 5, 10, 15, 20, 25],
         type: "number",
     },
     // "area": {
