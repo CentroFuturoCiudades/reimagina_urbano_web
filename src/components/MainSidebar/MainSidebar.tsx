@@ -7,6 +7,7 @@ import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
+    setDataInfo,
     setGlobalData,
     setQueryMetric,
 } from "../../features/queryMetric/queryMetricSlice";
@@ -24,6 +25,12 @@ const MainSidebar = () => {
         (state: RootState) => state.accessibilityList.accessibilityList
     );
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const groupAges = useSelector(
+        (state: RootState) => state.queryMetric.groupAges
+    );
+    const coordinates = useSelector(
+        (state: RootState) => state.coordinates.coordinates
+    );
 
     const dispatch: AppDispatch = useDispatch();
 
@@ -32,9 +39,10 @@ const MainSidebar = () => {
             const response = await axios.post(
                 `${process.env.REACT_APP_API_URL}/predios`,
                 {
-                    lots: [],
+                    coordinates: [],
                     type: "blocks",
                     accessibility_info: [],
+                    group_ages: groupAges,
                 }
             );
             if (response && response.data) {
@@ -42,7 +50,7 @@ const MainSidebar = () => {
             }
         };
         fetchData();
-    }, [dispatch]);
+    }, [dispatch, groupAges]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -50,18 +58,15 @@ const MainSidebar = () => {
                 setMetrics({});
                 return;
             }
-            const lots =
-                selectedLots &&
-                selectedLots.length > 0 &&
-                selectedLots.filter((x) => x !== undefined);
             const response = await axios.post(
                 `${process.env.REACT_APP_API_URL}/predios`,
                 {
-                    lots,
+                    coordinates,
                     type: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
                     accessibility_info: accessibilityList.map(
                         (x: any) => x.value
                     ),
+                    group_ages: groupAges,
                 }
             );
             if (response && response.data) {
@@ -69,7 +74,7 @@ const MainSidebar = () => {
             }
         };
         fetchData();
-    }, [selectedLots, accessibilityList, dispatch, viewMode]);
+    }, [selectedLots, accessibilityList, dispatch, viewMode, groupAges, coordinates]);
 
     return (
         <>

@@ -57,12 +57,12 @@ export const CustomGauge = ({
     const color = isHigher ? "green" : "red";
     const colorLight = isHigher ? "lightgreen" : "lightcoral";
 
-    const sx = (outerRadius + 8) * startCos;
-    const sy = (outerRadius + 8) * startSin;
+    const sx = (outerRadius + 12) * startCos;
+    const sy = (outerRadius + 12) * startSin;
     const startMx = innerRadius * startCos;
     const startMy = innerRadius * startSin;
-    const ex = (outerRadius + 10) * midCos;
-    const ey = (outerRadius + 10) * midSin;
+    const ex = (outerRadius + 12) * midCos;
+    const ey = (outerRadius + 12) * midSin;
     const textAnchor = midCos >= 0 ? "start" : "end";
     const sign = isHigher ? "+" : "-";
 
@@ -119,7 +119,7 @@ export const CustomGauge = ({
                         startAngle={90}
                         endAngle={-270}
                         innerRadius={outerRadius}
-                        outerRadius={outerRadius + 4}
+                        outerRadius={outerRadius + 6}
                         dataKey="value"
                         stroke="none"
                         animationDuration={500}
@@ -151,7 +151,7 @@ export const CustomGauge = ({
                             d={`M${sx},${sy}L${startMx},${startMy}`}
                             stroke={colorLight}
                             fill="none"
-                            strokeWidth={3}
+                            strokeWidth={4}
                         />
                     </g>
                 </PieChart>

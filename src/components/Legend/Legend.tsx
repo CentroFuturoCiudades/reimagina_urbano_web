@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 import "./Legend.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { getQuantiles, METRICS_MAPPING } from "../../constants";
+import {
+    _getQuantiles,
+    METRICS_MAPPING,
+    transformToOrganicNumbers,
+} from "../../constants";
 import { setLegendLimits } from "../../features/viewMode/viewModeSlice";
 
 const Legend = () => {
@@ -16,7 +20,22 @@ const Legend = () => {
     const metric = useSelector(
         (state: RootState) => state.queryMetric.queryMetric
     );
-    const [quantiles, colors] = getQuantiles(queryData, metric);
+    const dataInfo = useSelector(
+        (state: RootState) => state.queryMetric.dataInfo
+    );
+    const _quantiles = [
+        dataInfo["0.0"],
+        dataInfo["0.2"],
+        dataInfo["0.4"],
+        dataInfo["0.6"],
+        dataInfo["0.8"],
+        dataInfo["1.0"],
+    ];
+    const relaxedQuantiles =
+        METRICS_MAPPING[metric].type !== "float"
+            ? transformToOrganicNumbers(_quantiles)
+            : _quantiles.map((x) => Math.round(x * 100) / 100);
+    const [quantiles, colors] = _getQuantiles(relaxedQuantiles, metric);
     const [active, setActive] = useState(-1);
 
     const title = METRICS_MAPPING[metric]?.title || metric;

@@ -1,10 +1,25 @@
-import { useEffect, useState } from "react";
-import { Accordion, Box, Text, VStack, Tooltip } from "@chakra-ui/react";
+import { useState } from "react";
+import {
+    Accordion,
+    Box,
+    Text,
+    VStack,
+    Tooltip,
+    PopoverContent,
+    PopoverTrigger,
+    Button,
+    Popover,
+    useBoolean,
+    List,
+    Checkbox,
+} from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
+import {
+    setGroupAges,
+    setQueryMetric,
+} from "../../features/queryMetric/queryMetricSlice";
 import "./Visor.scss";
 import { RootState } from "../../app/store";
-import PopulationPyramid from "../../components/PopulationPyramid";
 import {
     formatNumber,
     mappingGradoEscolaridad,
@@ -12,7 +27,13 @@ import {
     VIEW_MODES,
 } from "../../constants";
 import { IoWater, IoHappyOutline } from "react-icons/io5";
-import { FaPerson, FaHouseUser, FaComputer } from "react-icons/fa6";
+import {
+    FaPerson,
+    FaHouseUser,
+    FaComputer,
+    FaChevronUp,
+    FaChevronDown,
+} from "react-icons/fa6";
 import { ImManWoman } from "react-icons/im";
 import { FaCar } from "react-icons/fa";
 import { MdSchool } from "react-icons/md";
@@ -20,60 +41,53 @@ import { AccordionContent, ComparativeTitles } from "../AccordionContent";
 import { CustomGauge } from "../../components/CustomGauge";
 import { ComparativeMetric } from "../../components/ComparativeMetric";
 import { Caret, GraphPercent } from "../../components/GraphPercent";
+import {
+    Bar,
+    BarChart,
+    LabelList,
+    ResponsiveContainer,
+    XAxis,
+    YAxis,
+} from "recharts";
 
-const getPyramidData = (metrics: any) => {
-    return metrics
-        ? [
-              {
-                  age: "0-2",
-                  male: metrics.p_0a2_m,
-                  female: metrics.p_0a2_f,
-                  total: metrics.p_0a2_m + metrics.p_0a2_f,
-              },
-              {
-                  age: "3-5",
-                  male: metrics.p_3a5_m,
-                  female: metrics.p_3a5_f,
-                  total: metrics.p_3a5_m + metrics.p_3a5_f,
-              },
-              {
-                  age: "6-11",
-                  male: metrics.p_6a11_m,
-                  female: metrics.p_6a11_f,
-                  total: metrics.p_6a11_m + metrics.p_6a11_f,
-              },
-              {
-                  age: "12-14",
-                  male: metrics.p_12a14_m,
-                  female: metrics.p_12a14_f,
-                  total: metrics.p_12a14_m + metrics.p_12a14_f,
-              },
-              {
-                  age: "15-17",
-                  male: metrics.p_15a17_m,
-                  female: metrics.p_15a17_f,
-                  total: metrics.p_15a17_m + metrics.p_15a17_f,
-              },
-              {
-                  age: "18-24",
-                  male: metrics.p_18a24_m,
-                  female: metrics.p_18a24_f,
-                  total: metrics.p_18a24_m + metrics.p_18a24_f,
-              },
-              {
-                  age: "25-59",
-                  male: metrics.p_25a59_m,
-                  female: metrics.p_25a59_f,
-                  total: metrics.p_25a59_m + metrics.p_25a59_f,
-              },
-              {
-                  age: "60+",
-                  male: metrics.p_60ymas_m,
-                  female: metrics.p_60ymas_f,
-                  total: metrics.p_60ymas_m + metrics.p_60ymas_f,
-              },
-          ]
-        : [];
+const getTextGroupAges = (selectedAges: string[]) => {
+    if (selectedAges.length === 0) return "";
+
+    const sortedAges = selectedAges
+        .map((age: any) =>
+            age.endsWith("+")
+                ? [Number(age.replace("+", "")), Infinity]
+                : age.split("-").map(Number)
+        )
+        .sort(([aStart]: any, [bStart]: any) => aStart - bStart);
+
+    const mergedRanges = sortedAges.reduce((acc: any, [start, end]: any) => {
+        const lastRange = acc[acc.length - 1];
+
+        if (lastRange && start <= lastRange[1] + 1) {
+            // Overlapping or consecutive range, merge them
+            lastRange[1] = Math.max(lastRange[1], end);
+        } else {
+            // No overlap, add a new range
+            acc.push([start, end]);
+        }
+
+        return acc;
+    }, []);
+
+    const formattedRanges = mergedRanges
+        .map(([start, end]: any) => {
+            if (end === Infinity) {
+                return `${start}+`; // Handle "60+" case
+            } else if (start === end) {
+                return `${start}`; // Handle single age (e.g., "12-12" -> "12")
+            } else {
+                return `${start}-${end}`; // Handle normal ranges (e.g., "0-5")
+            }
+        })
+        .join(", ");
+
+    return `${formattedRanges} años`;
 };
 
 const Visor = ({ metrics }: { metrics: any }) => {
@@ -81,31 +95,27 @@ const Visor = ({ metrics }: { metrics: any }) => {
     const globalData = useSelector(
         (state: RootState) => state.queryMetric.globalData
     );
-    const [pyramidData, setPyramidData] = useState<any[]>([]);
-    const [globalPyramidData, setGlobalPyramidData] = useState<any[]>([]);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const selectedGroupAges = useSelector(
+        (state: RootState) => state.queryMetric.groupAges
+    );
     const project = useSelector((state: RootState) => state.viewMode.project);
     const radius = useSelector((state: RootState) => state.lensSettings.radius);
-
-    useEffect(() => {
-        const pyramidData = getPyramidData(metrics).map((entry) => ({
-            per_male: (entry.male / metrics.poblacion) * 100,
-            per_female: (entry.female / metrics.poblacion) * 100,
-            per_total: (entry.total / metrics.poblacion) * 100,
-            ...entry,
-        }));
-        setPyramidData(pyramidData);
-    }, [metrics]);
-
-    useEffect(() => {
-        const pyramidData = getPyramidData(globalData).map((entry) => ({
-            per_male: (entry.male / globalData.poblacion) * 100,
-            per_female: (entry.female / globalData.poblacion) * 100,
-            per_total: (entry.total / globalData.poblacion) * 100,
-            ...entry,
-        }));
-        setGlobalPyramidData(pyramidData);
-    }, [globalData]);
+    const agesData =
+        metrics?.per_female_group_ages && globalData?.per_female_group_ages
+            ? [
+                  {
+                      name: "Mujeres",
+                      value: Math.round(metrics?.per_female_group_ages),
+                      global: Math.round(globalData?.per_female_group_ages),
+                  },
+                  {
+                      name: "Hombres",
+                      value: Math.round(metrics?.per_male_group_ages),
+                      global: Math.round(globalData?.per_male_group_ages),
+                  },
+              ]
+            : undefined;
 
     const names = {
         [VIEW_MODES.FULL]: REGIONS.find((x) => x.key === project)?.name,
@@ -162,26 +172,17 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                 </Text>
                             </Box>
                         </ComparativeMetric>
-
-                        {/* Sustituir por pyramidData en lugar de testData */}
                         <ComparativeMetric
-                            disabled={true}
-                            name="Pirámide poblacional"
                             icon={ImManWoman}
-                            metric="Pirámide poblacional"
+                            metric="per_group_ages"
                         >
-                            <PopulationPyramid
-                                data={pyramidData}
-                                invertAxes={true}
-                                showLegend={false}
-                                additionalMarginBottom={23}
-                            />
-                            <PopulationPyramid
-                                data={globalPyramidData}
-                                invertAxes={false}
-                                showLegend={false}
-                                additionalMarginBottom={23}
-                            />
+                            <Box width="100%">
+                                <SelectAgeGroup />
+                                {selectedGroupAges &&
+                                    selectedGroupAges.length > 0 && (
+                                        <PercentageBarChart data={agesData} />
+                                    )}
+                            </Box>
                         </ComparativeMetric>
 
                         <ComparativeMetric
@@ -310,6 +311,154 @@ const Visor = ({ metrics }: { metrics: any }) => {
                 </AccordionContent>
             </Accordion>
         </div>
+    );
+};
+
+const SelectAgeGroup = () => {
+    const dispatch = useDispatch();
+    const [isFocused, setIsFocused] = useBoolean();
+    const selectedGroupAges = useSelector(
+        (state: RootState) => state.queryMetric.groupAges
+    );
+    const groupAges = [
+        "0-2",
+        "3-5",
+        "6-11",
+        "12-14",
+        "15-17",
+        "18-24",
+        "25-59",
+        "60+",
+    ];
+    const onSelectedGroupAges = (groupAge: string) => {
+        dispatch(
+            setGroupAges(
+                selectedGroupAges.includes(groupAge)
+                    ? selectedGroupAges.filter((age) => age !== groupAge)
+                    : [...selectedGroupAges, groupAge]
+            )
+        );
+    };
+    return (
+        <Popover
+            placement="bottom"
+            closeOnBlur={true}
+            isOpen={isFocused}
+            onOpen={setIsFocused.on}
+            onClose={setIsFocused.off}
+        >
+            <PopoverTrigger>
+                <Button
+                    rightIcon={isFocused ? <FaChevronUp /> : <FaChevronDown />}
+                    onClick={setIsFocused.toggle}
+                    w="100%"
+                    size="sm"
+                    height="35px"
+                    borderRadius="5px"
+                    justifyContent="space-between"
+                    variant="outline"
+                >
+                    {getTextGroupAges(selectedGroupAges) || "Seleccionar edad"}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent
+                border="1px solid #c3cff0"
+                height="200px"
+                style={{ overflow: "hidden" }}
+            >
+                <List
+                    size="sm"
+                    p="2"
+                    spacing={1}
+                    style={{ overflowY: "scroll" }}
+                >
+                    {groupAges.map((groupAge, index) => (
+                        <Box
+                            key={index}
+                            display="flex"
+                            justifyContent="space-between"
+                        >
+                            <Checkbox
+                                size="sm"
+                                colorScheme="blue"
+                                isChecked={selectedGroupAges.includes(groupAge)}
+                                onChange={() => onSelectedGroupAges(groupAge)}
+                            >
+                                {groupAge} años
+                            </Checkbox>
+                        </Box>
+                    ))}
+                </List>
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+const PercentageBarChart = ({ data }: any) => {
+    if (!data) return null;
+    return (
+        <ResponsiveContainer
+            className={"pyramidContainer"}
+            width={"100%"}
+            height={150}
+        >
+            <BarChart
+                layout="vertical"
+                data={data}
+                margin={{
+                    top: 20,
+                    right: 30,
+                    left: 0,
+                    bottom: 5,
+                }}
+            >
+                <XAxis
+                    type="number"
+                    domain={[0, 100]}
+                    tickFormatter={(tick) =>
+                        Math.abs(tick.toFixed(0)).toString()
+                    }
+                    ticks={Array.from({ length: 5 }, (_, i) => i * 20)}
+                    tick={{ fontSize: "0.7em" }}
+                />
+
+                <YAxis
+                    type="category"
+                    dataKey="name"
+                    orientation={"left"}
+                    tick={{
+                        fontSize: "0.6em",
+                    }}
+                    width={70}
+                />
+                <Bar dataKey="value" fill="#8884d8" name="Local">
+                    <LabelList
+                        dataKey="value"
+                        position="right"
+                        fill="#8884d8"
+                        fontSize="0.6em"
+                        formatter={(value: any) => `${value}%`}
+                    />
+                </Bar>
+                <Bar
+                    dataKey="global"
+                    fill="#474747"
+                    name="Global"
+                    background={{
+                        fill: "#eee",
+                    }}
+                >
+                    <LabelList
+                        dataKey="global"
+                        position="right"
+                        fill="#474747"
+                        fontSize="0.6em"
+                        width={100}
+                        formatter={(value: any) => `${value}% (Culiácan)`}
+                    />
+                </Bar>
+            </BarChart>
+        </ResponsiveContainer>
     );
 };
 

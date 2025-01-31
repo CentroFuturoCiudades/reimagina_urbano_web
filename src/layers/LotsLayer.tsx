@@ -1,6 +1,12 @@
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { fetchPolygonData, useAborterEffect } from "../utils";
-import { getQuantiles, VIEW_MODES } from "../constants";
+import {
+    _getQuantiles,
+    getQuantiles,
+    METRICS_MAPPING,
+    transformToOrganicNumbers,
+    VIEW_MODES,
+} from "../constants";
 import { useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
@@ -19,7 +25,22 @@ const useLotsLayer = ({ queryData }: any) => {
     const legendLimits = useSelector(
         (state: RootState) => state.viewMode.legendLimits
     );
-    const [quantiles] = getQuantiles(queryData, metric);
+    const dataInfo = useSelector(
+        (state: RootState) => state.queryMetric.dataInfo
+    );
+    const _quantiles = [
+        dataInfo["0.0"],
+        dataInfo["0.2"],
+        dataInfo["0.4"],
+        dataInfo["0.6"],
+        dataInfo["0.8"],
+        dataInfo["1.0"],
+    ];
+    const relaxedQuantiles =
+        METRICS_MAPPING[metric].type === "float"
+            ? transformToOrganicNumbers(_quantiles)
+            : _quantiles.map((x) => Math.round(x * 100) / 100);
+    const [quantiles] = _getQuantiles(relaxedQuantiles, metric);
     const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
 
     useAborterEffect(
@@ -41,10 +62,9 @@ const useLotsLayer = ({ queryData }: any) => {
     const getFillColor = (d: any): any => {
         if (!quantiles) return [200, 200, 200];
         const value = queryData[d.properties[id]];
-
         if (
             legendLimits != null &&
-            (value < legendLimits.min || value > legendLimits.max)
+            (value <= legendLimits.min || value > legendLimits.max)
         ) {
             return [200, 200, 200];
         }
@@ -55,8 +75,6 @@ const useLotsLayer = ({ queryData }: any) => {
             return color ? [color.r, color.g, color.b] : [255, 255, 255];
         }
 
-        // if (value === undefined && viewMode === VIEW_MODES.FULL)
-        //     return [255, 255, 255, 0];
         return [200, 200, 200];
     };
 

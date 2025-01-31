@@ -17,6 +17,7 @@ import { setQueryData } from "../../features/queryData/queryDataSlice";
 import { setIsLoading } from "../../features/viewMode/viewModeSlice";
 import { fetchPolygonData, useAborterEffect } from "../../utils";
 import { IconLayer } from "@deck.gl/layers";
+import { setDataInfo } from "../../features/queryMetric/queryMetricSlice";
 
 const useExtraLayers = () => {
     const condition = useSelector(
@@ -73,8 +74,7 @@ const useExtraLayers = () => {
             },
         },
         getColor: [50, 50, 50],
-        iconAtlas:
-            "https://cdn-icons-png.flaticon.com/512/7033/7033682.png",
+        iconAtlas: "https://cdn-icons-png.flaticon.com/512/7033/7033682.png",
         getPosition: (d: any) => d.geometry.coordinates,
         getIcon: (d: any) => "marker",
         data: polygons.filter(
@@ -99,6 +99,9 @@ const Layers = () => {
     );
     const coordinates = useSelector(
         (state: RootState) => state.coordinates.coordinates
+    );
+    const groupAges = useSelector(
+        (state: RootState) => state.queryMetric.groupAges
     );
 
     const [queryData, setQueryDataState] = useState<any>({});
@@ -141,6 +144,7 @@ const Layers = () => {
                     coordinates,
                     metrics,
                     level: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
+                    group_ages: groupAges,
                 },
                 { signal }
             );
@@ -148,14 +152,16 @@ const Layers = () => {
             dispatch(setIsLoading(false));
 
             if (isMounted) {
+                const dfData = response.data.data;
+                const dataInfo = response.data.stats_info;
                 const queryDataByProductId: GenericObject = {};
                 const queryDataFloorsData: GenericObject = {};
                 const ids: any[] = Array.from(
-                    new Set(response.data.map((x: any) => x[id])).values()
+                    new Set(dfData.map((x: any) => x[id])).values()
                 );
                 dispatch(setSelectedLots(ids));
 
-                response.data.forEach((data: any) => {
+                dfData.forEach((data: any) => {
                     queryDataByProductId[data[id]] = data["value"];
                     queryDataFloorsData[data[id]] = {
                         num_levels: data["num_levels"],
@@ -165,10 +171,11 @@ const Layers = () => {
 
                 setQueryDataFloorsState(queryDataFloorsData);
                 setQueryDataState(queryDataByProductId);
-                dispatch(setQueryData(response.data));
+                dispatch(setDataInfo(dataInfo));
+                dispatch(setQueryData(dfData));
             }
         },
-        [metric, coordinates, accessibilityList]
+        [metric, coordinates, accessibilityList, groupAges]
     );
 
     const layers: any[] = [

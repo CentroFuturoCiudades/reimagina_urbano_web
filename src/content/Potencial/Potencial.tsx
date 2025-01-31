@@ -47,19 +47,18 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                             style={{ padding: "0.4rem" }}
                         >
                             <ComparativeMetric
-                                disabled={true}
                                 metric="area"
                                 name="Área"
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
                                     <Text>
-                                        {formatNumber(metrics.area)} ha
+                                        {formatNumber(metrics.area)} hec
                                     </Text>
                                 </Box>
                                 <Box>
                                     <Text>
-                                        {formatNumber(globalData.area)} ha
+                                        {formatNumber(globalData.area)} hec
                                     </Text>
                                 </Box>
                             </ComparativeMetric>
