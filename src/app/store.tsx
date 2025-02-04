@@ -7,6 +7,7 @@ import lensSettingsReducer from '../features/lensSettings/lensSettingsSlice';
 import queryDataReducer from '../features/queryData/queryDataSlice';
 import viewStateReducer from '../features/viewState/viewStateSlice';
 import coordinatesReducer from '../features/coordinates/coordinatesSlice';
+import scenariosReducer from '../features/scenarios/scenariosSlice';
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     queryData: queryDataReducer,
     viewState: viewStateReducer,
     coordinates: coordinatesReducer,
+    scenarios: scenariosReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: false,
