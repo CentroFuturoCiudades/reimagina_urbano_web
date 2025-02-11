@@ -12,7 +12,7 @@ import { TutorialTool } from "./TutorialTool";
 import { ReturnTool } from "./ReturnTool";
 import { InstructionControls } from "./InstructionControls";
 import { setSatellite } from "../../features/viewMode/viewModeSlice";
-import { Box, Button, ButtonGroup, IconButton, Tooltip } from "@chakra-ui/react";
+import { Flex, IconButton, Tooltip, useMediaQuery } from "@chakra-ui/react";
 import { MdSatellite } from "react-icons/md";
 
 interface ToolbarProps {
@@ -21,20 +21,25 @@ interface ToolbarProps {
 
 const Toolbar: React.FC<ToolbarProps> = ({ handleActivateLanding }) => {
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
+    const [isMobile] = useMediaQuery("(max-width: 800px)");
 
     return (
-        <div className="toolbar">
-            <ReturnTool handleActivateLanding={handleActivateLanding} />
-            <TutorialTool />
-            <ZoomTool />
-            <InstructionControls />
-            <SatelliteControl />
+        <div>
+            <Flex className="toolbar-left" style={{ left: isMobile ? "0" : "25dvw", height: isMobile ? "50px" : "4dvw" }}>
+                <ReturnTool handleActivateLanding={handleActivateLanding} />
+                <TutorialTool />
+                <ZoomTool />
+                <InstructionControls />
+                <SatelliteControl />
+            </Flex>
 
-            <ViewModeTool />
+            <Flex className="toolbar-center">
+                <ViewModeTool />
 
-            {viewMode === VIEW_MODES.POLIGON && <ColoniasSelect />}
-            {viewMode === VIEW_MODES.FULL && <FullSelect />}
-            {viewMode === VIEW_MODES.LENS && <LensRadius />}
+                {viewMode === VIEW_MODES.FULL && <FullSelect />}
+                {viewMode === VIEW_MODES.POLIGON && <ColoniasSelect />}
+                {viewMode === VIEW_MODES.LENS && <LensRadius />}
+            </Flex>
         </div>
     );
 };
@@ -46,19 +51,24 @@ const SatelliteControl = () => {
     );
 
     return (
-        <Box position="absolute" top="10px" left="620px">
-            <Tooltip label="Vista satelital" aria-label="Satellite">
-                <IconButton
-                    aria-label="Satellite"
-                    icon={<MdSatellite />}
-                    onClick={() => dispatch(setSatellite(!isSatellite))}
-                    bg={isSatellite ? "gray.700" : "gray.600"}
-                    size="xs"
-                    color="white"
-                    colorScheme="grey"
-                />
-            </Tooltip>
-        </Box>
+        <Tooltip
+            hasArrow
+            label="Vista satelital"
+            aria-label="Satellite"
+            borderRadius="min(0.6dvh, 0.3dvw)"
+            fontSize="min(2dvh, 1dvw)"
+        >
+            <IconButton
+                className="button-small"
+                aria-label="Satellite"
+                icon={<MdSatellite fontSize="1dvw" />}
+                onClick={() => dispatch(setSatellite(!isSatellite))}
+                bg={isSatellite ? "gray.700" : "gray.600"}
+                size="xs"
+                color="white"
+                colorScheme="grey"
+            />
+        </Tooltip>
     );
 };
 

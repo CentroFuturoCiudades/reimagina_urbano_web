@@ -42,7 +42,6 @@ const useExtraLayers = () => {
         isMounted && setPolygons(filteredData);
     }, []);
     if (!condition) return [];
-    console.log(polygons);
     const layer = new IconLayer({
         iconMapping: {
             marker: {

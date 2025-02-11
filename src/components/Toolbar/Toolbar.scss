@@ -1,31 +1,48 @@
-.toolbar {
-    width: 100%;
+.toolbar-left {
     position: fixed;
+    height: 4dvw;
     top: 0;
+    // left: 25dvw;
+    vertical-align: middle;
+}
+
+.toolbar-center {
+    width: 100% !important;
+    position: fixed;
+    height: 4dvw;
+    width: 10dvw;
+    top: 0;
+    left: 57.5dvw;
+    vertical-align: middle;
 }
 
 .toolbar__main {
-    position: absolute;
-    top: 0;
-    left: calc(50dvw + 60px);
+    width: 10dvw;
+    height: 3.5dvw;
+    margin: auto;
+    margin-left: 0px;
+    margin-right: 0px;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: var(--primary-dark);
     opacity: 0.95;
-    border-radius: 8px;
-    padding: 2px;
+    border-radius: 2dvw;
     z-index: 1;
 
     button {
         border-color: var(--primary-dark);
         background-color: var(--primary-dark);
-        border-radius: 8px;
-        padding: 14px;
-        height: 46px;
-        width: 50px;
-        margin: 2px;
+        border-radius: 2dvw;
+        height: 3dvw !important;
+        width: 3dvw !important;
+        margin: 0px !important;
+        margin-left: 0.14dvw !important;
+        margin-right: 0.14dvw !important;
         img {
+            height: 100%;
+            width: 100%;
+            padding: 0.8dvw;
             aspect-ratio: 1;
             filter: brightness(0) invert(1);
         }
@@ -60,92 +77,129 @@
 }
 
 .toolbar-edit__div {
-    position: absolute;
-    top: 0px;
-    left: calc(50dvw + 240px);
+    margin: auto;
+    margin-left: 1.4dvw !important;
+    margin-right: 1.4dvw !important;
+    height: 2dvw;
+    width: 10dvw;
     opacity: 0.95 !important;
 }
 
 .toolbar-edit__button {
     background-color: var(--primary-dark) !important;
-    width: 120px !important;
-    height: 30px !important;
+    width: 100% !important;
+    height: 2dvw !important;
+    font-size: 1dvw !important;
+    font-weight: 500 !important;
+    color: white !important;
     &:hover {
         background-color: var(--primary-dark3) !important;
     }
 }
 
 .toolbar-zoom {
-    position: absolute;
-    top: 0px;
-    left: 415px;
+    margin: auto;
+    margin-left: 0.2dvw !important;
+    margin-right: 0.2dvw !important;
+    height: 2dvw;
+    width: 6.2dvw;
     background-color: var(--primary-dark);
     opacity: 0.95;
-    border-radius: 8px;
-    padding: 1.5px;
+    border-radius: 0.4dvw;
     z-index: 1;
-    height: 30px;
+    padding: 0px;
+    display: flex;
 
     input {
-        width: 30px;
-        height: 24px;
-        border-radius: 8px;
+        height: 100%;
+        width: 2dvw;
+        padding: 0.2dvw;
+        font-size: 0.8dvw;
+        border-radius: 0.3dvw;
         background-color: var(--primary-dark);
         color: white;
-        border-color: var(--primary-dark);
-        padding: 0 5px;
-        margin: 1.5px;
+        border: 0.1dvw solid rgba(200, 200, 200, 0.25);
     }
 
     button {
-        margin: 1.5px !important;
         background-color: var(--primary-dark);
         color: white;
-        font-size: 15px;
+        margin: 0px !important;
+        margin-left: 0.3dvw !important;
+        font-size: 1dvw;
+        width: 1.6dvw;
+        height: 100%;
+        border-radius: 0.3dvw;
+        border: 0.1dvw solid rgba(200, 200, 200, 0.25);
 
         &:hover {
             background-color: var(--primary-dark3);
+        }
+
+        svg {
+            margin: auto;
         }
     }
 }
 
 .toolbar-instruction-controls {
-    position: absolute;
-    top: 0px;
-    left: 515px;
+    margin: auto;
+    margin-left: 0.2dvw !important;
+    margin-right: 0.2dvw !important;
+    height: 2dvw;
     background-color: var(--primary-dark);
     opacity: 0.95;
-    border-radius: 8px;
-    padding: 1.5px;
+    padding: 0.2dvw;
     z-index: 1;
-    height: 30px;
+    border-radius: 0.4dvw;
 
     div {
-        margin: 1.5px !important;
         align-items: center;
         background-color: var(--primary-dark);
     }
 
     kbd {
-        height: 24px;
+        height: 1.6dvw;
+        font-size: 0.8dvw;
         align-content: center;
+        border-radius: 0.3dvw;
     }
     span {
         color: white;
-        margin: 0 5px;
+        margin: 0 0.3dvw;
+        font-size: 1dvw;
+        border-radius: 0.3dvw;
     }
 }
 
 .button-small {
-    margin-top: 8px !important;
-    margin-left: 10px !important;
+    margin: auto;
+    margin-left: 0.2dvw !important;
+    margin-right: 0.2dvw !important;
+    border-radius: 0.4dvw !important;
     background-color: var(--primary-dark) !important;
     color: white !important;
-    height: 30px !important;
-    width: 30px !important;
+    height: 2dvw !important;
+    width: 2dvw !important;
     opacity: 0.95;
+    min-width: auto !important;
 
     &:hover {
         background-color: var(--primary-dark3) !important;
+    }
+}
+
+.toolbar-colonias-list {
+    .chakra-checkbox__control {
+        width: 1dvw !important;
+        height: 1dvw !important;
+        font-size: 0.8dvw !important;
+        display: block !important;
+        border: 0.1dvw solid white !important;
+        border-radius: 0.2dvw !important;
+    }
+
+    .chakra-checkbox__label {
+        margin-left: 0.3dvw !important;
     }
 }

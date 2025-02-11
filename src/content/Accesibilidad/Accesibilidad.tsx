@@ -21,8 +21,8 @@ import { setActiveAmenity } from "../../features/viewMode/viewModeSlice";
 import { MdOutlineAccessTime } from "react-icons/md";
 import { AccordionHeader } from "../AccordionContent";
 import { ComparativeMetric } from "../../components/ComparativeMetric";
-import { GraphPercent } from "../../components/GraphPercent";
 import { AccessibilityPieChart } from "./AccessibilityPieChart";
+import { CustomGauge } from "../../components/CustomGauge";
 
 const Accesibilidad = ({ metrics }: any) => {
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
@@ -46,20 +46,19 @@ const Accesibilidad = ({ metrics }: any) => {
                         <VStack
                             spacing={"0"}
                             className="accordion-body"
-                            style={{ padding: "0.4rem" }}
                         >
                             <SelectAutoComplete />
                             <ComparativeMetric
                                 metric="minutes"
                                 icon={MdOutlineAccessTime}
                             >
-                                <Text>{Math.trunc(metrics.minutes)} min</Text>
+                                <Text fontSize="min(2.4dvh, 1.2dvw)">{Math.trunc(metrics.minutes)} min</Text>
                             </ComparativeMetric>
                             <ComparativeMetric
                                 name="Equipamiento más lejano"
                                 icon={MdOutlineAccessTime}
                             >
-                                <Text>
+                                <Text fontSize="min(2.4dvh, 1.2dvw)">
                                     {
                                         amenitiesOptions.find(
                                             (option) =>
@@ -72,7 +71,7 @@ const Accesibilidad = ({ metrics }: any) => {
                                 metric="accessibility_score"
                                 icon={FaWalking}
                             >
-                                <GraphPercent
+                                <CustomGauge
                                     value={metrics?.accessibility_score || 0}
                                     percentage={false}
                                 />
@@ -101,7 +100,7 @@ const Accesibilidad = ({ metrics }: any) => {
                                 metric="slope"
                                 icon={FaChartLine}
                             >
-                                <Text>
+                                <Text fontSize="min(2.4dvh, 1.2dvw)">
                                     {slopeType} ({Math.trunc(metrics.slope)}°)
                                 </Text>
                             </ComparativeMetric>

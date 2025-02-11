@@ -166,21 +166,30 @@ const SelectAutoComplete = () => {
                     <Button
                         className="seleccionAccesibilidad"
                         rightIcon={
-                            isFocused ? <FaChevronUp /> : <FaChevronDown />
+                            isFocused ? (
+                                <FaChevronUp fontSize="min(1.6dvh, 0.8dvw)" />
+                            ) : (
+                                <FaChevronDown fontSize="min(1.6dvh, 0.8dvw)" />
+                            )
                         }
                         onClick={setIsFocused.toggle}
                         w="100%"
                         size="sm"
-                        height="35px"
-                        borderRadius="5px"
+                        fontSize="min(1.8dvh, 0.9dvw)"
+                        height="min(5dvh, 2.5dvw)"
+                        borderRadius="min(0.8dvh, 0.4dvw)"
                     >
                         Equipamientos esenciales
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent
-                    border="1px solid #c3cff0"
-                    height="200px"
-                    style={{ overflow: "hidden" }}
+                    border="min(0.2dvh, 0.1dvw) solid #c3cff0"
+                    height="min(40dvh, 20dvw)"
+                    width="24dvw"
+                    style={{
+                        overflow: "hidden",
+                        borderRadius: "min(0.8dvh, 0.4dvw)",
+                    }}
                 >
                     <List size="sm" spacing={1} style={{ overflowY: "scroll" }}>
                         {Object.entries(groupedAmenitiesOptions)
@@ -201,12 +210,15 @@ const SelectAutoComplete = () => {
                                 return (
                                     <React.Fragment key={category}>
                                         <ListItem
-                                            px="2"
-                                            py="1"
+                                            px="min(1.4dvh, 0.7dvw)"
+                                            py="min(0.8dvh, 0.4dvw)"
                                             fontWeight="bold"
                                             bg="gray.100"
                                             borderBottom="1px solid"
                                             borderColor="gray.200"
+                                            style={{
+                                                height: "min(5dvh, 2.5dvw)",
+                                            }}
                                         >
                                             <Checkbox
                                                 isChecked={allChecked}
@@ -223,18 +235,30 @@ const SelectAutoComplete = () => {
                                                     )
                                                 }
                                             >
-                                                {mappingCategories[category]}
+                                                <Text fontSize="min(2dvh, 1dvw)">
+                                                    {
+                                                        mappingCategories[
+                                                            category
+                                                        ]
+                                                    }
+                                                </Text>
                                             </Checkbox>
                                         </ListItem>
-                                        <ListItem mb="2">
+                                        <ListItem mb="min(1.2dvh, 0.6dvw)">
                                             {amenities.map(
                                                 (
                                                     amenity: GenericObject,
                                                     index
                                                 ) => (
-                                                    <Box key={index}>
+                                                    <Box
+                                                        key={index}
+                                                        style={{
+                                                            display: "flex",
+                                                        }}
+                                                    >
                                                         <Checkbox
-                                                            px="4"
+                                                            px="min(4dvh, 2dvw)"
+                                                            py="min(0.4dvh, 0.2dvw)"
                                                             size="md"
                                                             colorScheme="blue"
                                                             isChecked={
@@ -254,8 +278,9 @@ const SelectAutoComplete = () => {
                                                                 e.stopPropagation();
                                                                 e.preventDefault();
                                                             }}
+                                                            style={{ margin: '0px' }}
                                                         >
-                                                            <Text fontSize="sm">
+                                                            <Text fontSize="min(2dvh, 1dvw)">
                                                                 {amenity.label}
                                                             </Text>
                                                         </Checkbox>
@@ -269,19 +294,23 @@ const SelectAutoComplete = () => {
                     </List>
                 </PopoverContent>
             </Popover>
-            <Box width="100%" my="2">
+            <Box width="100%" my="min(1.6dvh, 0.8dvw)">
                 {summay.map((item: any) => (
                     <Tag
-                        m="0.5"
+                        m="min(0.4dvh, 0.2dvw)"
+                        color="var(--primary-dark)"
+                        fontSize="min(1.6dvh, 0.8dvw)"
                         className="tag-selection"
-                        size="xs"
-                        px="1"
-                        fontSize="12px"
+                        px="min(1.4dvh, 0.7dvw)"
+                        py="0"
+                        height="min(3dvh, 1.5dvw)"
+                        borderRadius="min(1.4dvh, 0.7dvw)"
                         key={item}
                     >
                         {item}
                         <TagCloseButton
-                            fontSize="xs"
+                            color="darkred"
+                            fontSize="min(1.6dvh, 0.8dvw)"
                             onClick={() => removeAmenity(item)}
                         />
                     </Tag>
@@ -289,12 +318,13 @@ const SelectAutoComplete = () => {
                 {summay.length === 0 && (
                     <Tag
                         variant="outline"
-                        color="black"
-                        m="1"
-                        size="md"
-                        p="1"
-                        fontSize="12px"
-                        colorScheme="gray"
+                        m="min(0.4dvh, 0.2dvw)"
+                        px="min(1.4dvh, 0.7dvw)"
+                        py="0"
+                        fontSize="min(1.6dvh, 0.8dvw)"
+                        height="min(3dvh, 1.5dvw)"
+                        color="var(--primary-dark)"
+                        borderRadius="min(1.4dvh, 0.7dvw)"
                     >
                         Todos los equipamientos
                     </Tag>

@@ -15,6 +15,7 @@ import { GraphPercent } from "../../components/GraphPercent";
 import { formatNumber, REGIONS, VIEW_MODES } from "../../constants";
 import { RootState } from "../../app/store";
 import { useSelector } from "react-redux";
+import { CustomGauge } from "../../components/CustomGauge";
 
 const Potencial = ({ metrics }: { metrics: any }) => {
     const project = useSelector((state: RootState) => state.viewMode.project);
@@ -41,23 +42,19 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                             title={names[viewMode]}
                             titleCompare="Culiacán"
                         />
-                        <VStack
-                            spacing={"0"}
-                            className="accordion-body"
-                            style={{ padding: "0.4rem" }}
-                        >
+                        <VStack spacing={"0"} className="accordion-body">
                             <ComparativeMetric
                                 metric="area"
                                 name="Área"
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(metrics.area)} hec
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(globalData.area)} hec
                                     </Text>
                                 </Box>
@@ -68,7 +65,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             metrics.cos,
                                             undefined,
@@ -77,7 +74,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             globalData.cos,
                                             undefined,
@@ -92,7 +89,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             metrics.max_cos,
                                             undefined,
@@ -101,7 +98,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             globalData.max_cos,
                                             undefined,
@@ -116,7 +113,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             metrics.cus,
                                             undefined,
@@ -125,7 +122,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             globalData.cus,
                                             undefined,
@@ -140,7 +137,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             metrics.max_cus,
                                             undefined,
@@ -149,7 +146,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             globalData.max_cus,
                                             undefined,
@@ -164,7 +161,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             metrics.num_levels,
                                             undefined,
@@ -174,7 +171,7 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             globalData.num_levels,
                                             undefined,
@@ -190,13 +187,13 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(metrics.max_num_levels)}{" "}
                                         pisos
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             globalData.max_num_levels
                                         )}{" "}
@@ -211,12 +208,12 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(metrics.density)} viv/hec
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(globalData.density)}{" "}
                                         viv/hec
                                     </Text>
@@ -228,13 +225,13 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(metrics.max_density)}{" "}
                                         viv/hec
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(globalData.max_density)}{" "}
                                         viv/hec
                                     </Text>
@@ -246,12 +243,12 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(metrics.home_units)} viv
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(globalData.home_units)}{" "}
                                         viv
                                     </Text>
@@ -263,13 +260,13 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(metrics.max_home_units)}{" "}
                                         viv
                                     </Text>
                                 </Box>
                                 <Box>
-                                    <Text>
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
                                         {formatNumber(
                                             globalData.max_home_units
                                         )}{" "}
@@ -283,12 +280,13 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 icon={FaPeopleGroup}
                             >
                                 <Box>
-                                    <GraphPercent
+                                    <CustomGauge
                                         value={metrics.subutilizacion}
+                                        globalValue={globalData.subutilizacion}
                                     />
                                 </Box>
                                 <Box>
-                                    <GraphPercent
+                                    <CustomGauge
                                         value={globalData.subutilizacion}
                                     />
                                 </Box>

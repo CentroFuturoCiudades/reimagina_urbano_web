@@ -75,8 +75,22 @@ export const Caret = ({
     if (value === undefined || compareWith === undefined) return null;
     const isHigher = value > compareWith;
     return isHigher ? (
-        <IoCaretUp style={{ marginLeft: "4px", color: "green" }} />
+        <IoCaretUp
+            color="green"
+            style={{
+                fontSize: "min(2.2dvh, 1.1dvw)",
+                marginLeft: "min(0.4dvh, 0.2dvw)",
+                alignSelf: "center",
+            }}
+        />
     ) : (
-        <IoCaretDown style={{ marginLeft: "4px", color: "red" }} />
+        <IoCaretDown
+            color="red"
+            style={{
+                fontSize: "min(2.2dvh, 1.1dvw)",
+                marginLeft: "min(0.4dvh, 0.2dvw)",
+                alignSelf: "center",
+            }}
+        />
     );
 };

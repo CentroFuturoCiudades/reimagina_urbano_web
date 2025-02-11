@@ -6,15 +6,19 @@ interface ReturnToolProps {
 }
 
 export const ReturnTool = ({ handleActivateLanding }: ReturnToolProps) => (
-    <Tooltip m="2" hasArrow label="Regresar a Inicio" fontSize="14px">
+    <Tooltip
+        hasArrow
+        label="Regresar a Inicio"
+        borderRadius="min(0.6dvh, 0.3dvw)"
+        fontSize="min(2dvh, 1dvw)"
+    >
         <IconButton
             aria-label="Regresar a Inicio"
             className="button-small"
-            style={{ position: "absolute", top: "0px", left: "340px" }}
             size="xs"
             onClick={() => handleActivateLanding()}
         >
-            <MdArrowBack />
+            <MdArrowBack fontSize="1dvw" />
         </IconButton>
     </Tooltip>
 );

@@ -17,14 +17,16 @@ const getTooltip = ({ object }: any): any => {
     if (object.properties && object.properties.NOM_COL) {
         return {
             html: `<div>
-                <p style="font-size:14px"><b>Colonia:</b> ${object.properties.NOM_COL}</p>
+                <p style="font-size:min(2.2vh, 1.1vw)">
+                    <b>Colonia:</b> ${object.properties.NOM_COL}
+                </p>
             </div>`,
             style: {
                 backgroundColor: "white",
                 color: "#333",
-                borderRadius: "10px",
-                borderWidth: "1px",
-                padding: "8px",
+                borderRadius: "min(1.2vh, 0.6vw)",
+                borderWidth: "min(0.2vh, 0.1vw)",
+                padding: "min(0.8vh, 0.4vw)",
                 boxShadow: "0 0 1px rgba(0,0,0,0.1)",
             },
         };
@@ -56,20 +58,22 @@ const getTooltip = ({ object }: any): any => {
             : 100 / ratioOpportunities;
     return {
         html: `<div>
-            <p style="font-size:18px"><b>${object.properties.amenity}</b></p>
-            <p style="font-size:16px">${_.capitalize(
-                object.properties.name
-            )}</p>
+            <p style="font-size:min(2.4vh, 1.2vw)">
+                <b>${object.properties.amenity}</b>
+            </p>
+            <p style="font-size:min(2.2vh, 1.1vw)">
+                ${_.capitalize(object.properties.name)}
+            </p>
             ${
                 object.properties.visits_category
                     ? `
-                        <p style="font-size:12px">
-                            Afluencia de Visitantes:
+                        <p style="font-size:min(1.8vh, 0.9vw)">
+                            Afluencia de Visitantes
                         </p>
                         <p>
-                            <div style="background-color: ${visitsColor}; border-radius: 50%; width: 8px; height: 8px; display: inline-block;">
+                            <div style="background-color: ${visitsColor}; border-radius: 50%; display: inline-block; width: min(1.2vh, 0.6vw); height: min(1.2vh, 0.6vw); padding: 0px">
                             </div>
-                            <span style="font-size:16px">
+                            <span style="font-size:min(2.2vh, 1.1vw)">
                                 <b>${object.properties.visits_category}</b>
                             </span>
                         </p>`
@@ -78,21 +82,18 @@ const getTooltip = ({ object }: any): any => {
             ${
                 object.properties.opportunities_ratio
                     ? `
-                        <p style="font-size:12px">
+                        <p style="font-size:min(1.8vh, 0.9vw)">
                             Uso Potencial del Equipamiento
                         </p>
                         <p>
-                            <div style="background-color: ${opportunitiesColor}; border-radius: 50%; width: 8px; height: 8px; display: inline-block;">
+                            <div style="background-color: ${opportunitiesColor}; border-radius: 50%; display: inline-block; width: min(1.2vh, 0.6vw); height: min(1.2vh, 0.6vw);">
                             </div>
-                            <span style="font-size:16px">
+                            <span style="font-size:min(2.2vh, 1.1vw)">
                                 <b>${opportunitiesTitle}</b>
                             </span>
-                            <br>
-                            <span style="font-size:14px">
+                            <span style="font-size:min(1.8vh, 0.9vw)">
                                 <b>
-                                    ${formatNumber(opportunitiesValue)}x más ${
-                          ratioOpportunities > 100 ? "demanda" : "capacidad"
-                      }
+                                    (${formatNumber(opportunitiesValue)}x más ${ratioOpportunities > 100 ? "demanda" : "capacidad"})
                                 </b>
                             </span>
                         </p>`
@@ -101,8 +102,10 @@ const getTooltip = ({ object }: any): any => {
             ${
                 object.properties.pob_reach
                     ? `
-                    <p style="font-size:12px">Alcance potencial a pie</p>
-                    <p style="font-size:16px">
+                    <p style="font-size:min(1.8vh, 0.9vw)">
+                        Alcance potencial a pie
+                    </p>
+                    <p style="font-size:min(2.2vh, 1.1vw)">
                         <b>
                             ${formatNumber(
                                 object.properties.pob_reach
@@ -115,9 +118,9 @@ const getTooltip = ({ object }: any): any => {
         style: {
             backgroundColor: "white",
             color: "#333",
-            borderRadius: "10px",
-            borderWidth: "1px",
-            padding: "8px",
+            borderRadius: "min(1.2vh, 0.6vw)",
+            borderWidth: "min(0.2vh, 0.1vw)",
+            padding: "min(1.2vh, 0.6vw)",
             boxShadow: "0 0 1px rgba(0,0,0,0.1)",
         },
     };
@@ -133,7 +136,9 @@ const BaseMap = () => {
     );
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
     const project = useSelector((state: RootState) => state.viewMode.project);
-    const isSatellite = useSelector((state: RootState) => state.viewMode.isSatellite);
+    const isSatellite = useSelector(
+        (state: RootState) => state.viewMode.isSatellite
+    );
     const [localViewState, setLocalViewState] = useState<any>(viewState);
 
     const { layers } = Layers();
@@ -155,7 +160,6 @@ const BaseMap = () => {
         };
         fetchData();
     }, [project, dispatch]);
-
 
     useEffect(() => {
         if (localViewState) {
@@ -185,12 +189,18 @@ const BaseMap = () => {
             <DeckGL
                 controller={{ dragPan: !isDrag }}
                 layers={layers}
-                viewState={{...viewState}}
+                viewState={{ ...viewState }}
                 onViewStateChange={(e: any) => {
                     setLocalViewState(e.viewState);
-                    if (!e.interactionState.isZooming && !e.interactionState.isPanning) {
-                        if (e.oldViewState.zoom.toFixed(0) !== e.viewState.zoom.toFixed(0)) {
-                            dispatch(setViewState({...e.viewState}));
+                    if (
+                        !e.interactionState.isZooming &&
+                        !e.interactionState.isPanning
+                    ) {
+                        if (
+                            e.oldViewState.zoom.toFixed(0) !==
+                            e.viewState.zoom.toFixed(0)
+                        ) {
+                            dispatch(setViewState({ ...e.viewState }));
                         }
                     }
                 }}

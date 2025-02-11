@@ -22,14 +22,14 @@ export const SectionDescriptions = forwardRef<
                     top={0}
                     pointerEvents={calcOpacity < 0.01 ? "none" : "auto"}
                 >
-                    <Box px={10}>
+                    <Box px={"4vw"}>
                         <Heading fontSize={"3vw"} color={"white"}>
                             Visor
                         </Heading>
-                        <Heading fontSize={"1.5vw"} color={"white"} mb={12}>
+                        <Heading fontSize={"1.4vw"} color={"white"} mb={"4dvw"}>
                             Mapeando la realidad
                         </Heading>
-                        <Text color={"white"} mb={4} fontSize={"sm"}>
+                        <Text color={"white"} mb={4} fontSize={"1.6vw"}>
                             Visor es una herramienta clave para comprender la
                             realidad demográfica, social y económica de las
                             áreas seleccionadas. A través del análisis detallado
@@ -41,7 +41,7 @@ export const SectionDescriptions = forwardRef<
                             obtener una visión completa del contexto de la zona
                             en estudio.
                         </Text>
-                        <Text color={"white"} fontSize={"sm"}>
+                        <Text color={"white"} fontSize={"1.6vw"}>
                             Este conocimiento es fundamental para la correcta
                             planificación y ejecución de políticas públicas,
                             proyectos de infraestructura y desarrollo social. Al
@@ -52,14 +52,14 @@ export const SectionDescriptions = forwardRef<
                         </Text>
                     </Box>
 
-                    <Box px={10}>
+                    <Box px={"2vw"}>
                         <Heading fontSize={"3vw"} color={"white"}>
                             Accesibilidad
                         </Heading>
-                        <Heading fontSize={"1.5vw"} color={"white"} mb={12}>
+                        <Heading fontSize={"1.5vw"} color={"white"} mb={"4dvw"}>
                             Más allá de la cercanía
                         </Heading>
-                        <Text color={"white"} mb={4} fontSize={"sm"}>
+                        <Text color={"white"} mb={4} fontSize={"1.6vw"}>
                             Una vez comprendido el perfil de la zona, es crucial
                             evaluar las características físicas y la
                             accesibilidad a los servicios urbanos disponibles.
@@ -69,7 +69,7 @@ export const SectionDescriptions = forwardRef<
                             traslado, y las posibles barreras físicas como
                             desniveles del terreno.
                         </Text>
-                        <Text color={"white"} fontSize={"sm"}>
+                        <Text color={"white"} fontSize={"1.6vw"}>
                             Estos elementos son determinantes para entender las
                             limitaciones urbanas y sociales que podrían afectar
                             la movilidad y el acceso equitativo a recursos
@@ -83,14 +83,14 @@ export const SectionDescriptions = forwardRef<
                         </Text>
                     </Box>
 
-                    <Box px={10}>
+                    <Box px={"4vw"}>
                         <Heading fontSize={"3vw"} color={"white"}>
                             Potencial
                         </Heading>
-                        <Heading fontSize={"1.5vw"} color={"white"} mb={12}>
+                        <Heading fontSize={"1.5vw"} color={"white"} mb={"4dvw"}>
                             Desbloqueando oportunidades
                         </Heading>
-                        <Text color={"white"} mb={4} fontSize={"sm"}>
+                        <Text color={"white"} mb={4} fontSize={"1.6vw"}>
                             El análisis del potencial urbano se centra en
                             maximizar el uso eficiente del suelo y el desarrollo
                             sostenible de las áreas urbanas. Este apartado
@@ -101,7 +101,7 @@ export const SectionDescriptions = forwardRef<
                             que podrían ser optimizadas para satisfacer las
                             necesidades urbanas en crecimiento.
                         </Text>
-                        <Text color={"white"} fontSize={"sm"}>
+                        <Text color={"white"} fontSize={"1.6vw"}>
                             Al explorar el porcentaje de subutilización y los
                             tipos de espacios subutilizados, los planificadores
                             urbanos pueden detectar oportunidades para

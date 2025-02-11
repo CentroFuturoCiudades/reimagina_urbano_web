@@ -21,26 +21,28 @@ export const LensRadius = () => {
             placement="right"
             label="Radio de exploración"
             bg="gray.700"
-            fontSize="14px"
+            borderRadius="min(0.6dvh, 0.3dvw)"
+            fontSize="min(2dvh, 1dvw)"
         >
             <Box
                 style={{
-                    position: "relative",
-                    zIndex: 1000,
-                    width: "150px",
-                    top: "20px",
-                    left: "calc(50% + 245px)",
-                    height: "30px",
-                    borderRadius: "5px",
-                    color: "white",
+                    margin: "auto",
+                    marginLeft: "1.4dvw",
+                    marginRight: "1.4dvw",
+                    width: "10dvw",
+                    height: "2dvw",
+                    borderRadius: "0.4dvw",
                     opacity: 0.95,
+                    paddingLeft: "0.5dvw",
+                    paddingRight: "0.5dvw",
                     backgroundColor: "var(--primary-dark)",
+                    alignContent: "center",
                 }}
-                px="3"
-                py="1"
             >
                 <Slider
                     aria-label="slider-ex-1"
+                    size="sm"
+                    width="100%"
                     min={200}
                     max={1000}
                     step={100}
@@ -50,8 +52,9 @@ export const LensRadius = () => {
                     onChange={(val) => dispatch(setRadius(val))}
                     onMouseEnter={() => setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
+                    style={{ display: "block", minWidth: "auto" }}
                 >
-                    <SliderTrack>
+                    <SliderTrack style={{ height: "0.3dvw" }}>
                         <SliderFilledTrack />
                     </SliderTrack>
                     <Tooltip
@@ -60,11 +63,12 @@ export const LensRadius = () => {
                         color="white"
                         placement="top"
                         mt="1"
-                        borderRadius="4px"
+                        borderRadius="min(0.6dvh, 0.3dvw)"
+                        fontSize="min(2dvh, 1dvw)"
                         isOpen={showTooltip}
                         label={`${radius} metros`}
                     >
-                        <SliderThumb />
+                        <SliderThumb height="1dvw" width="1dvw" />
                     </Tooltip>
                 </Slider>
             </Box>

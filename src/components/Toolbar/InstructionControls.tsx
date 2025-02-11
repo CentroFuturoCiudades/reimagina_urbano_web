@@ -2,8 +2,14 @@ import { Box, Flex, Icon, Kbd, Tooltip } from "@chakra-ui/react";
 import { PiMouseLeftClickFill } from "react-icons/pi";
 
 export const InstructionControls = () => (
-    <Box m="2" className="toolbar-instruction-controls">
-        <Tooltip hasArrow label="Girar 3D" bg="gray.700" fontSize="14px">
+    <Box className="toolbar-instruction-controls">
+        <Tooltip
+            hasArrow
+            label="Girar 3D"
+            bg="gray.700"
+            borderRadius="min(0.6dvh, 0.3dvw)"
+            fontSize="min(2dvh, 1dvw)"
+        >
             <Flex direction="row" justify="center">
                 <Kbd>cmd</Kbd>
                 <span> + </span>

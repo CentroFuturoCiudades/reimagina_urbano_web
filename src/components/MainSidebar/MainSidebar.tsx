@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Tabs, Tab, TabList, TabPanels, TabPanel } from "@chakra-ui/react";
+import { Tabs, Tab, TabList, TabPanels, TabPanel, useMediaQuery } from "@chakra-ui/react";
 import "./MainSidebar.scss";
 import { TABS, VIEW_MODES } from "../../constants";
 import axios from "axios";
@@ -7,13 +7,60 @@ import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    setDataInfo,
     setGlobalData,
     setQueryMetric,
 } from "../../features/queryMetric/queryMetricSlice";
 import { Accesibilidad, Potencial } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
 import { GenericObject } from "../../types";
+
+const TabsHeader = () => {
+    const dispatch: AppDispatch = useDispatch();
+
+    return (
+        <TabList className="tab-header">
+            <Tab
+                className="tab tab-visor"
+                _selected={{
+                    bg: "var(--visor-primary)",
+                    color: "white",
+                }}
+                onClick={() => {
+                    dispatch(setActiveTab(TABS.VISOR));
+                    dispatch(setQueryMetric("poblacion"));
+                }}
+            >
+                Visor
+            </Tab>
+            <Tab
+                className="tab tab-accesibilidad"
+                _selected={{
+                    bg: "var(--accesibilidad-primary)",
+                    color: "white",
+                }}
+                onClick={() => {
+                    dispatch(setActiveTab(TABS.ACCESIBILIDAD));
+                    dispatch(setQueryMetric("minutes"));
+                }}
+            >
+                Accesibilidad
+            </Tab>
+            <Tab
+                className="tab tab-potencial"
+                _selected={{
+                    bg: "var(--potencial-primary)",
+                    color: "white",
+                }}
+                onClick={() => {
+                    dispatch(setActiveTab(TABS.POTENCIAL));
+                    dispatch(setQueryMetric("density"));
+                }}
+            >
+                Potencial
+            </Tab>
+        </TabList>
+    );
+};
 
 const MainSidebar = () => {
     const [metrics, setMetrics] = useState<any>({});
@@ -31,6 +78,7 @@ const MainSidebar = () => {
     const coordinates = useSelector(
         (state: RootState) => state.coordinates.coordinates
     );
+    const [isMobile] = useMediaQuery("(max-width: 800px)");
 
     const dispatch: AppDispatch = useDispatch();
 
@@ -74,64 +122,34 @@ const MainSidebar = () => {
             }
         };
         fetchData();
-    }, [selectedLots, accessibilityList, dispatch, viewMode, groupAges, coordinates]);
+    }, [
+        selectedLots,
+        accessibilityList,
+        dispatch,
+        viewMode,
+        groupAges,
+        coordinates,
+    ]);
+
+    if (isMobile) {
+        return null;
+    }
 
     return (
         <>
             <Tabs
                 className="mainSidebar"
-                variant="soft-rounded"
-                colorScheme="green"
+                variant="solid-rounded"
             >
-                <TabList>
-                    <Tab
-                        className="tab-visor"
-                        _selected={{
-                            bg: "var(--visor-primary)",
-                            color: "white",
-                        }}
-                        onClick={() => {
-                            dispatch(setActiveTab(TABS.VISOR));
-                            dispatch(setQueryMetric("poblacion"));
-                        }}
-                    >
-                        Visor
-                    </Tab>
-                    <Tab
-                        className="tab-accesibilidad"
-                        _selected={{
-                            bg: "var(--accesibilidad-primary)",
-                            color: "white",
-                        }}
-                        onClick={() => {
-                            dispatch(setActiveTab(TABS.ACCESIBILIDAD));
-                            dispatch(setQueryMetric("minutes"));
-                        }}
-                    >
-                        Accesibilidad
-                    </Tab>
-                    <Tab
-                        className="tab-potencial"
-                        _selected={{
-                            bg: "var(--potencial-primary)",
-                            color: "white",
-                        }}
-                        onClick={() => {
-                            dispatch(setActiveTab(TABS.POTENCIAL));
-                            dispatch(setQueryMetric("density"));
-                        }}
-                    >
-                        Potencial
-                    </Tab>
-                </TabList>
+                <TabsHeader />
                 <TabPanels>
-                    <TabPanel>
+                    <TabPanel p="0">
                         <Visor metrics={metrics}></Visor>
                     </TabPanel>
-                    <TabPanel>
+                    <TabPanel p="0">
                         <Accesibilidad metrics={metrics}></Accesibilidad>
                     </TabPanel>
-                    <TabPanel>
+                    <TabPanel p="0">
                         <Potencial metrics={metrics} />
                     </TabPanel>
                 </TabPanels>

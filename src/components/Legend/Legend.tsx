@@ -31,10 +31,11 @@ const Legend = () => {
         dataInfo["0.8"],
         dataInfo["1.0"],
     ];
-    const relaxedQuantiles =
-        METRICS_MAPPING[metric].type !== "float"
-            ? transformToOrganicNumbers(_quantiles)
-            : _quantiles.map((x) => Math.round(x * 100) / 100);
+    // const relaxedQuantiles =
+    //     METRICS_MAPPING[metric].type !== "float"
+    //         ? transformToOrganicNumbers(_quantiles)
+    //         : _quantiles.map((x) => Math.round(x * 100) / 100);
+    const relaxedQuantiles = transformToOrganicNumbers(_quantiles);
     const [quantiles, colors] = _getQuantiles(relaxedQuantiles, metric);
     const [active, setActive] = useState(-1);
 
@@ -113,8 +114,6 @@ const Legend = () => {
                         <img
                             src="https://images.vexels.com/content/155419/preview/thick-christian-cross-icon-032999.png"
                             alt="Capilla"
-                            width="20px"
-                            height="20px"
                         />
                         <span>Capillas</span>
                     </div>
@@ -122,8 +121,6 @@ const Legend = () => {
                         <img
                             src="https://cdn-icons-png.flaticon.com/512/7033/7033682.png"
                             alt="Capilla"
-                            width="20px"
-                            height="20px"
                         />
                         <span>Comedores</span>
                     </div>

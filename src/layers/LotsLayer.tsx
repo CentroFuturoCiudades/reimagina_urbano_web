@@ -36,10 +36,11 @@ const useLotsLayer = ({ queryData }: any) => {
         dataInfo["0.8"],
         dataInfo["1.0"],
     ];
-    const relaxedQuantiles =
-        METRICS_MAPPING[metric].type === "float"
-            ? transformToOrganicNumbers(_quantiles)
-            : _quantiles.map((x) => Math.round(x * 100) / 100);
+    // const relaxedQuantiles =
+    //     METRICS_MAPPING[metric].type !== "float"
+    //         ? transformToOrganicNumbers(_quantiles)
+    //         : _quantiles.map((x) => Math.round(x * 100) / 100);
+    const relaxedQuantiles = transformToOrganicNumbers(_quantiles);
     const [quantiles] = _getQuantiles(relaxedQuantiles, metric);
     const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
 
@@ -71,6 +72,7 @@ const useLotsLayer = ({ queryData }: any) => {
 
         if (value > 0) {
             const colorString = quantiles(value);
+
             const color = d3.color(colorString)?.rgb();
             return color ? [color.r, color.g, color.b] : [255, 255, 255];
         }

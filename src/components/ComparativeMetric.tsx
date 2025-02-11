@@ -44,7 +44,8 @@ export const ComparativeMetric = ({
                 <Tooltip
                     hasArrow
                     label={METRIC_DESCRIPTIONS[metric || ""]}
-                    fontSize="md"
+                    borderRadius="min(0.6dvh, 0.3dvw)"
+                    fontSize="min(2dvh, 1dvw)"
                     placement="right"
                 >
                     <Text
@@ -55,8 +56,10 @@ export const ComparativeMetric = ({
                             <span>
                                 <Icon
                                     as={icon}
-                                    mr="2"
+                                    mr="min(0.8dvh, 0.4dvw)"
                                     color={isCurrent ? "white" : "#383b46"}
+                                    fontSize="min(1.8dvh, 0.9dvw)"
+                                    style={{ display: "block" }}
                                 />
                             </span>
                         )}

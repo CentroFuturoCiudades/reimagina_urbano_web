@@ -48,58 +48,51 @@ export const ColoniasSelect = () => {
         >
             <PopoverTrigger>
                 <ButtonGroup
-                    my="5"
-                    mx="1"
-                    size="sm"
+                    size="xs"
                     isAttached
                     className="toolbar-edit__div"
                 >
                     <Button
                         rightIcon={
                             isFocused ? (
-                                <IoCaretUpSharp size="10px" />
+                                <IoCaretUpSharp fontSize="0.6dvw" />
                             ) : (
-                                <IoCaretDownSharp size="10px" />
+                                <IoCaretDownSharp fontSize="0.6dvw" />
                             )
                         }
                         onClick={setIsFocused.toggle}
-                        w="100%"
-                        size="sm"
-                        height="35px"
-                        borderRadius="5px"
-                        color="white"
+                        size="xs"
                         className="toolbar-edit__button"
-                        fontSize="14px"
-                        fontWeight="400"
                     >
                         {selectedColonias.length} Colonia(s)
                     </Button>
                     <IconButton
                         size="xs"
                         colorScheme="red"
-                        aria-label="Remove colonias"
-                        icon={<MdDelete />}
-                        style={{ height: "30px", width: "30px" }}
+                        aria-label="Deseleccionar colonias"
+                        icon={<MdDelete fontSize="0.8dvw" />}
+                        style={{ height: "2dvw", width: "2dvw", minWidth: "auto" }}
                         onClick={() => dispatch(clearSelectedColonias())}
                     />
                 </ButtonGroup>
             </PopoverTrigger>
             <PopoverContent
                 border="0"
-                height="200px"
-                width="200px"
+                height="15dvw"
+                width="10dvw"
                 bg="var(--primary-dark3)"
-                style={{ overflow: "hidden" }}
+                style={{ overflow: "hidden", borderRadius: "0.5dvw" }}
             >
                 <List
-                    size="sm"
+                    className="toolbar-colonias-list"
+                    size="xs"
                     spacing={1}
                     style={{ overflowY: "scroll" }}
-                    p="2"
+                    p="0.5dvw"
                 >
                     {selectedColoniasObjects.map((item: any) => (
                         <>
-                            <ListItem mb="2">
+                            <ListItem mb="0.2dvw" height="1.4dvw">
                                 <Checkbox
                                     size="md"
                                     colorScheme="white"
@@ -113,7 +106,7 @@ export const ColoniasSelect = () => {
                                         );
                                     }}
                                 >
-                                    <Text fontSize="sm">
+                                    <Text fontSize="0.6dvw">
                                         {item.properties.NOM_COL}
                                     </Text>
                                 </Checkbox>
@@ -123,9 +116,8 @@ export const ColoniasSelect = () => {
                     <Divider />
                     {unselectedColonias.map((item: any) => (
                         <>
-                            <ListItem mb="2">
+                            <ListItem mb="0.2dvw" height="1.4dvw">
                                 <Checkbox
-                                    size="md"
                                     colorScheme="white"
                                     color="white"
                                     isChecked={false}
@@ -137,7 +129,7 @@ export const ColoniasSelect = () => {
                                         );
                                     }}
                                 >
-                                    <Text fontSize="sm">
+                                    <Text fontSize="0.6dvw">
                                         {item.properties.NOM_COL}
                                     </Text>
                                 </Checkbox>

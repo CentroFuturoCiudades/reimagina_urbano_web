@@ -1,4 +1,3 @@
-import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Box, Select } from "@chakra-ui/react";
 import { MdArrowDropDown } from "react-icons/md";
@@ -8,6 +7,7 @@ import {
     setProject,
 } from "../../features/viewMode/viewModeSlice";
 import { REGIONS } from "../../constants";
+import { IoCaretDownSharp } from "react-icons/io5";
 
 export const FullSelect = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -17,18 +17,16 @@ export const FullSelect = () => {
         <Box
             color="white"
             style={{
-                position: "absolute",
-                zIndex: 1000,
-                width: "150px",
-                top: "20px",
-                left: "calc(50% + 245px)",
+                margin: "auto",
+                marginLeft: "1.4dvw",
+                marginRight: "1.4dvw",
             }}
         >
             <Select
                 id="toolbar-select-region"
                 variant="outline"
-                size="sm"
-                icon={<MdArrowDropDown />}
+                size="xs"
+                icon={<IoCaretDownSharp fontSize="0.6dvw" />}
                 value={project}
                 onChange={(e) => {
                     dispatch(clearSelectedColonias());
@@ -37,8 +35,12 @@ export const FullSelect = () => {
                 style={{
                     backgroundColor: "var(--primary-dark)",
                     border: "0px",
-                    borderRadius: "5px",
                     opacity: 0.95,
+                    height: "2dvw",
+                    width: "10dvw",
+                    fontSize: "1dvw",
+                    fontWeight: "500",
+                    borderRadius: "0.4dvw",
                 }}
             >
                 {REGIONS.map((region) => (

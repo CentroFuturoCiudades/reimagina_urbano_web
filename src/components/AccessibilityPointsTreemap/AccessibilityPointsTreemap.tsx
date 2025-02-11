@@ -33,18 +33,18 @@ const TreemapLegend = ({
 }) => {
     const items = accessibilityTreeArray.map((item) => item.name);
     const iconMap: Record<string, JSX.Element> = {
-        education: <FaSchool />,
-        health: <FaHospital />,
-        park: <PiParkFill />,
-        recreation: <FaIcons />,
-        other: <FaLocationDot />,
+        education: <FaSchool style={{ fontSize: "min(2dvh, 1dvw)" }} />,
+        health: <FaHospital style={{ fontSize: "min(2dvh, 1dvw)" }} />,
+        park: <PiParkFill style={{ fontSize: "min(2dvh, 1dvw)" }} />,
+        recreation: <FaIcons style={{ fontSize: "min(2dvh, 1dvw)" }} />,
+        other: <FaLocationDot style={{ fontSize: "min(2dvh, 1dvw)" }} />,
     };
     return (
         <ul>
             {items.map((entry, index) => (
                 <li
                     key={`item-${index}`}
-                    style={{ color: ACCESSIBILITY_POINTS_COLORS[entry] }}
+                    style={{ color: ACCESSIBILITY_POINTS_COLORS[entry], fontSize: "min(2.2dvh, 1.1dvw)" }}
                 >
                     {iconMap[entry]} {mappingCategories[entry]}
                 </li>
@@ -81,6 +81,8 @@ const TreemapNodeContent = ({
             hasArrow={true}
             bg={"#34353c"}
             isOpen={size && isActive && activeAmenity !== "" ? true : false}
+            borderRadius="min(0.6dvh, 0.3dvw)"
+            fontSize="min(2dvh, 1dvw)"
         >
             <g>
                 <rect
@@ -100,10 +102,13 @@ const TreemapNodeContent = ({
                 />
                 {depth === 2 && width > 30 && height > 25 ? (
                     <text
-                        x={x + 4}
-                        y={y + 18}
+                        x={x}
+                        y={y}
+                        dx="min(0.5dvh, 0.25dvw)"
+                        dy="min(0.5dvh, 0.25dvw)"
                         fill="#fff"
-                        fontSize={16}
+                        fontSize="min(2.2dvh, 1.1dvw)"
+                        dominantBaseline="hanging"
                         fillOpacity={0.9}
                     >
                         {size}
@@ -131,7 +136,8 @@ const AccessibilityPointsTreemap = () => {
 
     return (
         <>
-            <ResponsiveContainer width={"100%"} height={200}>
+            <div style={{ height: 'min(30dvh, 15dvw)' }}>
+            <ResponsiveContainer width={"100%"} height={"100%"}>
                 <Treemap
                     data={accessibilityTreeArray}
                     dataKey={"size"}
@@ -139,6 +145,7 @@ const AccessibilityPointsTreemap = () => {
                     content={<TreemapNodeContent />}
                 />
             </ResponsiveContainer>
+            </div>
             <Legend
                 content={() => (
                     <TreemapLegend

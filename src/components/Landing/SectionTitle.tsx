@@ -15,11 +15,15 @@ export const SectionTitle = forwardRef<HTMLDivElement>((props, ref) => {
             <Center w="100%" color="white">
                 <Heading
                     as="h1"
-                    fontSize={"8vw"}
                     noOfLines={2}
                     textAlign={"center"}
+                    letterSpacing={"0.2em"}
+                    style={{
+                        fontSize: "7vw",
+                    }}
                 >
-                    ( r e ) I M A G I N A<br></br>U R B A N O
+                    𝓻𝓮IMAGINA<br />
+                    URBANO
                 </Heading>
             </Center>
         </Box>

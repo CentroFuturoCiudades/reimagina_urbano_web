@@ -10,8 +10,8 @@ import {
 import { FaInfoCircle } from "react-icons/fa";
 
 export const ComparativeTitles = ({ title, titleCompare }: any) => (
-    <Box className="stat-row header" style={{ margin: 0 }}>
-        <Box className="title-box" style={{ margin: 0 }}>
+    <Box className="stat-row header">
+        <Box className="title-box">
             <Text className="stat-title" width={"50%"}>
                 {title}
             </Text>
@@ -30,23 +30,35 @@ export const AccordionContent = ({ title, description, children }: any) => (
 );
 
 export const AccordionHeader = ({ title, description }: any) => (
-    <AccordionButton className="accordion-header">
+    <AccordionButton
+        className="accordion-header"
+        height="min(5dvh, 2.5dvw)"
+        style={{
+            padding: "0 min(2dvh, 1dvw) 0 min(2dvh, 1dvw)",
+        }}
+    >
         <Box
             flex="1"
             textAlign="left"
             display="flex"
             alignItems="center"
-            fontSize="16px"
+            borderRadius="min(0.6dvh, 0.3dvw)"
+            fontSize="min(2dvh, 1dvw)"
         >
             {title}
             <InfoTooltip description={description} />
         </Box>
-        <AccordionIcon />
+        <AccordionIcon fontSize="min(2.5dvh, 1.5dvw)" />
     </AccordionButton>
 );
 
 export const InfoTooltip = ({ description }: any) => (
-    <Tooltip label={description} fontSize="md">
+    <Tooltip
+        hasArrow
+        label={description}
+        borderRadius="min(0.6dvh, 0.3dvw)"
+        fontSize="min(2dvh, 1dvw)"
+    >
         <span
             style={{
                 marginLeft: "7px",
@@ -54,7 +66,7 @@ export const InfoTooltip = ({ description }: any) => (
                 cursor: "pointer",
             }}
         >
-            <FaInfoCircle fontSize="12px" />
+            <FaInfoCircle fontSize="min(1.5dvh, 1.2dvw)" />
         </span>
     </Tooltip>
 );

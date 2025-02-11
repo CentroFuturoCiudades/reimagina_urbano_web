@@ -35,11 +35,11 @@ export const TutorialTool = () => {
 
     return (
         <Tooltip
-            m="2"
             id="toolbar-tutorial"
             hasArrow
             label="Tutorial"
-            fontSize="14px"
+            borderRadius="min(0.6dvh, 0.3dvw)"
+            fontSize="min(2dvh, 1dvw)"
         >
             <IconButton
                 bg="gray.600"
@@ -47,16 +47,11 @@ export const TutorialTool = () => {
                 className="button-small"
                 size="xs"
                 aria-label="Info"
-                style={{
-                    position: "absolute",
-                    top: "0px",
-                    left: "375px",
-                }}
                 onClick={() => {
                     showHelp();
                 }}
             >
-                <MdInfoOutline />
+                <MdInfoOutline fontSize="1dvw" />
             </IconButton>
         </Tooltip>
     );

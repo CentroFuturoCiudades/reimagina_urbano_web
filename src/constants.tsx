@@ -123,6 +123,54 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
     return [quantiles, colors];
 };
 
+// export const transformToOrganicNumbers = (numbers: number[]): number[] => {
+//     if (numbers.length === 0) return [];
+
+//     // Sort the numbers to handle them in order
+//     const sortedNumbers = [...numbers].sort((a, b) => a - b);
+
+//     // Calculate differences between consecutive numbers
+//     const differences: number[] = [];
+//     for (let i = 1; i < sortedNumbers.length; i++) {
+//         const diff = sortedNumbers[i] - sortedNumbers[i - 1];
+//         if (diff > 0) differences.push(diff);
+//     }
+
+//     // If all differences are zero, return the original numbers
+//     if (differences.length === 0) return sortedNumbers;
+
+//     // Find the smallest non-zero difference
+//     const minDifference = Math.min(...differences);
+
+//     // Define sensible rounding bases in ascending order
+//     const sensibleBases = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
+
+//     // Find the smallest sensible base greater than or equal to the minDifference
+//     let roundingBase = sensibleBases.find((base) => base >= minDifference);
+//     if (!roundingBase) {
+//         // If all sensible bases are smaller, use the largest possible
+//         roundingBase = sensibleBases[sensibleBases.length - 1];
+//     }
+
+//     // Round each number to the nearest multiple of the rounding base
+//     const roundedNumbers: number[] = [];
+//     let previousRounded: number | null = null;
+
+//     for (const num of sortedNumbers) {
+//         let rounded = Math.round(num / roundingBase) * roundingBase;
+
+//         // Avoid clustering: if the current rounded is the same as previous, adjust it
+//         if (previousRounded !== null && rounded <= previousRounded) {
+//             rounded = previousRounded + roundingBase;
+//         }
+
+//         roundedNumbers.push(rounded);
+//         previousRounded = rounded;
+//     }
+
+//     return roundedNumbers;
+// };
+
 export const transformToOrganicNumbers = (numbers: number[]): number[] => {
     if (numbers.length === 0) return [];
 
@@ -142,24 +190,36 @@ export const transformToOrganicNumbers = (numbers: number[]): number[] => {
     // Find the smallest non-zero difference
     const minDifference = Math.min(...differences);
 
-    // Define sensible rounding bases in ascending order
-    const sensibleBases = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
+    // Generate a comprehensive list of sensible bases including decimals
+    const sensibleBases: number[] = [];
+    for (let exp = -3; exp <= 5; exp++) { // Covers 0.001 to 100000
+        const magnitude = Math.pow(10, exp);
+        [1, 2, 5].forEach(base => sensibleBases.push(base * magnitude));
+    }
+    sensibleBases.sort((a, b) => a - b);
 
-    // Find the smallest sensible base greater than or equal to the minDifference
-    let roundingBase = sensibleBases.find((base) => base >= minDifference);
-    if (!roundingBase) {
-        // If all sensible bases are smaller, use the largest possible
-        roundingBase = sensibleBases[sensibleBases.length - 1];
+    // Determine the rounding base based on the minDifference
+    let roundingBase: number;
+    if (minDifference < 1) {
+        // For decimals, use the largest base <= minDifference
+        const possibleBases = sensibleBases.filter(base => base <= minDifference);
+        roundingBase = possibleBases.length > 0 
+            ? possibleBases[possibleBases.length - 1] 
+            : sensibleBases[0];
+    } else {
+        // For larger numbers, use the smallest base >= minDifference
+        roundingBase = sensibleBases.find(base => base >= minDifference) 
+            || sensibleBases[sensibleBases.length - 1];
     }
 
-    // Round each number to the nearest multiple of the rounding base
+    // Round each number and adjust for clustering
     const roundedNumbers: number[] = [];
     let previousRounded: number | null = null;
 
     for (const num of sortedNumbers) {
         let rounded = Math.round(num / roundingBase) * roundingBase;
 
-        // Avoid clustering: if the current rounded is the same as previous, adjust it
+        // Adjust to avoid clustering
         if (previousRounded !== null && rounded <= previousRounded) {
             rounded = previousRounded + roundingBase;
         }
@@ -169,7 +229,7 @@ export const transformToOrganicNumbers = (numbers: number[]): number[] => {
     }
 
     return roundedNumbers;
-};
+}
 
 export const _getQuantiles = (
     quantiles: number[],
@@ -237,7 +297,7 @@ export const METRICS_MAPPING: { [key: string]: MetricInterface } = {
         type: "percentage",
     },
     accessibility_score: {
-        title: "Puntuaje de accesibilidad (0 a 100)",
+        title: "Puntaje de accesibilidad (0 a 100)",
         type: "number",
     },
     per_female_group_ages: {
