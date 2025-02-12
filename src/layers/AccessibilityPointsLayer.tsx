@@ -30,9 +30,6 @@ const useAccessibilityPointsLayer = () => {
     const accessibilityList = useSelector(
         (state: RootState) => state.accessibilityList.accessibilityList
     );
-    const activeAmenity = useSelector(
-        (state: RootState) => state.viewMode.activeAmenity
-    );
 
     useAborterEffect(
         async (signal: any, isMounted: boolean) => {
@@ -94,17 +91,7 @@ const useAccessibilityPointsLayer = () => {
                 clusteringSize: 1,
                 pickable: true,
                 getColor: (d: any) => {
-                    if (
-                        activeAmenity !== "" &&
-                        (d.properties.cluster ||
-                            d.properties.properties.amenity !== activeAmenity)
-                    ) {
-                        return [255, 255, 255, 100];
-                    }
                     return mappingColors[amenity_type];
-                },
-                updateTriggers: {
-                    getColor: [activeAmenity],
                 },
             } as any);
         }

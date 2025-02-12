@@ -23,8 +23,8 @@
 }
 
 .loading-text {
-    margin-top: 10px;
-    font-size: 18px;
+    margin-top: min(0.4dvh, 0.2dvw);
+    font-size: min(2.6dvh, 1.3dvw);
     color: #333;
 }
 

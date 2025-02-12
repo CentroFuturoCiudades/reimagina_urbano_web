@@ -11,7 +11,6 @@ import "./Potencial.scss";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { AccordionHeader, ComparativeTitles } from "../AccordionContent";
 import { ComparativeMetric } from "../../components/ComparativeMetric";
-import { GraphPercent } from "../../components/GraphPercent";
 import { formatNumber, REGIONS, VIEW_MODES } from "../../constants";
 import { RootState } from "../../app/store";
 import { useSelector } from "react-redux";
@@ -48,158 +47,190 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 name="Área"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(metrics.area)} hec
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(globalData.area)} hec
-                                    </Text>
-                                </Box>
+                                {metrics.area && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(metrics.area)} hec
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.area && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(globalData.area)} hec
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="cos"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            metrics.cos,
-                                            undefined,
-                                            2
-                                        )}
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            globalData.cos,
-                                            undefined,
-                                            2
-                                        )}
-                                    </Text>
-                                </Box>
+                                {metrics.cos && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                metrics.cos,
+                                                undefined,
+                                                2
+                                            )}
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.cos && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                globalData.cos,
+                                                undefined,
+                                                2
+                                            )}
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="max_cos"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            metrics.max_cos,
-                                            undefined,
-                                            2
-                                        )}
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            globalData.max_cos,
-                                            undefined,
-                                            2
-                                        )}
-                                    </Text>
-                                </Box>
+                                {metrics.max_cos && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                metrics.max_cos,
+                                                undefined,
+                                                2
+                                            )}
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.max_cos && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                globalData.max_cos,
+                                                undefined,
+                                                2
+                                            )}
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="cus"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            metrics.cus,
-                                            undefined,
-                                            2
-                                        )}
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            globalData.cus,
-                                            undefined,
-                                            2
-                                        )}
-                                    </Text>
-                                </Box>
+                                {metrics.cus && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                metrics.cus,
+                                                undefined,
+                                                2
+                                            )}
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.cus && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                globalData.cus,
+                                                undefined,
+                                                2
+                                            )}
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="max_cus"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            metrics.max_cus,
-                                            undefined,
-                                            2
-                                        )}
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            globalData.max_cus,
-                                            undefined,
-                                            2
-                                        )}
-                                    </Text>
-                                </Box>
+                                {metrics.max_cus && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                metrics.max_cus,
+                                                undefined,
+                                                2
+                                            )}
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.max_cus && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                globalData.max_cus,
+                                                undefined,
+                                                2
+                                            )}
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="num_levels"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            metrics.num_levels,
-                                            undefined,
-                                            1
-                                        )}{" "}
-                                        pisos
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            globalData.num_levels,
-                                            undefined,
-                                            1
-                                        )}{" "}
-                                        pisos
-                                    </Text>
-                                </Box>
+                                {metrics.num_levels && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                metrics.num_levels,
+                                                undefined,
+                                                1
+                                            )}{" "}
+                                            pisos
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.num_levels && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                globalData.num_levels,
+                                                undefined,
+                                                1
+                                            )}{" "}
+                                            pisos
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="max_num_levels"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(metrics.max_num_levels)}{" "}
-                                        pisos
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            globalData.max_num_levels
-                                        )}{" "}
-                                        pisos
-                                    </Text>
-                                </Box>
+                                {metrics.max_num_levels && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                metrics.max_num_levels,
+                                                undefined,
+                                                1
+                                            )}{" "}
+                                            pisos
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.max_num_levels && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                globalData.max_num_levels
+                                            )}{" "}
+                                            pisos
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
@@ -207,89 +238,119 @@ const Potencial = ({ metrics }: { metrics: any }) => {
                                 name="Densidad observada"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(metrics.density)} viv/hec
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(globalData.density)}{" "}
-                                        viv/hec
-                                    </Text>
-                                </Box>
+                                {metrics.density && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(metrics.density)}{" "}
+                                            viv/hec
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.density && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(globalData.density)}{" "}
+                                            viv/hec
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="max_density"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(metrics.max_density)}{" "}
-                                        viv/hec
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(globalData.max_density)}{" "}
-                                        viv/hec
-                                    </Text>
-                                </Box>
+                                {metrics.max_density && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(metrics.max_density)}{" "}
+                                            viv/hec
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.max_density && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                globalData.max_density
+                                            )}{" "}
+                                            viv/hec
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="home_units"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(metrics.home_units)} viv
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(globalData.home_units)}{" "}
-                                        viv
-                                    </Text>
-                                </Box>
+                                {metrics.home_units && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(metrics.home_units)}{" "}
+                                            viv
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.home_units && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                globalData.home_units
+                                            )}{" "}
+                                            viv
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="max_home_units"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(metrics.max_home_units)}{" "}
-                                        viv
-                                    </Text>
-                                </Box>
-                                <Box>
-                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
-                                        {formatNumber(
-                                            globalData.max_home_units
-                                        )}{" "}
-                                        viv
-                                    </Text>
-                                </Box>
+                                {metrics.max_home_units && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                metrics.max_home_units
+                                            )}{" "}
+                                            viv
+                                        </Text>
+                                    </Box>
+                                )}
+                                {globalData.max_home_units && (
+                                    <Box>
+                                        <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                            {formatNumber(
+                                                globalData.max_home_units
+                                            )}{" "}
+                                            viv
+                                        </Text>
+                                    </Box>
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric
                                 metric="subutilizacion"
                                 icon={FaPeopleGroup}
                             >
-                                <Box>
-                                    <CustomGauge
-                                        value={metrics.subutilizacion}
-                                        globalValue={globalData.subutilizacion}
-                                    />
-                                </Box>
-                                <Box>
-                                    <CustomGauge
-                                        value={globalData.subutilizacion}
-                                    />
-                                </Box>
+                                {metrics.subutilizacion && (
+                                    <Box>
+                                        <CustomGauge
+                                            value={metrics.subutilizacion}
+                                            globalValue={
+                                                globalData.subutilizacion
+                                            }
+                                        />
+                                    </Box>
+                                )}
+                                {globalData.subutilizacion && (
+                                    <Box>
+                                        <CustomGauge
+                                            value={globalData.subutilizacion}
+                                        />
+                                    </Box>
+                                )}
                             </ComparativeMetric>
                         </VStack>
                     </AccordionPanel>

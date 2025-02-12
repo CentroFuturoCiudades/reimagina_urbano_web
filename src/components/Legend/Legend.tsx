@@ -31,10 +31,6 @@ const Legend = () => {
         dataInfo["0.8"],
         dataInfo["1.0"],
     ];
-    // const relaxedQuantiles =
-    //     METRICS_MAPPING[metric].type !== "float"
-    //         ? transformToOrganicNumbers(_quantiles)
-    //         : _quantiles.map((x) => Math.round(x * 100) / 100);
     const relaxedQuantiles = transformToOrganicNumbers(_quantiles);
     const [quantiles, colors] = _getQuantiles(relaxedQuantiles, metric);
     const [active, setActive] = useState(-1);

@@ -43,16 +43,17 @@ const Accesibilidad = ({ metrics }: any) => {
                         description="Servicios urbanos esenciales, como escuelas, tiendas, hospitales y centros de transporte, ubicados en las cercanías de las áreas residenciales, facilitando el acceso rápido y eficiente para los habitantes."
                     />
                     <AccordionPanel p={0}>
-                        <VStack
-                            spacing={"0"}
-                            className="accordion-body"
-                        >
+                        <VStack spacing={"0"} className="accordion-body">
                             <SelectAutoComplete />
                             <ComparativeMetric
                                 metric="minutes"
                                 icon={MdOutlineAccessTime}
                             >
-                                <Text fontSize="min(2.4dvh, 1.2dvw)">{Math.trunc(metrics.minutes)} min</Text>
+                                {metrics.minutes && (
+                                    <Text fontSize="min(2.4dvh, 1.2dvw)">
+                                        {Math.trunc(metrics.minutes)} min
+                                    </Text>
+                                )}
                             </ComparativeMetric>
                             <ComparativeMetric
                                 name="Equipamiento más lejano"
@@ -71,10 +72,14 @@ const Accesibilidad = ({ metrics }: any) => {
                                 metric="accessibility_score"
                                 icon={FaWalking}
                             >
-                                <CustomGauge
-                                    value={metrics?.accessibility_score || 0}
-                                    percentage={false}
-                                />
+                                {metrics?.accessibility_score && (
+                                    <CustomGauge
+                                        value={
+                                            metrics?.accessibility_score || 0
+                                        }
+                                        percentage={false}
+                                    />
+                                )}
                             </ComparativeMetric>
 
                             <ComparativeMetric

@@ -7,6 +7,7 @@ import { debounce } from "lodash";
 import { VIEW_MODES, ZOOM_SHOW_DETAILS } from "../constants";
 import { setDrag } from "../features/lensSettings/lensSettingsSlice";
 import { setCoordinates } from "../features/coordinates/coordinatesSlice";
+import { PathStyleExtension } from "@deck.gl/extensions";
 
 const useLensLayer = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -31,7 +32,8 @@ const useLensLayer = () => {
             radius,
             {
                 units: "meters",
-            }
+                steps: radius * 16 / 100,
+            },
         );
         setPolygon(temp);
     }, [circleCoords, radius]);
@@ -64,9 +66,12 @@ const useLensLayer = () => {
         data: polygon,
         filled: true,
         getFillColor: [255, 255, 255, 0],
-        getLineColor: [0, 120, 0, 255],
-        getLineWidth: 10,
+        getLineColor: [42, 47, 58, 255],
+        getLineWidth: 8,
         pickable: viewState.zoom < ZOOM_SHOW_DETAILS,
+        getDashArray: [6, 1],
+        dashJustified: true,
+        dashGapPickable: true,
         onDragStart: () => {
             dispatch(setDrag(true));
         },
@@ -81,6 +86,10 @@ const useLensLayer = () => {
             debouncedHover(info);
             dispatch(setDrag(false));
         },
+        extensions: [new PathStyleExtension({ dash: true })],
+        updateTriggers: {
+            getDashArray: [radius],
+        }
     });
 
     const centerPointLayer = new GeoJsonLayer({
@@ -89,7 +98,7 @@ const useLensLayer = () => {
             ? turf.point([circleCoords.longitude, circleCoords.latitude])
             : undefined,
         filled: true,
-        getLineColor: [150, 150, 150, 255],
+        getLineColor: [42, 47, 58, 255],
         getLineWidth: 5,
         getFillColor: [200, 200, 200, 200],
         getRadius: 15,

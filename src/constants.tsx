@@ -43,7 +43,8 @@ export const METRIC_DESCRIPTIONS: GenericObject = {
         "Porcentaje de viviendas en la zona que cuentan con un tinaco para almacenamiento de agua, según el Censo 2020 del INEGI.",
     minutes:
         "Tiempo promedio que la población en la zona tarda en llegar a un equipamiento esencial. Para cada tipo de equipamiento seleccionado, se identifica la opción más cercana a cada hogar y, entre estas, se elige la que tiene el mayor tiempo de acceso. La estimación se realiza considerando la red de calles de OpenStreetMap y asumiendo un desplazamiento a pie de 80 metros por minuto.",
-    accessibility_score: "Puntaje de accesibilidad en la zona (0 a 100) basado en un modelo gravitacional que mide la facilidad de acceso a equipamientos esenciales. Se asigna mayor peso a los equipamientos cercanos y con mayor capacidad de atención, como un hospital grande o un parque amplio. El cálculo considera las distancias en la red de calles de OpenStreetMap para estimar la distancia desde los hogares hasta los equipamientos.",
+    accessibility_score:
+        "Puntaje de accesibilidad en la zona (0 a 100) basado en un modelo gravitacional que mide la facilidad de acceso a equipamientos esenciales. Se asigna mayor peso a los equipamientos cercanos y con mayor capacidad de atención, como un hospital grande o un parque amplio. El cálculo considera las distancias en la red de calles de OpenStreetMap para estimar la distancia desde los hogares hasta los equipamientos.",
     slope: "Promedio de la inclinación de las vialidades en la zona (en grados), calculado con la red de calles de OpenStreetMap y datos topográficos SRTMGL1 v003 de la NASA.",
     area: "Área total de las manzanas o predios en la zona (hectáreas).",
     cos: "Promedio del Coeficiente de Ocupación del Suelo (COS) observable en la zona. Representa la proporción del terreno ocupada por construcciones (0 a 1), donde valores más altos indican mayor aprovechamiento del suelo. Datos obtenidos de footprints de OpenBuildings v3 de Google.",
@@ -123,112 +124,84 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
     return [quantiles, colors];
 };
 
-// export const transformToOrganicNumbers = (numbers: number[]): number[] => {
-//     if (numbers.length === 0) return [];
-
-//     // Sort the numbers to handle them in order
-//     const sortedNumbers = [...numbers].sort((a, b) => a - b);
-
-//     // Calculate differences between consecutive numbers
-//     const differences: number[] = [];
-//     for (let i = 1; i < sortedNumbers.length; i++) {
-//         const diff = sortedNumbers[i] - sortedNumbers[i - 1];
-//         if (diff > 0) differences.push(diff);
-//     }
-
-//     // If all differences are zero, return the original numbers
-//     if (differences.length === 0) return sortedNumbers;
-
-//     // Find the smallest non-zero difference
-//     const minDifference = Math.min(...differences);
-
-//     // Define sensible rounding bases in ascending order
-//     const sensibleBases = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
-
-//     // Find the smallest sensible base greater than or equal to the minDifference
-//     let roundingBase = sensibleBases.find((base) => base >= minDifference);
-//     if (!roundingBase) {
-//         // If all sensible bases are smaller, use the largest possible
-//         roundingBase = sensibleBases[sensibleBases.length - 1];
-//     }
-
-//     // Round each number to the nearest multiple of the rounding base
-//     const roundedNumbers: number[] = [];
-//     let previousRounded: number | null = null;
-
-//     for (const num of sortedNumbers) {
-//         let rounded = Math.round(num / roundingBase) * roundingBase;
-
-//         // Avoid clustering: if the current rounded is the same as previous, adjust it
-//         if (previousRounded !== null && rounded <= previousRounded) {
-//             rounded = previousRounded + roundingBase;
-//         }
-
-//         roundedNumbers.push(rounded);
-//         previousRounded = rounded;
-//     }
-
-//     return roundedNumbers;
-// };
-
-export const transformToOrganicNumbers = (numbers: number[]): number[] => {
+export function transformToOrganicNumbers(numbers: number[]): number[] {
     if (numbers.length === 0) return [];
 
     // Sort the numbers to handle them in order
     const sortedNumbers = [...numbers].sort((a, b) => a - b);
 
-    // Calculate differences between consecutive numbers
-    const differences: number[] = [];
-    for (let i = 1; i < sortedNumbers.length; i++) {
-        const diff = sortedNumbers[i] - sortedNumbers[i - 1];
-        if (diff > 0) differences.push(diff);
-    }
+    // Function to compute quantile for IQR calculation
+    const computeQuantile = (sorted: number[], p: number): number => {
+        const index = p * (sorted.length - 1);
+        const lower = Math.floor(index);
+        const fraction = index - lower;
+        if (lower + 1 >= sorted.length) return sorted[lower];
+        return sorted[lower] + fraction * (sorted[lower + 1] - sorted[lower]);
+    };
 
-    // If all differences are zero, return the original numbers
-    if (differences.length === 0) return sortedNumbers;
+    // Calculate IQR to determine the spread of the central data
+    const q1 = computeQuantile(sortedNumbers, 0.25);
+    const q3 = computeQuantile(sortedNumbers, 0.75);
+    const iqr = q3 - q1;
 
-    // Find the smallest non-zero difference
-    const minDifference = Math.min(...differences);
+    // Target base derived from IQR to focus on central data spread
+    const targetBase = iqr / 5;
 
-    // Generate a comprehensive list of sensible bases including decimals
+    // Generate a comprehensive list of sensible bases (0.001, 0.002, 0.005, ..., 100000)
     const sensibleBases: number[] = [];
-    for (let exp = -3; exp <= 5; exp++) { // Covers 0.001 to 100000
+    for (let exp = -3; exp <= 5; exp++) {
         const magnitude = Math.pow(10, exp);
-        [1, 2, 5].forEach(base => sensibleBases.push(base * magnitude));
+        [1, 2, 5].forEach((base) => sensibleBases.push(base * magnitude));
     }
     sensibleBases.sort((a, b) => a - b);
 
-    // Determine the rounding base based on the minDifference
-    let roundingBase: number;
-    if (minDifference < 1) {
-        // For decimals, use the largest base <= minDifference
-        const possibleBases = sensibleBases.filter(base => base <= minDifference);
-        roundingBase = possibleBases.length > 0 
-            ? possibleBases[possibleBases.length - 1] 
-            : sensibleBases[0];
-    } else {
-        // For larger numbers, use the smallest base >= minDifference
-        roundingBase = sensibleBases.find(base => base >= minDifference) 
-            || sensibleBases[sensibleBases.length - 1];
+    // Find the largest sensible base <= targetBase
+    let roundingBase = sensibleBases[0];
+    for (let i = sensibleBases.length - 1; i >= 0; i--) {
+        if (sensibleBases[i] <= targetBase) {
+            roundingBase = sensibleBases[i];
+            break;
+        }
     }
 
-    // Round each number and adjust for clustering
+    // Round each number and adjust for clustering/duplicates
     const roundedNumbers: number[] = [];
     let previousRounded: number | null = null;
+    let previousOriginal: number | null = null;
 
     for (const num of sortedNumbers) {
         let rounded = Math.round(num / roundingBase) * roundingBase;
 
-        // Adjust to avoid clustering
-        if (previousRounded !== null && rounded <= previousRounded) {
-            rounded = previousRounded + roundingBase;
+        if (previousRounded !== null) {
+            if (num === previousOriginal) {
+                // Duplicate value: retain the previous rounded value
+                rounded = previousRounded;
+            } else {
+                // Ensure minimum gap of half the rounding base
+                const minGap = roundingBase * 0.5;
+                while (
+                    rounded <= previousRounded ||
+                    rounded - previousRounded < minGap
+                ) {
+                    rounded += roundingBase;
+                }
+            }
         }
 
         roundedNumbers.push(rounded);
         previousRounded = rounded;
+        previousOriginal = num;
     }
 
-    return roundedNumbers;
+    // Post-processing: Remove consecutive duplicates
+    const cleanedNumbers: number[] = [];
+    for (let i = 0; i < roundedNumbers.length; i++) {
+        if (i === 0 || roundedNumbers[i] !== roundedNumbers[i - 1]) {
+            cleanedNumbers.push(roundedNumbers[i]);
+        }
+    }
+
+    return cleanedNumbers;
 }
 
 export const _getQuantiles = (

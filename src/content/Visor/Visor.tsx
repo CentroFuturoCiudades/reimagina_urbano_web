@@ -158,20 +158,22 @@ const Visor = ({ metrics }: { metrics: any }) => {
                                     </Text>
                                 </Box>
                             )}
-                            <Box fontSize="min(2.8dvh, 1.4dvw)">
-                                {globalData?.poblacion?.toLocaleString(
-                                    "es-MX",
-                                    {
-                                        maximumFractionDigits: 0,
-                                    }
-                                )}
-                                <Text
-                                    fontSize="min(2dvh, 1dvw)"
-                                    textAlign="center"
-                                >
-                                    habitantes
-                                </Text>
-                            </Box>
+                            {globalData?.poblacion && (
+                                <Box fontSize="min(2.8dvh, 1.4dvw)">
+                                    {globalData?.poblacion?.toLocaleString(
+                                        "es-MX",
+                                        {
+                                            maximumFractionDigits: 0,
+                                        }
+                                    )}
+                                    <Text
+                                        fontSize="min(2dvh, 1dvw)"
+                                        textAlign="center"
+                                    >
+                                        habitantes
+                                    </Text>
+                                </Box>
+                            )}
                         </ComparativeMetric>
                         <ComparativeMetric
                             icon={ImManWoman}

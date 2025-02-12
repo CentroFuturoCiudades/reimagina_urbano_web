@@ -180,7 +180,8 @@ const BaseMap = () => {
                         speed="0.65s"
                         emptyColor="gray.200"
                         color="gray.500"
-                        size="xl"
+                        height="min(7vh, 3.5vw)"
+                        width="min(7vh, 3.5vw)"
                     />
                     <div className="loading-text">Cargando...</div>
                 </div>
@@ -218,7 +219,7 @@ const BaseMap = () => {
                     attributionControl={false}
                 />
             </DeckGL>
-            <Legend />
+            {!isLoading && <Legend />}
         </>
     );
 };

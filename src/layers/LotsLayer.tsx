@@ -2,8 +2,6 @@ import { GeoJsonLayer } from "@deck.gl/layers";
 import { fetchPolygonData, useAborterEffect } from "../utils";
 import {
     _getQuantiles,
-    getQuantiles,
-    METRICS_MAPPING,
     transformToOrganicNumbers,
     VIEW_MODES,
 } from "../constants";
@@ -36,10 +34,6 @@ const useLotsLayer = ({ queryData }: any) => {
         dataInfo["0.8"],
         dataInfo["1.0"],
     ];
-    // const relaxedQuantiles =
-    //     METRICS_MAPPING[metric].type !== "float"
-    //         ? transformToOrganicNumbers(_quantiles)
-    //         : _quantiles.map((x) => Math.round(x * 100) / 100);
     const relaxedQuantiles = transformToOrganicNumbers(_quantiles);
     const [quantiles] = _getQuantiles(relaxedQuantiles, metric);
     const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
@@ -65,9 +59,9 @@ const useLotsLayer = ({ queryData }: any) => {
         const value = queryData[d.properties[id]];
         if (
             legendLimits != null &&
-            (value <= legendLimits.min || value > legendLimits.max)
+            (value <= legendLimits.min || value >= legendLimits.max)
         ) {
-            return [200, 200, 200];
+            return [200, 200, 200, 0];
         }
 
         if (value > 0) {
@@ -77,7 +71,7 @@ const useLotsLayer = ({ queryData }: any) => {
             return color ? [color.r, color.g, color.b] : [255, 255, 255];
         }
 
-        return [200, 200, 200];
+        return [200, 200, 200, 0];
     };
 
     if (!condition) return [];
@@ -87,7 +81,7 @@ const useLotsLayer = ({ queryData }: any) => {
             id: "lots",
             data: polygons,
             filled: true,
-            getFillColor: getFillColor,
+            getFillColor,
             getLineWidth: 0,
             pickable: true,
             opacity: 0.8,
