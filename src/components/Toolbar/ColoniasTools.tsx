@@ -20,6 +20,7 @@ import {
     toggleSelectedColonias,
 } from "../../features/viewMode/viewModeSlice";
 import { IoCaretDownSharp, IoCaretUpSharp } from "react-icons/io5";
+import _ from "lodash";
 
 export const ColoniasSelect = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -47,11 +48,7 @@ export const ColoniasSelect = () => {
             isOpen={isFocused}
         >
             <PopoverTrigger>
-                <ButtonGroup
-                    size="xs"
-                    isAttached
-                    className="toolbar-edit__div"
-                >
+                <ButtonGroup size="xs" isAttached className="toolbar-edit__div">
                     <Button
                         rightIcon={
                             isFocused ? (
@@ -71,7 +68,11 @@ export const ColoniasSelect = () => {
                         colorScheme="red"
                         aria-label="Deseleccionar colonias"
                         icon={<MdDelete fontSize="0.8dvw" />}
-                        style={{ height: "2dvw", width: "2dvw", minWidth: "auto" }}
+                        style={{
+                            height: "2dvw",
+                            width: "2dvw",
+                            minWidth: "auto",
+                        }}
                         onClick={() => dispatch(clearSelectedColonias())}
                     />
                 </ButtonGroup>
@@ -107,7 +108,9 @@ export const ColoniasSelect = () => {
                                     }}
                                 >
                                     <Text fontSize="0.6dvw">
-                                        {item.properties.NOM_COL}
+                                        {_.startCase(
+                                            _.toLower(item.properties.NOM_COL)
+                                        )}
                                     </Text>
                                 </Checkbox>
                             </ListItem>
@@ -130,7 +133,9 @@ export const ColoniasSelect = () => {
                                     }}
                                 >
                                     <Text fontSize="0.6dvw">
-                                        {item.properties.NOM_COL}
+                                        {_.startCase(
+                                            _.toLower(item.properties.NOM_COL)
+                                        )}
                                     </Text>
                                 </Checkbox>
                             </ListItem>

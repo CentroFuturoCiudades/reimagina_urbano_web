@@ -18,7 +18,9 @@ const getTooltip = ({ object }: any): any => {
         return {
             html: `<div>
                 <p style="font-size:min(2.2vh, 1.1vw)">
-                    <b>Colonia:</b> ${object.properties.NOM_COL}
+                    <b>Colonia:</b> ${_.startCase(
+                        _.toLower(object.properties.NOM_COL)
+                    )}
                 </p>
             </div>`,
             style: {
@@ -93,7 +95,9 @@ const getTooltip = ({ object }: any): any => {
                             </span>
                             <span style="font-size:min(1.8vh, 0.9vw)">
                                 <b>
-                                    (${formatNumber(opportunitiesValue)}x más ${ratioOpportunities > 100 ? "demanda" : "capacidad"})
+                                    (${formatNumber(opportunitiesValue)}x más ${
+                          ratioOpportunities > 100 ? "demanda" : "capacidad"
+                      })
                                 </b>
                             </span>
                         </p>`
