@@ -3,26 +3,16 @@ import { useEffect, useState } from "react";
 import "./Legend.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import {
-    _getQuantiles,
-    METRICS_MAPPING,
-    transformToOrganicNumbers,
-} from "../../constants";
+import { _getQuantiles, METRICS_MAPPING, transformToOrganicNumbers } from "../../constants";
 import { setLegendLimits } from "../../features/viewMode/viewModeSlice";
 
 const Legend = () => {
     const dispatch: AppDispatch = useDispatch();
     const project = useSelector((state: RootState) => state.viewMode.project);
 
-    const queryData = useSelector(
-        (state: RootState) => state.queryData.queryData
-    );
-    const metric = useSelector(
-        (state: RootState) => state.queryMetric.queryMetric
-    );
-    const dataInfo = useSelector(
-        (state: RootState) => state.queryMetric.dataInfo
-    );
+    const queryData = useSelector((state: RootState) => state.queryData.queryData);
+    const metric = useSelector((state: RootState) => state.queryMetric.queryMetric);
+    const dataInfo = useSelector((state: RootState) => state.queryMetric.dataInfo);
     const _quantiles = [
         dataInfo["0.0"],
         dataInfo["0.2"],
@@ -71,16 +61,13 @@ const Legend = () => {
             {colors.map((color, i) => (
                 <div
                     key={i}
-                    className={`legend__label ${
-                        active === i ? "legend__label--active" : ""
-                    }`}
+                    className={`legend__label ${active === i ? "legend__label--active" : ""}`}
                     onClick={() => {
                         if (active === i) {
                             setActive(-1);
                             dispatch(setLegendLimits(null));
                         } else {
-                            const quantileValues =
-                                quantiles.invertExtent(color);
+                            const quantileValues = quantiles.invertExtent(color);
 
                             setActive(i);
                             dispatch(
@@ -92,10 +79,7 @@ const Legend = () => {
                         }
                     }}
                 >
-                    <div
-                        className="legend__icon"
-                        style={{ background: color }}
-                    />
+                    <div className="legend__icon" style={{ background: color }} />
                     <span>
                         {quantiles
                             .invertExtent(color)
@@ -114,10 +98,7 @@ const Legend = () => {
                         <span>Capillas</span>
                     </div>
                     <div className="legend__label">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/512/7033/7033682.png"
-                            alt="Capilla"
-                        />
+                        <img src="https://cdn-icons-png.flaticon.com/512/7033/7033682.png" alt="Capilla" />
                         <span>Comedores</span>
                     </div>
                 </>

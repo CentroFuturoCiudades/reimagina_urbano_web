@@ -18,9 +18,7 @@ const getTooltip = ({ object }: any): any => {
         return {
             html: `<div>
                 <p style="font-size:min(2.2vh, 1.1vw)">
-                    <b>Colonia:</b> ${_.startCase(
-                        _.toLower(object.properties.NOM_COL)
-                    )}
+                    <b>Colonia:</b> ${_.startCase(_.toLower(object.properties.NOM_COL))}
                 </p>
             </div>`,
             style: {
@@ -33,8 +31,7 @@ const getTooltip = ({ object }: any): any => {
             },
         };
     }
-    if (!object || !object.properties || !object.properties.amenity)
-        return null;
+    if (!object || !object.properties || !object.properties.amenity) return null;
     const visitsColor =
         object.properties.visits_category === "Baja"
             ? "lightcoral"
@@ -49,15 +46,8 @@ const getTooltip = ({ object }: any): any => {
             ? "green"
             : "orange";
     const opportunitiesTitle =
-        ratioOpportunities > 500
-            ? "Saturado"
-            : ratioOpportunities < 30
-            ? "Sub-utilizado"
-            : "Adecuado";
-    const opportunitiesValue =
-        ratioOpportunities > 100
-            ? ratioOpportunities / 100
-            : 100 / ratioOpportunities;
+        ratioOpportunities > 500 ? "Saturado" : ratioOpportunities < 30 ? "Sub-utilizado" : "Adecuado";
+    const opportunitiesValue = ratioOpportunities > 100 ? ratioOpportunities / 100 : 100 / ratioOpportunities;
     return {
         html: `<div>
             <p style="font-size:min(2.4vh, 1.2vw)">
@@ -111,9 +101,7 @@ const getTooltip = ({ object }: any): any => {
                     </p>
                     <p style="font-size:min(2.2vh, 1.1vw)">
                         <b>
-                            ${formatNumber(
-                                object.properties.pob_reach
-                            )} habitantes
+                            ${formatNumber(object.properties.pob_reach)} habitantes
                         </b>
                     </p>`
                     : ""
@@ -132,26 +120,18 @@ const getTooltip = ({ object }: any): any => {
 
 const BaseMap = () => {
     const dispatch: AppDispatch = useDispatch();
-    const isLoading = useSelector(
-        (state: RootState) => state.viewMode.isLoading
-    );
-    const viewState = useSelector(
-        (state: RootState) => state.viewState.viewState
-    );
+    const isLoading = useSelector((state: RootState) => state.viewMode.isLoading);
+    const viewState = useSelector((state: RootState) => state.viewState.viewState);
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
     const project = useSelector((state: RootState) => state.viewMode.project);
-    const isSatellite = useSelector(
-        (state: RootState) => state.viewMode.isSatellite
-    );
+    const isSatellite = useSelector((state: RootState) => state.viewMode.isSatellite);
     const [localViewState, setLocalViewState] = useState<any>(viewState);
 
     const { layers } = Layers();
 
     useEffect(() => {
         const fetchData = async () => {
-            const { data } = await axios.get(
-                `${process.env.REACT_APP_API_URL}/coords?project=${project}`
-            );
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/coords?project=${project}`);
             if (data) {
                 dispatch(setCoordsState(data));
                 setLocalViewState({
@@ -180,7 +160,7 @@ const BaseMap = () => {
             {isLoading && (
                 <div className="loading-container">
                     <Spinner
-                        thickness="6px"
+                        thickness="min(1vh, 0.5vw)"
                         speed="0.65s"
                         emptyColor="gray.200"
                         color="gray.500"
@@ -197,14 +177,8 @@ const BaseMap = () => {
                 viewState={{ ...viewState }}
                 onViewStateChange={(e: any) => {
                     setLocalViewState(e.viewState);
-                    if (
-                        !e.interactionState.isZooming &&
-                        !e.interactionState.isPanning
-                    ) {
-                        if (
-                            e.oldViewState.zoom.toFixed(0) !==
-                            e.viewState.zoom.toFixed(0)
-                        ) {
+                    if (!e.interactionState.isZooming && !e.interactionState.isPanning) {
+                        if (e.oldViewState.zoom.toFixed(0) !== e.viewState.zoom.toFixed(0)) {
                             dispatch(setViewState({ ...e.viewState }));
                         }
                     }

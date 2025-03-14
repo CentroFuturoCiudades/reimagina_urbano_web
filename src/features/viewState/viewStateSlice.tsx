@@ -23,8 +23,11 @@ const viewStateSlice = createSlice({
         setViewState: (state, action: PayloadAction<any>) => {
             state.viewState = action.payload;
         },
+        setPitch: (state, action: PayloadAction<number>) => {
+            state.viewState.pitch = action.payload;
+        },
     },
 });
 
-export const { setZoom, setViewState } = viewStateSlice.actions;
+export const { setZoom, setViewState, setPitch } = viewStateSlice.actions;
 export default viewStateSlice.reducer;

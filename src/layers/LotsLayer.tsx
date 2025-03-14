@@ -1,31 +1,19 @@
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { fetchPolygonData, useAborterEffect } from "../utils";
-import {
-    _getQuantiles,
-    transformToOrganicNumbers,
-    VIEW_MODES,
-} from "../constants";
+import { _getQuantiles, transformToOrganicNumbers, VIEW_MODES } from "../constants";
 import { useState } from "react";
 import * as d3 from "d3";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 
 const useLotsLayer = ({ queryData }: any) => {
-    const coordinates = useSelector(
-        (state: RootState) => state.coordinates.coordinates
-    );
+    const coordinates = useSelector((state: RootState) => state.coordinates.coordinates);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const metric = useSelector(
-        (state: RootState) => state.queryMetric.queryMetric
-    );
+    const metric = useSelector((state: RootState) => state.queryMetric.queryMetric);
     const [polygons, setPolygons] = useState<any>([]);
     const condition = coordinates && coordinates.length > 0;
-    const legendLimits = useSelector(
-        (state: RootState) => state.viewMode.legendLimits
-    );
-    const dataInfo = useSelector(
-        (state: RootState) => state.queryMetric.dataInfo
-    );
+    const legendLimits = useSelector((state: RootState) => state.viewMode.legendLimits);
+    const dataInfo = useSelector((state: RootState) => state.queryMetric.dataInfo);
     const _quantiles = [
         dataInfo["0.0"],
         dataInfo["0.2"],
@@ -36,7 +24,7 @@ const useLotsLayer = ({ queryData }: any) => {
     ];
     const relaxedQuantiles = transformToOrganicNumbers(_quantiles);
     const [quantiles] = _getQuantiles(relaxedQuantiles, metric);
-    const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "cvegeo";
+    const id = viewMode === VIEW_MODES.LENS ? "lot_id" : "block_id";
 
     useAborterEffect(
         async (signal: any, isMounted: boolean) => {
@@ -57,10 +45,7 @@ const useLotsLayer = ({ queryData }: any) => {
     const getFillColor = (d: any): any => {
         if (!quantiles) return [200, 200, 200];
         const value = queryData[d.properties[id]];
-        if (
-            legendLimits != null &&
-            (value <= legendLimits.min || value >= legendLimits.max)
-        ) {
+        if (legendLimits != null && (value <= legendLimits.min || value >= legendLimits.max)) {
             return [200, 200, 200, 0];
         }
 

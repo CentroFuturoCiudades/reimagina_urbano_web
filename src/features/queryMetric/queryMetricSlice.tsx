@@ -5,6 +5,7 @@ interface QueryMetricState {
     globalData: any;
     groupAges: string[];
     dataInfo: any;
+    insights: any;
 }
 
 const initialState: QueryMetricState = {
@@ -12,6 +13,7 @@ const initialState: QueryMetricState = {
     globalData: {},
     groupAges: ["0-2", "3-5"],
     dataInfo: {},
+    insights: "",
 };
 
 const queryMetricSlice = createSlice({
@@ -30,10 +32,12 @@ const queryMetricSlice = createSlice({
         setDataInfo: (state, action: PayloadAction<any>) => {
             state.dataInfo = action.payload;
         },
+        setInsights: (state, action: PayloadAction<any>) => {
+            state.insights = action.payload;
+        },
     },
 });
 
-export const { setQueryMetric, setGlobalData, setGroupAges, setDataInfo } =
-    queryMetricSlice.actions;
+export const { setQueryMetric, setGlobalData, setGroupAges, setDataInfo, setInsights } = queryMetricSlice.actions;
 
 export default queryMetricSlice.reducer;

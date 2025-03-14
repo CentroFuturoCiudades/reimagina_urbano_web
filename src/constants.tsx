@@ -8,6 +8,7 @@ export const INITIAL_STATE = {
     bearing: 0,
     minZoom: 12,
     maxZoom: 22,
+    pitch: 0,
 };
 
 export const INITIAL_COORDS: any = {
@@ -29,10 +30,8 @@ export const METRIC_DESCRIPTIONS: GenericObject = {
         "Porcentaje de la población en la zona que pertenece a los rangos de edad seleccionados, según el Censo 2020 del INEGI.",
     grado_escuela:
         "Promedio del último grado de estudios alcanzado por los habitantes en la zona, según el Censo 2020 del INEGI. Esta variable es relevante porque se relaciona con el nivel de ingresos del hogar.",
-    viviendas_habitadas_percent:
-        "Porcentaje de viviendas habitadas en la zona, según el Censo 2020 del INEGI.",
-    viviendas_deshabitadas_percent:
-        "Porcentaje de viviendas deshabitadas en la zona, según el Censo 2020 del INEGI.",
+    viviendas_habitadas_percent: "Porcentaje de viviendas habitadas en la zona, según el Censo 2020 del INEGI.",
+    viviendas_deshabitadas_percent: "Porcentaje de viviendas deshabitadas en la zona, según el Censo 2020 del INEGI.",
     indice_bienestar:
         "Índice de bienestar económico en la zona (0 a 100) basado en el acceso a servicios esenciales en los hogares, donde valores más altos indican mejores condiciones. Este indicador es importante porque se relaciona con el nivel de ingresos del hogar.",
     viviendas_auto:
@@ -55,25 +54,17 @@ export const METRIC_DESCRIPTIONS: GenericObject = {
         "Promedio del CUS máximo permitido por la regulación vigente en la zona. Determina cuántas veces el área del terreno puede ser edificada en distintos niveles.",
     num_levels:
         "Promedio del número de niveles observados en los edificios de la zona. Datos obtenidos de alturas de OpenBuildings 2.5D de Google.",
-    max_num_levels:
-        "Promedio del número máximo de niveles permitidos por la regulación vigente en la zona.",
-    density:
-        "Densidad habitacional promedio en la zona (viviendas por hectárea).",
+    max_num_levels: "Promedio del número máximo de niveles permitidos por la regulación vigente en la zona.",
+    density: "Densidad habitacional promedio en la zona (viviendas por hectárea).",
     max_density:
         "Densidad habitacional máxima permitida por la regulación vigente en la zona (viviendas por hectárea).",
-    home_units:
-        "Número total de viviendas observadas en la zona, según el Censo 2020 del INEGI.",
-    max_home_units:
-        "Número máximo de viviendas que podrían construirse en la zona según la normativa vigente.",
+    home_units: "Número total de viviendas observadas en la zona, según el Censo 2020 del INEGI.",
+    max_home_units: "Número máximo de viviendas que podrían construirse en la zona según la normativa vigente.",
     subutilizacion:
         "Índice de subutilización en la zona (0 a 100), que mide cuántas viviendas podrían haberse construido según la normativa, pero aún no han sido edificadas. Este indicador es importante porque ayuda a identificar oportunidades para desarrollos de vivienda.",
 };
 
-export const formatNumber = (
-    value: number,
-    type: string | undefined = undefined,
-    precision: number = 0
-) => {
+export const formatNumber = (value: number, type: string | undefined = undefined, precision: number = 0) => {
     if (value === null || value === undefined) return "N/A";
     if (type === "percentage") {
         return `${(value * 100).toLocaleString("es-MX", {
@@ -105,14 +96,10 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
         Math.max(...(Object.values(data) as any)),
     ];
 
-    const startColor =
-        metricInfo.startColor || VIEW_COLORS_RGBA.ACCESIBILIDAD.light;
+    const startColor = metricInfo.startColor || VIEW_COLORS_RGBA.ACCESIBILIDAD.light;
     const endColor = metricInfo.endColor || VIEW_COLORS_RGBA.ACCESIBILIDAD.dark;
 
-    const colors = d3.quantize(
-        d3.interpolateRgb(startColor, endColor),
-        metricInfo.ranges ? domain.length - 1 : 5
-    );
+    const colors = d3.quantize(d3.interpolateRgb(startColor, endColor), metricInfo.ranges ? domain.length - 1 : 5);
 
     const quantiles = metricInfo.ranges
         ? d3
@@ -179,10 +166,7 @@ export function transformToOrganicNumbers(numbers: number[]): number[] {
             } else {
                 // Ensure minimum gap of half the rounding base
                 const minGap = roundingBase * 0.5;
-                while (
-                    rounded <= previousRounded ||
-                    rounded - previousRounded < minGap
-                ) {
+                while (rounded <= previousRounded || rounded - previousRounded < minGap) {
                     rounded += roundingBase;
                 }
             }
@@ -204,19 +188,12 @@ export function transformToOrganicNumbers(numbers: number[]): number[] {
     return cleanedNumbers;
 }
 
-export const _getQuantiles = (
-    quantiles: number[],
-    metric: string
-): [any, string[]] => {
+export const _getQuantiles = (quantiles: number[], metric: string): [any, string[]] => {
     const metricInfo = METRICS_MAPPING[metric] || {};
-    const startColor =
-        metricInfo.startColor || VIEW_COLORS_RGBA.ACCESIBILIDAD.light;
+    const startColor = metricInfo.startColor || VIEW_COLORS_RGBA.ACCESIBILIDAD.light;
     const endColor = metricInfo.endColor || VIEW_COLORS_RGBA.ACCESIBILIDAD.dark;
 
-    const colors = d3.quantize(
-        d3.interpolateRgb(startColor, endColor),
-        quantiles.length - 1
-    );
+    const colors = d3.quantize(d3.interpolateRgb(startColor, endColor), quantiles.length - 1);
 
     const _quantiles = d3
         .scaleThreshold<number, string>()
@@ -459,6 +436,9 @@ export const VIEW_COLORS_RGBA = {
     ACCESIBILIDAD: {
         light: `#BFE5F8`,
         dark: "#2C238B",
+        // light: "#7FA8D3",
+        // light: "rgb(137, 229, 158)",
+        // dark: "rgb(198, 73, 61)",
     },
 };
 
