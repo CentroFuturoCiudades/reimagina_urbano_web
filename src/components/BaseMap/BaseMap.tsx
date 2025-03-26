@@ -11,6 +11,7 @@ import { setCoordsState } from "../../features/viewMode/viewModeSlice";
 import axios from "axios";
 import { setViewState } from "../../features/viewState/viewStateSlice";
 import _ from "lodash";
+import { clearSelectedAmenity } from "../../features/accessibilityList/accessibilityListSlice";
 
 const getTooltip = ({ object }: any): any => {
     if (!object) return null;
@@ -36,15 +37,15 @@ const getTooltip = ({ object }: any): any => {
         object.properties.visits_category === "Baja"
             ? "lightcoral"
             : object.properties.visits_category === "Media"
-            ? "orange"
-            : "lightgreen";
+                ? "orange"
+                : "lightgreen";
     const ratioOpportunities = 100 / object.properties.opportunities_ratio;
     const opportunitiesColor =
         ratioOpportunities <= 30 || ratioOpportunities > 500
             ? "lightcoral"
             : ratioOpportunities > 50 && ratioOpportunities <= 200
-            ? "green"
-            : "orange";
+                ? "green"
+                : "orange";
     const opportunitiesTitle =
         ratioOpportunities > 500 ? "Saturado" : ratioOpportunities < 30 ? "Sub-utilizado" : "Adecuado";
     const opportunitiesValue = ratioOpportunities > 100 ? ratioOpportunities / 100 : 100 / ratioOpportunities;
@@ -56,9 +57,8 @@ const getTooltip = ({ object }: any): any => {
             <p style="font-size:min(2.2vh, 1.1vw)">
                 ${_.capitalize(object.properties.name)}
             </p>
-            ${
-                object.properties.visits_category
-                    ? `
+            ${object.properties.visits_category
+                ? `
                         <p style="font-size:min(1.8vh, 0.9vw)">
                             Afluencia de Visitantes
                         </p>
@@ -69,11 +69,10 @@ const getTooltip = ({ object }: any): any => {
                                 <b>${object.properties.visits_category}</b>
                             </span>
                         </p>`
-                    : ""
+                : ""
             }
-            ${
-                object.properties.opportunities_ratio
-                    ? `
+            ${object.properties.opportunities_ratio
+                ? `
                         <p style="font-size:min(1.8vh, 0.9vw)">
                             Uso Potencial del Equipamiento
                         </p>
@@ -85,17 +84,15 @@ const getTooltip = ({ object }: any): any => {
                             </span>
                             <span style="font-size:min(1.8vh, 0.9vw)">
                                 <b>
-                                    (${formatNumber(opportunitiesValue)}x más ${
-                          ratioOpportunities > 100 ? "demanda" : "capacidad"
-                      })
+                                    (${formatNumber(opportunitiesValue)}x más ${ratioOpportunities > 100 ? "demanda" : "capacidad"
+                })
                                 </b>
                             </span>
                         </p>`
-                    : ""
+                : ""
             }
-            ${
-                object.properties.pob_reach
-                    ? `
+            ${object.properties.pob_reach
+                ? `
                     <p style="font-size:min(1.8vh, 0.9vw)">
                         Alcance potencial a pie
                     </p>
@@ -104,7 +101,7 @@ const getTooltip = ({ object }: any): any => {
                             ${formatNumber(object.properties.pob_reach)} habitantes
                         </b>
                     </p>`
-                    : ""
+                : ""
             }
         </div>`,
         style: {
@@ -125,6 +122,7 @@ const BaseMap = () => {
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
     const project = useSelector((state: RootState) => state.viewMode.project);
     const isSatellite = useSelector((state: RootState) => state.viewMode.isSatellite);
+    const selectedAmenity = useSelector((state: RootState) => state.accessibilityList.selectedAmenity);
     const [localViewState, setLocalViewState] = useState<any>(viewState);
 
     const { layers } = Layers();
@@ -184,6 +182,12 @@ const BaseMap = () => {
                     }
                 }}
                 getTooltip={getTooltip}
+                onClick={(info: any) => {
+                    // If there's a selected amenity and we click on empty space, clear the selection
+                    if (selectedAmenity && !info.object) {
+                        dispatch(clearSelectedAmenity());
+                    }
+                }}
             >
                 <Map
                     reuseMaps

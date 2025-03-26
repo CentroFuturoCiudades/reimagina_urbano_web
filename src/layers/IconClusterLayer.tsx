@@ -3,10 +3,14 @@ import { CompositeLayer } from "@deck.gl/core";
 import { IconLayer, IconLayerProps, TextLayer } from "@deck.gl/layers";
 import Supercluster from "supercluster";
 
+interface IconClusterLayerProps<DataT> extends IconLayerProps<DataT> {
+    onClick?: (info: any) => void;
+}
+
 export class IconClusterLayer<
     DataT extends { [key: string]: any } = any,
     ExtraProps extends {} = {}
-> extends CompositeLayer<Required<IconLayerProps<DataT>> & ExtraProps> {
+> extends CompositeLayer<IconClusterLayerProps<DataT> & ExtraProps> {
     state!: {
         data: (PointFeature<DataT> | ClusterFeature<DataT>)[];
         index: Supercluster<DataT, DataT>;
@@ -56,7 +60,14 @@ export class IconClusterLayer<
                     .getLeaves(pickedObject.cluster_id, 25)
                     .map((f: any) => f.properties);
             }
-            return { ...info, object: pickedObject, objects };
+            const result = { ...info, object: pickedObject, objects };
+
+            // Call the onClick handler if it exists and we're in click mode
+            if (mode === 'click' && this.props.onClick) {
+                this.props.onClick(result);
+            }
+
+            return result;
         }
         return { ...info, object: undefined };
     }

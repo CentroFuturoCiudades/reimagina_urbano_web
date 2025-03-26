@@ -137,14 +137,14 @@ const AccessibilityPointsTreemap = () => {
     return (
         <>
             <div style={{ height: 'min(30dvh, 15dvw)' }}>
-            <ResponsiveContainer width={"100%"} height={"100%"}>
-                <Treemap
-                    data={accessibilityTreeArray}
-                    dataKey={"size"}
-                    animationDuration={100}
-                    content={<TreemapNodeContent />}
-                />
-            </ResponsiveContainer>
+                <ResponsiveContainer width={"100%"} height={"100%"}>
+                    <Treemap
+                        data={accessibilityTreeArray}
+                        dataKey={"size"}
+                        animationDuration={100}
+                        content={<TreemapNodeContent />}
+                    />
+                </ResponsiveContainer>
             </div>
             <Legend
                 content={() => (

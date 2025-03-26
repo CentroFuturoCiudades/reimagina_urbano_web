@@ -10,6 +10,7 @@ import { setGlobalData, setInsights, setQueryMetric } from "../../features/query
 import { Accesibilidad, Potencial } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
 import { GenericObject } from "../../types";
+import AmenitiesSidebar from "../AmenitiesSidebar";
 
 const TabsHeader = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -66,6 +67,7 @@ const MainSidebar = () => {
     const accessibilityList: GenericObject = useSelector(
         (state: RootState) => state.accessibilityList.accessibilityList
     );
+    const selectedAmenity = useSelector((state: RootState) => state.accessibilityList.selectedAmenity);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const groupAges = useSelector((state: RootState) => state.queryMetric.groupAges);
     const coordinates = useSelector((state: RootState) => state.coordinates.coordinates);
@@ -124,6 +126,10 @@ const MainSidebar = () => {
         fetchData();
     }, [selectedLots, accessibilityList, dispatch, viewMode, groupAges, coordinates]);
 
+
+    if (selectedAmenity) {
+        return <AmenitiesSidebar />;
+    }
     if (isMobile) {
         return null;
     }

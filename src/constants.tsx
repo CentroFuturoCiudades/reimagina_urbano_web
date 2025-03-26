@@ -103,9 +103,9 @@ export const getQuantiles = (data: any, metric: string): [any, string[]] => {
 
     const quantiles = metricInfo.ranges
         ? d3
-              .scaleThreshold<number, string>()
-              .domain(domain)
-              .range([startColor, ...colors])
+            .scaleThreshold<number, string>()
+            .domain(domain)
+            .range([startColor, ...colors])
         : d3.scaleQuantize<string>().domain(domain).range(colors);
 
     return [quantiles, colors];
@@ -332,55 +332,55 @@ export const REGIONS = [
 ];
 export const amenitiesOptions = [
     // Salud
-    { value: "Hospital_general", label: "Hospital general", type: "health" },
+    { value: "Hospital_general", label: "Hospital General", type: "health" },
     {
         value: "Consultorios_medicos",
-        label: "Consultorios médicos",
+        label: "Consultorios Médicos",
         type: "health",
     },
     { value: "Farmacia", label: "Farmacia", type: "health" },
     // Recreativo
     {
         value: "Parques_recreativos",
-        label: "Parques recreativos",
+        label: "Parque",
         type: "park",
     },
     {
-        value: "Clubs_deportivos_y_acondicionamiento_fisico",
-        label: "Clubs deportivos y de acondicionamiento físico",
+        value: "Unidad_deportiva",
+        label: "Unidad Deportiva",
         type: "recreation",
     },
     { value: "Cine", label: "Cine", type: "recreation" },
     {
         value: "Otros_servicios_recreativos",
-        label: "Otros servicios recreativos",
+        label: "Otros Servicios Recreativos",
         type: "recreation",
     },
     // Educación
     { value: "Guarderia", label: "Guarderia", type: "education" },
     {
         value: "Educacion_preescolar",
-        label: "Educación preescolar",
+        label: "Educación Preescolar",
         type: "education",
     },
     {
         value: "Educacion_primaria",
-        label: "Educación primaria",
+        label: "Educación Primaria",
         type: "education",
     },
     {
         value: "Educacion_secundaria",
-        label: "Educación secundaria",
+        label: "Educación Secundaria",
         type: "education",
     },
     {
         value: "Educacion_media_superior",
-        label: "Educación media superior",
+        label: "Educación Media Superior",
         type: "education",
     },
     {
         value: "Educacion_superior",
-        label: "Educación superior",
+        label: "Educación Superior",
         type: "education",
     },
     // Otros
