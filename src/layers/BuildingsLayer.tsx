@@ -1,11 +1,10 @@
-import { GenericObject } from '../types';
+import { GenericObject } from "../types";
 import { fetchPolygonData, useAborterEffect } from "../utils";
 import { GeoJsonLayer } from "@deck.gl/layers";
 import { useState } from "react";
 import { VIEW_MODES, ZOOM_SHOW_DETAILS } from "../constants";
 import { RootState } from "../app/store";
 import { useSelector } from "react-redux";
-
 
 type BuildingFeature = {
     type: string;
@@ -24,40 +23,39 @@ interface BuildingsLayerProps {
 }
 
 const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
-    const coordinates = useSelector(
-        (state: RootState) => state.coordinates.coordinates
-    );
-    const queryMetric = useSelector(
-        (state: RootState) => state.queryMetric.queryMetric
-    );
+    const coordinates = useSelector((state: RootState) => state.coordinates.coordinates);
+    const queryMetric = useSelector((state: RootState) => state.queryMetric.queryMetric);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
     const viewState = useSelector((state: RootState) => state.viewState.viewState);
     const [polygons, setPolygons] = useState<any>([]);
     const [polygons2, setPolygons2] = useState<any>([]);
     const isZoomedIn = viewState.zoom >= ZOOM_SHOW_DETAILS;
     const condition = isZoomedIn && coordinates && coordinates.length !== 0 && viewMode === VIEW_MODES.LENS;
-    useAborterEffect(async (signal: any, isMounted: boolean) => {
-        if (!condition) return;
-        const polygons = await fetchPolygonData(
-            {
-                coordinates,
-                layer: "landuse_building",
-            },
-            signal
-        );
+    useAborterEffect(
+        async (signal: any, isMounted: boolean) => {
+            if (!condition) return;
+            const polygons = await fetchPolygonData(
+                {
+                    coordinates,
+                    layer: "landuse_building",
+                },
+                signal
+            );
 
-        const polygons2 = await fetchPolygonData(
-            {
-                coordinates,
-                layer: "ideal_buildings",
-            },
-            signal
-        );
+            const polygons2 = await fetchPolygonData(
+                {
+                    coordinates,
+                    layer: "ideal_buildings",
+                },
+                signal
+            );
 
-        isMounted && setPolygons(polygons);
-        isMounted && setPolygons2(polygons2);
-    }, [coordinates, queryDataFloors, isZoomedIn]);
-    
+            isMounted && setPolygons(polygons);
+            isMounted && setPolygons2(polygons2);
+        },
+        [coordinates, queryDataFloors, isZoomedIn]
+    );
+
     if (!condition) return [];
 
     function getFloors(buildingId: string): number {
@@ -80,8 +78,8 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
                 const feature = d as BuildingFeature;
                 return (feature.properties.max_num_levels || 1) * 3.5;
             },
-        })
-    ]
+        }),
+    ];
     const actualBuildings = [
         new GeoJsonLayer({
             id: "buildings-floors-layer",
@@ -97,11 +95,9 @@ const useBuildingsLayer = ({ queryDataFloors }: BuildingsLayerProps) => {
                 return getFloors(feature.properties.lot_id);
             },
         }),
-    ]
-
-    return [
-        ...(queryMetric === "max_num_levels" ? idealBuildings : actualBuildings)
     ];
+
+    return [...(queryMetric === "max_num_levels" ? idealBuildings : actualBuildings)];
 };
 
 export default useBuildingsLayer;

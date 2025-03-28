@@ -49,6 +49,7 @@ export class IconClusterLayer<
 
     getPickingInfo({ info, mode }: { info: any; mode: string }): any {
         const pickedObject = info.object?.properties;
+        console.log(info);
         if (pickedObject) {
             let objects: DataT[] | undefined;
             if (pickedObject.cluster && mode !== "hover") {
@@ -56,7 +57,14 @@ export class IconClusterLayer<
                     .getLeaves(pickedObject.cluster_id, 25)
                     .map((f: any) => f.properties);
             }
-            return { ...info, object: pickedObject, objects };
+            const result = { ...info, object: pickedObject, objects };
+
+            // Call the onClick handler if it exists and we're in click mode
+            if (mode === 'click' && this.props.onClick) {
+                this.props.onClick(result, info.event);
+            }
+
+            return result;
         }
         return { ...info, object: undefined };
     }

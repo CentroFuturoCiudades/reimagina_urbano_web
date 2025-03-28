@@ -11,6 +11,7 @@ import { setCoordsState } from "../../features/viewMode/viewModeSlice";
 import axios from "axios";
 import { setViewState } from "../../features/viewState/viewStateSlice";
 import _ from "lodash";
+import { clearSelectedAmenity } from "../../features/accessibilityList/accessibilityListSlice";
 
 const getTooltip = ({ object }: any): any => {
     if (!object) return null;
@@ -18,9 +19,7 @@ const getTooltip = ({ object }: any): any => {
         return {
             html: `<div>
                 <p style="font-size:min(2.2vh, 1.1vw)">
-                    <b>Colonia:</b> ${_.startCase(
-                        _.toLower(object.properties.NOM_COL)
-                    )}
+                    <b>Colonia:</b> ${_.startCase(_.toLower(object.properties.NOM_COL))}
                 </p>
             </div>`,
             style: {
@@ -33,31 +32,23 @@ const getTooltip = ({ object }: any): any => {
             },
         };
     }
-    if (!object || !object.properties || !object.properties.amenity)
-        return null;
+    if (!object || !object.properties || !object.properties.amenity) return null;
     const visitsColor =
         object.properties.visits_category === "Baja"
             ? "lightcoral"
             : object.properties.visits_category === "Media"
-            ? "orange"
-            : "lightgreen";
+                ? "orange"
+                : "lightgreen";
     const ratioOpportunities = 100 / object.properties.opportunities_ratio;
     const opportunitiesColor =
         ratioOpportunities <= 30 || ratioOpportunities > 500
             ? "lightcoral"
             : ratioOpportunities > 50 && ratioOpportunities <= 200
-            ? "green"
-            : "orange";
+                ? "green"
+                : "orange";
     const opportunitiesTitle =
-        ratioOpportunities > 500
-            ? "Saturado"
-            : ratioOpportunities < 30
-            ? "Sub-utilizado"
-            : "Adecuado";
-    const opportunitiesValue =
-        ratioOpportunities > 100
-            ? ratioOpportunities / 100
-            : 100 / ratioOpportunities;
+        ratioOpportunities > 500 ? "Saturado" : ratioOpportunities < 30 ? "Sub-utilizado" : "Adecuado";
+    const opportunitiesValue = ratioOpportunities > 100 ? ratioOpportunities / 100 : 100 / ratioOpportunities;
     return {
         html: `<div>
             <p style="font-size:min(2.4vh, 1.2vw)">
@@ -66,9 +57,8 @@ const getTooltip = ({ object }: any): any => {
             <p style="font-size:min(2.2vh, 1.1vw)">
                 ${_.capitalize(object.properties.name)}
             </p>
-            ${
-                object.properties.visits_category
-                    ? `
+            ${object.properties.visits_category
+                ? `
                         <p style="font-size:min(1.8vh, 0.9vw)">
                             Afluencia de Visitantes
                         </p>
@@ -79,11 +69,10 @@ const getTooltip = ({ object }: any): any => {
                                 <b>${object.properties.visits_category}</b>
                             </span>
                         </p>`
-                    : ""
+                : ""
             }
-            ${
-                object.properties.opportunities_ratio
-                    ? `
+            ${object.properties.opportunities_ratio
+                ? `
                         <p style="font-size:min(1.8vh, 0.9vw)">
                             Uso Potencial del Equipamiento
                         </p>
@@ -95,28 +84,24 @@ const getTooltip = ({ object }: any): any => {
                             </span>
                             <span style="font-size:min(1.8vh, 0.9vw)">
                                 <b>
-                                    (${formatNumber(opportunitiesValue)}x más ${
-                          ratioOpportunities > 100 ? "demanda" : "capacidad"
-                      })
+                                    (${formatNumber(opportunitiesValue)}x más ${ratioOpportunities > 100 ? "demanda" : "capacidad"
+                })
                                 </b>
                             </span>
                         </p>`
-                    : ""
+                : ""
             }
-            ${
-                object.properties.pob_reach
-                    ? `
+            ${object.properties.pob_reach
+                ? `
                     <p style="font-size:min(1.8vh, 0.9vw)">
                         Alcance potencial a pie
                     </p>
                     <p style="font-size:min(2.2vh, 1.1vw)">
                         <b>
-                            ${formatNumber(
-                                object.properties.pob_reach
-                            )} habitantes
+                            ${formatNumber(object.properties.pob_reach)} habitantes
                         </b>
                     </p>`
-                    : ""
+                : ""
             }
         </div>`,
         style: {
@@ -132,26 +117,19 @@ const getTooltip = ({ object }: any): any => {
 
 const BaseMap = () => {
     const dispatch: AppDispatch = useDispatch();
-    const isLoading = useSelector(
-        (state: RootState) => state.viewMode.isLoading
-    );
-    const viewState = useSelector(
-        (state: RootState) => state.viewState.viewState
-    );
+    const isLoading = useSelector((state: RootState) => state.viewMode.isLoading);
+    const viewState = useSelector((state: RootState) => state.viewState.viewState);
     const isDrag = useSelector((state: RootState) => state.lensSettings.isDrag);
     const project = useSelector((state: RootState) => state.viewMode.project);
-    const isSatellite = useSelector(
-        (state: RootState) => state.viewMode.isSatellite
-    );
+    const isSatellite = useSelector((state: RootState) => state.viewMode.isSatellite);
+    const selectedAmenity = useSelector((state: RootState) => state.accessibilityList.selectedAmenity);
     const [localViewState, setLocalViewState] = useState<any>(viewState);
 
     const { layers } = Layers();
 
     useEffect(() => {
         const fetchData = async () => {
-            const { data } = await axios.get(
-                `${process.env.REACT_APP_API_URL}/coords?project=${project}`
-            );
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/coords?project=${project}`);
             if (data) {
                 dispatch(setCoordsState(data));
                 setLocalViewState({
@@ -180,7 +158,7 @@ const BaseMap = () => {
             {isLoading && (
                 <div className="loading-container">
                     <Spinner
-                        thickness="6px"
+                        thickness="min(1vh, 0.5vw)"
                         speed="0.65s"
                         emptyColor="gray.200"
                         color="gray.500"
@@ -197,19 +175,19 @@ const BaseMap = () => {
                 viewState={{ ...viewState }}
                 onViewStateChange={(e: any) => {
                     setLocalViewState(e.viewState);
-                    if (
-                        !e.interactionState.isZooming &&
-                        !e.interactionState.isPanning
-                    ) {
-                        if (
-                            e.oldViewState.zoom.toFixed(0) !==
-                            e.viewState.zoom.toFixed(0)
-                        ) {
+                    if (!e.interactionState.isZooming && !e.interactionState.isPanning) {
+                        if (e.oldViewState.zoom.toFixed(0) !== e.viewState.zoom.toFixed(0)) {
                             dispatch(setViewState({ ...e.viewState }));
                         }
                     }
                 }}
                 getTooltip={getTooltip}
+                onClick={(info: any) => {
+                    // If there's a selected amenity and we click on empty space, clear the selection
+                    if (selectedAmenity && !info.object) {
+                        dispatch(clearSelectedAmenity());
+                    }
+                }}
             >
                 <Map
                     reuseMaps

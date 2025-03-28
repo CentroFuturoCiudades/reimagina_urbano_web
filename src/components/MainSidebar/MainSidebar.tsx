@@ -6,13 +6,11 @@ import axios from "axios";
 import Visor from "../../content/Visor";
 import { AppDispatch, RootState } from "../../app/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    setGlobalData,
-    setQueryMetric,
-} from "../../features/queryMetric/queryMetricSlice";
+import { setGlobalData, setInsights, setQueryMetric } from "../../features/queryMetric/queryMetricSlice";
 import { Accesibilidad, Potencial } from "../../content";
 import { setActiveTab } from "../../features/viewMode/viewModeSlice";
 import { GenericObject } from "../../types";
+import AmenitiesSidebar from "../AmenitiesSidebar";
 
 const TabsHeader = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -65,34 +63,26 @@ const TabsHeader = () => {
 const MainSidebar = () => {
     const [metrics, setMetrics] = useState<any>({});
 
-    const selectedLots = useSelector(
-        (state: RootState) => state.selectedLots.selectedLots
-    );
+    const selectedLots = useSelector((state: RootState) => state.selectedLots.selectedLots);
     const accessibilityList: GenericObject = useSelector(
         (state: RootState) => state.accessibilityList.accessibilityList
     );
+    const selectedAmenity = useSelector((state: RootState) => state.accessibilityList.selectedAmenity);
     const viewMode = useSelector((state: RootState) => state.viewMode.viewMode);
-    const groupAges = useSelector(
-        (state: RootState) => state.queryMetric.groupAges
-    );
-    const coordinates = useSelector(
-        (state: RootState) => state.coordinates.coordinates
-    );
+    const groupAges = useSelector((state: RootState) => state.queryMetric.groupAges);
+    const coordinates = useSelector((state: RootState) => state.coordinates.coordinates);
     const [isMobile] = useMediaQuery("(max-width: 800px)");
 
     const dispatch: AppDispatch = useDispatch();
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/predios`,
-                {
-                    coordinates: [],
-                    type: "blocks",
-                    accessibility_info: [],
-                    group_ages: groupAges,
-                }
-            );
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/predios`, {
+                coordinates: [],
+                type: "blocks",
+                accessibility_info: [],
+                group_ages: groupAges,
+            });
             if (response && response.data) {
                 dispatch(setGlobalData(response.data));
             }
@@ -100,47 +90,53 @@ const MainSidebar = () => {
         fetchData();
     }, [dispatch, groupAges]);
 
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         if (!coordinates || coordinates.length === 0) {
+    //             dispatch(setInsights(""));
+    //             return;
+    //         }
+    //         dispatch(setInsights(undefined));
+    //         const response = await axios.post(`${process.env.REACT_APP_API_URL}/stats`, {
+    //             coordinates,
+    //             coordinates_compare: [],
+    //             type: "blocks",
+    //         });
+    //         dispatch(setInsights(response.data.description));
+    //     };
+    //     fetchData();
+    // }, [coordinates]);
+
     useEffect(() => {
         const fetchData = async () => {
             if (!(selectedLots && selectedLots.length > 0)) {
                 setMetrics({});
                 return;
             }
-            const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/predios`,
-                {
-                    coordinates,
-                    type: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
-                    accessibility_info: accessibilityList.map(
-                        (x: any) => x.value
-                    ),
-                    group_ages: groupAges,
-                }
-            );
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/predios`, {
+                coordinates,
+                type: viewMode === VIEW_MODES.LENS ? "lots" : "blocks",
+                accessibility_info: accessibilityList.map((x: any) => x.value),
+                group_ages: groupAges,
+            });
             if (response && response.data) {
                 setMetrics(response.data);
             }
         };
         fetchData();
-    }, [
-        selectedLots,
-        accessibilityList,
-        dispatch,
-        viewMode,
-        groupAges,
-        coordinates,
-    ]);
+    }, [selectedLots, accessibilityList, dispatch, viewMode, groupAges, coordinates]);
 
+
+    if (selectedAmenity) {
+        return <AmenitiesSidebar />;
+    }
     if (isMobile) {
         return null;
     }
 
     return (
         <>
-            <Tabs
-                className="mainSidebar"
-                variant="solid-rounded"
-            >
+            <Tabs className="mainSidebar" variant="solid-rounded">
                 <TabsHeader />
                 <TabPanels>
                     <TabPanel p="0">

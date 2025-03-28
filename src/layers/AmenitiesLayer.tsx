@@ -5,6 +5,8 @@ import { GeoJsonLayer } from "@deck.gl/layers";
 import { useState } from "react";
 import { RootState } from "../app/store";
 import { amenitiesOptions, TABS } from "../constants";
+import { setSelectedAmenity, clearSelectedAmenity } from "../features/accessibilityList/accessibilityListSlice";
+import { useDispatch } from "react-redux";
 
 const METRIC_COLOR: GenericObject = {
     health: [149, 136, 196, 255],
@@ -15,6 +17,7 @@ const METRIC_COLOR: GenericObject = {
 };
 
 const useAmenitiesLayer = () => {
+    const dispatch = useDispatch();
     const coordinates = useSelector(
         (state: RootState) => state.coordinates.coordinates
     );
@@ -26,6 +29,12 @@ const useAmenitiesLayer = () => {
     );
     const accessibilityList = useSelector(
         (state: RootState) => state.accessibilityList.accessibilityList
+    );
+    const selectedAmenity = useSelector(
+        (state: RootState) => state.accessibilityList.selectedAmenity
+    );
+    const zoom = useSelector(
+        (state: RootState) => state.viewState.viewState.zoom
     );
     const [polygons, setPolygons] = useState<any>([]);
     const condition =
@@ -52,6 +61,9 @@ const useAmenitiesLayer = () => {
             data: polygons,
             filled: true,
             getFillColor: (d: any) => {
+                if (selectedAmenity && d.properties.id !== selectedAmenity.id) {
+                    return [200, 200, 200];
+                }
                 if (
                     accessibilityList.length > 0 &&
                     !accessibilityList
@@ -65,10 +77,22 @@ const useAmenitiesLayer = () => {
                 )?.type;
                 return type ? METRIC_COLOR[type] : [200, 200, 200];
             },
-            getLineWidth: 0,
+            getLineWidth: (d: any) => {
+                return selectedAmenity && d.properties.id === selectedAmenity.id ? 10 : 0;
+            },
+            getLineColor: [100, 100, 100],
+            onClick: (info: any) => {
+                if (info.object) {
+                    console.log(info.object.properties);
+                    dispatch(setSelectedAmenity(info.object.properties));
+                } else {
+                    dispatch(clearSelectedAmenity());
+                }
+            },
             pickable: true,
             updateTriggers: {
-                getFillColor: [accessibilityList],
+                getFillColor: [accessibilityList, selectedAmenity],
+                getLineWidth: [selectedAmenity],
             },
         }),
     ];

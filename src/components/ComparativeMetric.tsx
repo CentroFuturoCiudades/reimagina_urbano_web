@@ -37,9 +37,8 @@ export const ComparativeMetric = ({
             }}
         >
             <Box
-                className={`stat-title-box${
-                    metric && !disabled ? " regular" : ""
-                }${isCurrent ? " active" : ""}`}
+                className={`stat-title-box${metric && !disabled ? " regular" : ""
+                    }${isCurrent ? " active" : ""}`}
             >
                 <Tooltip
                     hasArrow

@@ -12,7 +12,8 @@
         flex: 1;
         text-align: center;
         border-radius: 0;
-        background-color: rgb(255, 255, 255); /* Color sólido */
+        background-color: rgb(255, 255, 255);
+        /* Color sólido */
         transition: background-color 0.3s;
         color: white;
         transition: none;
@@ -43,9 +44,8 @@
 
     .chakra-tabs__tabpanel {
         padding: 1rem;
-        height: calc(
-            100% - 3rem
-        ); /* ajusta la altura según el tamaño de las pestañas */
+        height: calc(100% - 3rem);
+        /* ajusta la altura según el tamaño de las pestañas */
         overflow-y: auto;
     }
 }
@@ -123,6 +123,7 @@
             z-index: 1;
             overflow: hidden;
             border-radius: min(0.8dvh, 0.4dvw);
+
             &.active {
                 background-color: var(--primary);
             }
@@ -130,6 +131,7 @@
             &.regular {
                 &:not(.active) {
                     border: min(0.2dvh, 0.1dvw) solid #c3cff0;
+
                     &:hover {
                         box-shadow: 0 6px 6px rgba(69, 69, 69, 0.4) !important;
                         background-color: rgb(236, 239, 249) !important;
@@ -160,12 +162,12 @@
             font-weight: bold;
 
             &.full {
-                > div {
+                >div {
                     width: 100%;
                 }
             }
 
-            > div {
+            >div {
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -182,11 +184,12 @@
             }
         }
 
-        .stat-value > p {
+        .stat-value>p {
             display: flex;
             align-items: center;
         }
     }
+
     .checkbox-container {
         display: flex;
         align-items: center;
@@ -210,12 +213,30 @@
     }
 }
 
+.amenities-sidebar {
+    height: 100dvh !important;
+    width: 25dvw !important;
+    border-radius: 0px !important;
+    border: 0px !important;
+    background-color: rgb(255, 255, 255);
+}
+
+.amenities-sidebar-title {
+    margin: min(1dvh, 0.5dvw);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: min(2.5dvh, 1.25dvw);
+    font-weight: bold;
+}
+
 .chakra-checkbox__control {
     height: min(2.6dvh, 1.3dvw) !important;
     width: min(2.6dvh, 1.3dvw) !important;
     border: min(0.14dvh, 0.07dvw) solid #c3cff0 !important;
     border-radius: min(0.6dvh, 0.3dvw) !important;
 }
+
 .chakra-checkbox__label {
     margin-top: 0px !important;
     margin-left: min(1.2dvh, 0.6dvw) !important;

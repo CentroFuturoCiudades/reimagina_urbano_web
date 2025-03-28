@@ -6,7 +6,7 @@ import "intro.js/introjs.css";
 
 import "./Landing.scss";
 import { setProject } from "../../features/viewMode/viewModeSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { SectionTitle } from "./SectionTitle";
 import { SectionDescriptions } from "./SectionDescriptions";
 

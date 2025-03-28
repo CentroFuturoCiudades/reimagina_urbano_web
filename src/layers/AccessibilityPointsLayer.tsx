@@ -6,7 +6,7 @@ import {
     TABS,
 } from "../constants";
 import { useDispatch, useSelector } from "react-redux";
-import { setAccessibilityPoints } from "../features/accessibilityList/accessibilityListSlice";
+import { setAccessibilityPoints, setSelectedAmenity, clearSelectedAmenity } from "../features/accessibilityList/accessibilityListSlice";
 import { RootState } from "../app/store";
 import { IconClusterLayer } from "./IconClusterLayer";
 
@@ -20,6 +20,9 @@ const useAccessibilityPointsLayer = () => {
     );
     const activeTab = useSelector(
         (state: RootState) => state.viewMode.activeTab
+    );
+    const selectedAmenity = useSelector(
+        (state: RootState) => state.accessibilityList.selectedAmenity
     );
 
     const [polygons, setPolygons] = React.useState<any>([]);
@@ -91,7 +94,25 @@ const useAccessibilityPointsLayer = () => {
                 clusteringSize: 1,
                 pickable: true,
                 getColor: (d: any) => {
-                    return mappingColors[amenity_type];
+                    const color = mappingColors[amenity_type];
+                    if (!selectedAmenity) {
+                        return color;
+                    }
+                    if (d.properties && d.properties.properties.id === selectedAmenity.id) {
+                        return color;
+                    } else {
+                        return [color[0] + 20, color[1] + 20, color[2] + 20, 50];
+                    }
+                },
+                onClick: (info: any) => {
+                    if (info.object) {
+                        dispatch(setSelectedAmenity(info.object.properties));
+                    } else {
+                        dispatch(clearSelectedAmenity());
+                    }
+                },
+                updateTriggers: {
+                    getColor: [selectedAmenity],
                 },
             } as any);
         }
