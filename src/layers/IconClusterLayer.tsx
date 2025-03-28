@@ -3,15 +3,9 @@ import { CompositeLayer } from "@deck.gl/core";
 import { IconLayer, IconLayerProps, TextLayer } from "@deck.gl/layers";
 import Supercluster from "supercluster";
 
-interface IconClusterLayerProps<DataT> extends IconLayerProps<DataT> {
-    onClick?: (info: any) => void;
-    sizeScale?: number;
-}
-
 export class IconClusterLayer<
-    DataT extends { [key: string]: any } = any,
-    ExtraProps extends {} = {}
-> extends CompositeLayer<IconClusterLayerProps<DataT> & ExtraProps> {
+    DataT extends { [key: string]: any } = any
+> extends CompositeLayer<any> {
     state!: {
         data: (PointFeature<DataT> | ClusterFeature<DataT>)[];
         index: Supercluster<DataT, DataT>;
