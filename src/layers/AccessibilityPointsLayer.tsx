@@ -114,7 +114,7 @@ const useAccessibilityPointsLayer = () => {
                 updateTriggers: {
                     getColor: [selectedAmenity],
                 },
-            });
+            } as any);
         }
     );
 
