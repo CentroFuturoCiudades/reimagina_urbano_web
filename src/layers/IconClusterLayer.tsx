@@ -5,6 +5,7 @@ import Supercluster from "supercluster";
 
 interface IconClusterLayerProps<DataT> extends IconLayerProps<DataT> {
     onClick?: (info: any) => void;
+    sizeScale?: number;
 }
 
 export class IconClusterLayer<
